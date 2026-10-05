@@ -173,6 +173,18 @@ Tags: `poc-landing-r4` · `poc-landing-viva-r15` · `poc-landing-viva-mobile-m1`
   construídos por 7 agentes em paralelo a partir do brief; QA limpo nos 14; testes de interação de 35 a 57 por tela.
   Laboratórios: teto de Lazer (Orçamentos) e data do notebook (Planejamento). Hub de Finanças ligado às subtelas.
 
+### Implementação da Fase 2 em `web/` (em andamento)
+- Plano: `docs/superpowers/plans/2026-10-05-fase2-implementacao-web.md`. Base comum commitada (`SubnavArea`, `SubtelaV5`, `Painel`, `Confirma`, CSS no
+  fim de `app-v5.css`, prop `onRegistrar` no chrome). Onda A em paralelo (6 agentes: Transações, Orçamentos, Recorrentes, Planejamento, Relatórios,
+  Importar); Onda B: Calendário (depende de `TransacaoPainel` e `EventoPlanejadoPainel`).
+- **Contexto de Sy para Finanças ampliado** (`lib/coach/context.ts`): o módulo `financas` agora leva orçamentos (8), contas fixas (10), metas,
+  eventos planejados, proventos anunciados e contas bancárias, com fontes citadas; o Panorama continua com 3 orçamentos e 3 contas.
+  Antes o módulo só levava o resumo das transações, então Sy não saberia responder sobre o teto de Lazer. Testes novos.
+- **Homolog igualada a produção:** migrations 025 (`user_accounts` + `account_from_id/account_to_id`) e 026 (colunas de perfil) aplicadas SÓ em homolog
+  (produção já tinha). Sem 025 a lista de Transações e as transferências quebravam em homolog. Fila de produção não muda.
+- **Seed de homolog das subtelas** (conta do usuário): 10 recorrentes (1 pausada, quinzenal, trimestral, anual), 8 eventos planejados, orçamentos
+  completos (6, Saúde com rollover), 3 contas, 1 transferência, provento MXRF11 anunciado.
+
 ### Aprovação (2026-10-05)
 **As 7 telas foram APROVADAS pelo usuário**, com os pontos para decidir como propostos. Dúvida levantada na aprovação:
 **como se chega a cada subtela.** Diagnóstico: do hub, o desktop só leva a Transações e o mobile a Transações, Orçamentos e

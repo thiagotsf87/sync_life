@@ -92,6 +92,21 @@ export type RoadmapResumo = {
   passo_atual: string | null
 }
 export type IntencoesResumo = { total: number; ultima: string | null }
+/** Fase 2 · Finanças: evento planejado (planning_events), proventos anunciados e contas de transferência. */
+export type EventoPlanejadoResumo = { name: string; tipo: 'income' | 'expense'; amount: number; planned_date: string; confirmado: boolean }
+export type ProventoResumo = { ticker: string | null; total_amount: number; payment_date: string }
+export type ContaBancariaResumo = { name: string; bank: string | null }
+
+/** Contexto do módulo Finanças (hub e subtelas): o resumo do mês + tudo que as subtelas mostram. */
+export type FinancasModuloContext = {
+  financas: FinancasContext
+  orcamentos?: OrcamentoResumo[]
+  contas?: ContaResumo[]
+  metas?: MetaResumo[]
+  planejamento?: EventoPlanejadoResumo[]
+  proventos?: ProventoResumo[]
+  contas_bancarias?: ContaBancariaResumo[]
+}
 
 /** Contexto do Panorama (Meu dia). Mantém os campos antigos (compat com diario-brief). */
 export type PanoramaContext = {
@@ -168,6 +183,12 @@ export function fontesDe(ctx: Record<string, unknown>): string[] {
   if (contas && contas.length > 0) out.push(plural(contas.length, 'conta fixa', 'contas fixas'))
   const metas = ctx.metas as unknown[] | undefined
   if (metas && metas.length > 0) out.push(plural(metas.length, 'meta', 'metas'))
+  const plan = ctx.planejamento as unknown[] | undefined
+  if (plan && plan.length > 0) out.push(plural(plan.length, 'evento planejado', 'eventos planejados'))
+  const prov = ctx.proventos as unknown[] | undefined
+  if (prov && prov.length > 0) out.push(plural(prov.length, 'provento previsto', 'proventos previstos'))
+  const cb = ctx.contas_bancarias as unknown[] | undefined
+  if (cb && cb.length > 0) out.push(plural(cb.length, 'conta bancária', 'contas bancárias'))
   if (ctx.score) out.push('seu Life Sync Score')
   if (ctx.checkin_ontem) out.push('check-in de ontem')
   const tempo = ctx.tempo as Partial<TempoResumo> | PanoramaContext['tempo'] | undefined
@@ -288,6 +309,80 @@ async function readIntencoes(sb: SB, userId: string): Promise<IntencoesResumo | 
   } catch { return undefined }
 }
 
+async function readOrcamentos(
+  sb: SB, userId: string, m: number, y: number,
+  txs: { amount: number; type: string; category: { name: string } | null }[], limite: number,
+): Promise<OrcamentoResumo[] | undefined> {
+  try {
+    const { data: buds }: { data: { amount: number; category: { name: string } | null }[] | null } =
+      await sb.from('budgets')
+        .select('amount, category:categories(name)')
+        .eq('user_id', userId).eq('month', m).eq('year', y)
+    if (!buds || buds.length === 0) return undefined
+    const spent = new Map<string, number>()
+    for (const t of txs) {
+      if (t.type !== 'expense') continue
+      const name = t.category?.name ?? 'Outros'
+      spent.set(name, (spent.get(name) ?? 0) + t.amount)
+    }
+    const rows: OrcamentoResumo[] = []
+    for (const b of buds) {
+      const name = b.category?.name
+      if (!name || b.amount <= 0) continue
+      const gasto = spent.get(name) ?? 0
+      rows.push({ category: name, gasto, limite: b.amount, pct: Math.round((gasto / b.amount) * 100) })
+    }
+    rows.sort((a, b) => b.pct - a.pct)
+    return rows.length > 0 ? rows.slice(0, limite) : undefined
+  } catch { return undefined /* orçamentos são opcionais no contexto */ }
+}
+
+async function readContasFixas(sb: SB, userId: string, limite: number): Promise<ContaResumo[] | undefined> {
+  try {
+    const { data: recs }: { data: { name: string; amount: number; day_of_month: number | null }[] | null } =
+      await sb.from('recurring_transactions')
+        .select('name, amount, day_of_month')
+        .eq('user_id', userId).eq('is_active', true).eq('type', 'expense')
+        .order('day_of_month', { ascending: true }).limit(limite)
+    if (!recs || recs.length === 0) return undefined
+    return recs.map(r => ({ name: r.name, amount: r.amount, day_of_month: r.day_of_month }))
+  } catch { return undefined /* contas fixas são opcionais no contexto */ }
+}
+
+async function readPlanejamento(sb: SB, userId: string, today: string): Promise<EventoPlanejadoResumo[] | undefined> {
+  try {
+    const { data }: { data: { name: string; type: 'income' | 'expense'; amount: number; planned_date: string; is_confirmed: boolean | null }[] | null } =
+      await sb.from('planning_events')
+        .select('name, type, amount, planned_date, is_confirmed')
+        .eq('user_id', userId).gte('planned_date', today).order('planned_date', { ascending: true }).limit(8)
+    if (!data || data.length === 0) return undefined
+    return data.map(e => ({ name: e.name, tipo: e.type, amount: e.amount, planned_date: e.planned_date, confirmado: Boolean(e.is_confirmed) }))
+  } catch { return undefined /* planning_events pode não existir neste ambiente */ }
+}
+
+async function readProventos(sb: SB, userId: string, today: string): Promise<ProventoResumo[] | undefined> {
+  try {
+    const { data }: { data: { total_amount: number; payment_date: string; portfolio_assets: { ticker: string } | null }[] | null } =
+      await sb.from('portfolio_dividends')
+        .select('total_amount, payment_date, portfolio_assets(ticker)')
+        .eq('user_id', userId).eq('status', 'announced').gte('payment_date', today)
+        .order('payment_date', { ascending: true }).limit(5)
+    if (!data || data.length === 0) return undefined
+    return data.map(d => ({ ticker: d.portfolio_assets?.ticker ?? null, total_amount: d.total_amount, payment_date: d.payment_date }))
+  } catch { return undefined /* patrimônio é opcional no contexto de Finanças */ }
+}
+
+async function readContasBancarias(sb: SB, userId: string): Promise<ContaBancariaResumo[] | undefined> {
+  try {
+    const { data }: { data: { name: string; bank: string | null }[] | null } =
+      await sb.from('user_accounts')
+        .select('name, bank')
+        .eq('user_id', userId).eq('is_active', true).order('sort_order', { ascending: true }).limit(6)
+    if (!data || data.length === 0) return undefined
+    return data.map(a => ({ name: a.name, bank: a.bank }))
+  } catch { return undefined /* user_accounts não existe em todos os ambientes */ }
+}
+
 async function readFinancasMes(sb: SB, userId: string, today: string) {
   const y = Number(today.slice(0, 4)), m = Number(today.slice(5, 7)) // m = 1-12
   const start = `${today.slice(0, 7)}-01`
@@ -354,8 +449,25 @@ export async function buildContextoComFontes(
   // Janela do mês corrente derivada da data em America/Sao_Paulo (não do fuso do
   // servidor): perto da virada do mês em UTC, o mês local ainda é o anterior.
   const { txs, y, m } = await readFinancasMes(sb, userId, today)
+  if (moduleId === 'financas') {
+    // Finanças (hub e subtelas): o resumo do mês + o que as subtelas mostram, bloco a bloco.
+    const fin: FinancasModuloContext = { financas: summarizeFinancas(txs) }
+    const orcamentos = await readOrcamentos(sb, userId, m, y, txs, 8)
+    if (orcamentos) fin.orcamentos = orcamentos
+    const contas = await readContasFixas(sb, userId, 10)
+    if (contas) fin.contas = contas
+    const metasFin = await readMetas(sb, userId, true)
+    if (metasFin) fin.metas = metasFin
+    const planejamento = await readPlanejamento(sb, userId, today)
+    if (planejamento) fin.planejamento = planejamento
+    const proventos = await readProventos(sb, userId, today)
+    if (proventos) fin.proventos = proventos
+    const contasBancarias = await readContasBancarias(sb, userId)
+    if (contasBancarias) fin.contas_bancarias = contasBancarias
+    return { ctx: fin, fontes: fontesDe(fin) }
+  }
+
   const ctx: PanoramaContext = { financas: summarizeFinancas(txs) }
-  if (moduleId === 'financas') return { ctx, fontes: fontesDe(ctx) }
 
   // Panorama: enriquecimento best-effort, bloco a bloco.
   try {
@@ -374,40 +486,11 @@ export async function buildContextoComFontes(
     }
   } catch { /* life_sync_scores pode não existir neste ambiente */ }
 
-  try {
-    const { data: buds }: { data: { amount: number; category: { name: string } | null }[] | null } =
-      await sb.from('budgets')
-        .select('amount, category:categories(name)')
-        .eq('user_id', userId).eq('month', m).eq('year', y)
-    if (buds && buds.length > 0) {
-      const spent = new Map<string, number>()
-      for (const t of txs) {
-        if (t.type !== 'expense') continue
-        const name = t.category?.name ?? 'Outros'
-        spent.set(name, (spent.get(name) ?? 0) + t.amount)
-      }
-      const rows: OrcamentoResumo[] = []
-      for (const b of buds) {
-        const name = b.category?.name
-        if (!name || b.amount <= 0) continue
-        const gasto = spent.get(name) ?? 0
-        rows.push({ category: name, gasto, limite: b.amount, pct: Math.round((gasto / b.amount) * 100) })
-      }
-      rows.sort((a, b) => b.pct - a.pct)
-      if (rows.length > 0) ctx.orcamentos = rows.slice(0, 3)
-    }
-  } catch { /* orçamentos são opcionais no contexto */ }
+  const orcamentosPan = await readOrcamentos(sb, userId, m, y, txs, 3)
+  if (orcamentosPan) ctx.orcamentos = orcamentosPan
 
-  try {
-    const { data: recs }: { data: { name: string; amount: number; day_of_month: number | null }[] | null } =
-      await sb.from('recurring_transactions')
-        .select('name, amount, day_of_month')
-        .eq('user_id', userId).eq('is_active', true).eq('type', 'expense')
-        .order('day_of_month', { ascending: true }).limit(3)
-    if (recs && recs.length > 0) {
-      ctx.contas = recs.map(r => ({ name: r.name, amount: r.amount, day_of_month: r.day_of_month }))
-    }
-  } catch { /* contas fixas são opcionais no contexto */ }
+  const contasPan = await readContasFixas(sb, userId, 3)
+  if (contasPan) ctx.contas = contasPan
 
   const metas = await readMetas(sb, userId, false)
   if (metas) ctx.metas = metas

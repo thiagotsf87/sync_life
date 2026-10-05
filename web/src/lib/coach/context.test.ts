@@ -93,8 +93,63 @@ describe('coach/context buildContextoComFontes', () => {
       expect(r.ctx).toEqual({})
       expect(r.fontes).toEqual([])
     }
+    const fin = await buildContextoComFontes(sb, 'u1', 'financas')
+    expect(Object.keys(fin.ctx)).toEqual(['financas'])
+    expect(fin.fontes).toEqual([])
     const pan = await buildContextoComFontes(sb, 'u1', 'panorama')
     expect(Object.keys(pan.ctx)).toEqual(['financas'])
     expect(pan.fontes).toEqual([])
+  })
+})
+
+describe('coach/context módulo Finanças (hub e subtelas)', () => {
+  /** Supabase fake por tabela: cada `from(t)` devolve a linha configurada, ou erro de tabela ausente. */
+  function fakePorTabela(tabelas: Record<string, unknown>) {
+    return {
+      from: (t: string) => {
+        const resultado = t in tabelas
+          ? { data: tabelas[t], error: null }
+          : { data: null, error: { message: 'relation does not exist' } }
+        const chain: Record<string, unknown> = {}
+        const self = () => chain
+        for (const m of ['select', 'eq', 'neq', 'gte', 'lte', 'order', 'limit', 'in']) chain[m] = self
+        chain.maybeSingle = () => Promise.resolve(resultado)
+        chain.then = (res: (v: unknown) => unknown) => Promise.resolve(resultado).then(res)
+        return chain
+      },
+    }
+  }
+
+  it('inclui orçamentos, contas fixas, planejamento, proventos e contas bancárias com as fontes certas', async () => {
+    const sb = fakePorTabela({
+      transactions: [
+        { amount: 5000, type: 'income', category: null },
+        { amount: 410, type: 'expense', category: { name: 'Lazer' } },
+      ],
+      budgets: [{ amount: 420, category: { name: 'Lazer' } }],
+      recurring_transactions: [{ name: 'Aluguel', amount: 1200, day_of_month: 6 }],
+      planning_events: [{ name: 'IPVA', type: 'expense', amount: 1450, planned_date: '2027-01-20', is_confirmed: false }],
+      portfolio_dividends: [{ total_amount: 42.3, payment_date: '2026-10-15', portfolio_assets: { ticker: 'MXRF11' } }],
+      user_accounts: [{ name: 'Nubank', bank: 'Nubank' }, { name: 'Inter', bank: 'Inter' }],
+    })
+    const r = await buildContextoComFontes(sb, 'u1', 'financas')
+    expect(Object.keys(r.ctx)).toEqual(['financas', 'orcamentos', 'contas', 'planejamento', 'proventos', 'contas_bancarias'])
+    expect((r.ctx.orcamentos as { category: string; pct: number }[])[0]).toMatchObject({ category: 'Lazer', pct: 98 })
+    expect((r.ctx.planejamento as { tipo: string; confirmado: boolean }[])[0]).toMatchObject({ tipo: 'expense', confirmado: false })
+    expect((r.ctx.proventos as { ticker: string }[])[0].ticker).toBe('MXRF11')
+    expect(r.fontes).toEqual([
+      '2 transações', '1 orçamento', '1 conta fixa', '1 evento planejado', '1 provento previsto', '2 contas bancárias',
+    ])
+  })
+
+  it('o Panorama continua com no máximo 3 orçamentos e sem blocos de planejamento', async () => {
+    const sb = fakePorTabela({
+      transactions: [],
+      budgets: [1, 2, 3, 4, 5].map(i => ({ amount: 100 * i, category: { name: `Cat${i}` } })),
+      planning_events: [{ name: 'IPVA', type: 'expense', amount: 1450, planned_date: '2027-01-20', is_confirmed: false }],
+    })
+    const r = await buildContextoComFontes(sb, 'u1', 'panorama')
+    expect((r.ctx.orcamentos as unknown[]).length).toBe(3)
+    expect(r.ctx.planejamento).toBeUndefined()
   })
 })
