@@ -160,6 +160,32 @@ Tags: `poc-landing-r4` · `poc-landing-viva-r15` · `poc-landing-viva-mobile-m1`
 
 ---
 
+## 2026-10-05 · Sessão 30 (cont.) — Fase 2: sete telas de Finanças prototipadas D+M, em aprovação
+
+> Tudo local. Brief: `docs/superpowers/plans/2026-10-05-fase2-financas-brief.md` (regras, tela a tela, inventário v3, 8 correções).
+> Revisão para o usuário (privada): https://claude.ai/artifact/4Pm3x4tc8fqHndaAxJK9sW (protótipos navegáveis + pontos para decidir).
+
+### Entregue
+- **Base:** bottom bar mobile, sheet de Áreas e `.painel`/`.confirma` promovidos ao `shared/` (smoke das 15 aprovadas: 0 erro).
+  `SL_MOCK.fin` gerado por script (scratchpad `mock_fin.py`; números coerentes com o hub: fechamento de outubro 2.120,
+  poupança 39%, projeção com renda e gasto variáveis médios). `web/scripts/qa-proto-v5.mjs` (QA do brief §8).
+- **14 protótipos** `app/financas-{transacoes,orcamentos,recorrentes,planejamento,calendario,relatorios,importar}(.mobile).html`,
+  construídos por 7 agentes em paralelo a partir do brief; QA limpo nos 14; testes de interação de 35 a 57 por tela.
+  Laboratórios: teto de Lazer (Orçamentos) e data do notebook (Planejamento). Hub de Finanças ligado às subtelas.
+
+### Aguardando o usuário
+Aprovação tela a tela + os pontos para decidir (na página de revisão e na anotação de cada protótipo).
+
+### Limitações conhecidas do mock (no app os dados reais decidem)
+- `SL_MOCK.transacoes` põe o Salário em 30/set, mas o hub conta os R$ 4.150 em outubro; Aluguel aparece pago (Moradia 1.240)
+  e "em 3 dias" em Meu dia. Reconciliar mexeria em telas aprovadas: deixado como está.
+- Só outubro (e setembro em Transações) tem dados; as outras telas mostram uma nota ao navegar de mês.
+
+### Gotchas
+- `.selo` cai no detector de peças de revista do QA: usar `.etq` para etiquetas.
+- Captura de página inteira: elementos fixos (bottom bar) e o reveal `.rv` saem errados; o script do QA já corrige.
+- `html.mob .dia` do shared (Meu dia) estica células de grade; o Calendário sobrescreve na página.
+
 ## 2026-10-05 · Sessão 30 — Fase 1 fechada: identidade com login, produção congelada
 
 > Tudo local, sem push. Produção não foi tocada e **fica congelada até o fim do plano** (decisão do usuário).
