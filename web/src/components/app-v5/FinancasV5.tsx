@@ -14,6 +14,7 @@ import Link from 'next/link'
 import { ChromeV5 } from '@/components/app-v5/ChromeV5'
 import { CamadaCoach } from '@/components/app-v5/CamadaCoach'
 import { Sy40 } from '@/components/app-v5/Sy40'
+import { SubnavArea, SUBNAV_FINANCAS } from '@/components/app-v5/SubnavArea'
 import { useFinancasV5, type FinancasV5Data } from '@/hooks/use-financas-v5'
 import type { Parte } from '@/lib/financas/fluxo'
 import type { ParteFala } from '@/lib/financas/hub'
@@ -305,6 +306,7 @@ export function FinancasV5() {
 
       <main className="financas" ref={mainRef}>
         <div className="wrap">
+          <SubnavArea itens={SUBNAV_FINANCAS} atual="visao" rotulo="Telas de Finanças" />
           {titulo}
           {d.loading ? <Carregando /> : nums}
           {mob ? mobile : desktop}

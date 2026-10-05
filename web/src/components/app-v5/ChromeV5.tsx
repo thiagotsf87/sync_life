@@ -19,6 +19,8 @@ interface ChromeV5Props {
   ativo: AtivoV5
   onCoachOpen: () => void
   onAreasOpen?: () => void
+  /** Registrar da tela (bar e bottom bar). Sem isso, leva a Transações com a captura aberta. */
+  onRegistrar?: () => void
   /** score por área para o sheet de Áreas (áreas sem score ficam sem número) */
   scores?: AreaScores
 }
@@ -80,7 +82,7 @@ function CoachBussola() {
   )
 }
 
-export function ChromeV5({ ativo, onCoachOpen, onAreasOpen, scores }: ChromeV5Props) {
+export function ChromeV5({ ativo, onCoachOpen, onAreasOpen, onRegistrar, scores }: ChromeV5Props) {
   const hoje = useSyncExternalStore(noopSubscribe, hojePorExtenso, serverDate)
   const [areasOpen, setAreasOpen] = useState(false)
 
@@ -104,10 +106,17 @@ export function ChromeV5({ ativo, onCoachOpen, onAreasOpen, scores }: ChromeV5Pr
             <CoachBussola />
             Fale com Sy
           </button>
-          <Link className="btn-sm roxo" href="/financas/transacoes" aria-label="Registrar">
-            <span className="d-only">+ Registrar</span>
-            <span className="m-only">+</span>
-          </Link>
+          {onRegistrar ? (
+            <button className="btn-sm roxo" type="button" aria-label="Registrar" onClick={onRegistrar}>
+              <span className="d-only">+ Registrar</span>
+              <span className="m-only">+</span>
+            </button>
+          ) : (
+            <Link className="btn-sm roxo" href="/financas/transacoes#registrar" aria-label="Registrar">
+              <span className="d-only">+ Registrar</span>
+              <span className="m-only">+</span>
+            </Link>
+          )}
         </div>
       </header>
 
@@ -152,6 +161,7 @@ export function ChromeV5({ ativo, onCoachOpen, onAreasOpen, scores }: ChromeV5Pr
         onCoachOpen={onCoachOpen}
         onAreasOpen={abrirAreas}
         areasOpen={areasOpen}
+        onRegistrar={onRegistrar}
       />
       <SheetAreas open={areasOpen} onClose={() => setAreasOpen(false)} scores={scores} />
     </>
