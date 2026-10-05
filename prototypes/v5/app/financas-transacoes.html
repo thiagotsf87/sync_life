@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife · Transações · v5</title>
+<!-- Fase 2 · Finanças · Transações (r2 do template T2 aprovado, _t2-lista.html). Desktop 1440.
+     Voltar para o hub → cabeçalho curto com o mês navegável → filtros em pílula (tipo, categoria, ordem, busca) → captura inline
+     (1 linha) → lista densa: previstos do mês no topo, depois os dias com subtotal (ou lista plana quando a ordem é por valor)
+     → Carregar mais → total do mês inteiro. Sy só pela camada. Edição no .painel do shared, nunca modal.
+     E-02: sem JS, a lista está completa (o HTML de #lista é o mesmo que o script desenha no boot). -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Cline x1='32' y1='6' x2='32' y2='13' stroke='%23a1ff62' stroke-width='6' stroke-linecap='round'/%3E%3Cpolygon points='32,10 39,34 25,34' fill='%236840ff'/%3E%3Cpolygon points='32,57 25,34 39,34' fill='%23575353'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/base.css">
+<link rel="stylesheet" href="../shared/app.css">
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.185.1/build/three.module.js"}}</script>
+<style>
+  .wrap{--wrap-max:1180px;padding-left:clamp(20px,4vw,56px);padding-right:clamp(20px,4vw,56px)}
+
+  /* navegação dentro de Finanças: voltar para o hub acima do cabeçalho (mesma peça do T3) */
+  .voltar{display:inline-flex;align-items:center;gap:8px;margin-top:28px;font:500 12.5px var(--int);color:var(--t3);transition:color .3s var(--ease)}
+  .voltar:hover{color:var(--t1)}
+  .voltar b{font:700 10.5px var(--gro);color:var(--t3)}
+
+  /* T2 · cabeçalho curto: sem a unidade Sy; sub de 1 linha com o total do mês */
+  .titulo{padding:44px 0 26px}
+  .voltar + .titulo{padding-top:18px}
+  .titulo .eyebrow a{transition:color .3s var(--ease)}
+  .titulo .eyebrow a:hover{color:var(--t1)}
+  .titulo .sub{font:400 14px var(--int);color:var(--t2);margin-top:12px}
+  .titulo .sub .num{color:var(--t1);font-weight:600}
+  /* mês navegável à direita do título (candidata a shared: Orçamentos e Calendário usam a mesma) */
+  .tline{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap}
+  .mesnav{display:flex;align-items:center;gap:6px}
+  .mesnav .mn{width:36px;height:36px;border-radius:999px;border:1px solid var(--line);background:none;color:var(--t2);cursor:pointer;
+    display:inline-flex;align-items:center;justify-content:center;transition:border-color .3s var(--ease),color .3s var(--ease)}
+  .mesnav .mn:hover:not(:disabled){border-color:var(--line-h);color:var(--t1)}
+  .mesnav .mn:disabled{opacity:.35;cursor:default}
+  .mesnav .ml{font:500 15px var(--gro);letter-spacing:-.015em;color:var(--t1);min-width:150px;text-align:center}
+  .mesnav .hoje{background:none;border:none;cursor:pointer;padding:0 0 0 8px;font:500 12.5px var(--int);color:var(--roxo)}
+  .mesnav .hoje:hover{text-decoration:underline}
+
+  /* T2 · filtros em pílula (reusa .chip da marca) + categoria e ordem em select-pílula + busca em pílula */
+  .filtros{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:18px 0 16px}
+  .filtros .chip{padding:8px 14px;font-size:12px}
+  .filtros .sep{width:1px;height:20px;background:var(--line);margin:0 4px}
+  .filtros .sel{margin-top:0}
+  .filtros .sel select{border-radius:999px;padding:8px 34px 8px 14px;font:500 12px var(--int);background:transparent;color:var(--t2)}
+  .filtros .sel select:hover{color:var(--t1)}
+  .filtros .sel::after{right:14px}
+  .busca{margin-left:auto;display:flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:999px;padding:0 15px;height:36px;min-width:220px;transition:border-color .3s var(--ease)}
+  .busca:hover{border-color:var(--line-h)}
+  .busca:focus-within{border-color:rgba(104,64,255,.55)}
+  .busca svg{color:var(--t3);flex:none}
+  .busca input{background:none;border:none;outline:none;color:var(--t1);font:400 12.5px var(--int);width:100%;height:100%}
+  .busca input::placeholder{color:var(--t3)}
+
+  /* T2 · captura inline: 1 linha, Enter registra (campos reusam .ck-note e .sel do shared) */
+  .captura{display:grid;grid-template-columns:1fr 150px 190px 160px auto;gap:10px;align-items:center;padding:16px 0 14px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .captura .ck-note{width:100%;min-width:0;height:44px;padding:0 16px}
+  .captura .ck-note.num{font-size:14px}
+  .captura input[type=date]{color-scheme:dark}
+  .captura .sel{margin-top:0}
+  .captura .sel select{height:44px;padding:0 40px 0 16px}
+  .captura .btn-sm.roxo{height:44px;padding:0 20px;font-size:13px;justify-content:center}
+  .cap-foot{grid-column:1/-1;display:flex;justify-content:space-between;gap:16px;font:400 11.5px var(--int);color:var(--t3)}
+  .cap-foot output{color:var(--ele);font-weight:600;min-height:1em;margin-left:auto}
+  .cap-foot .link{background:none;border:none;padding:0;cursor:pointer;font:500 11.5px var(--int);color:var(--t2);transition:color .3s var(--ease)}
+  .cap-foot .link:hover{color:var(--t1)}
+
+  /* T2 · lista densa agrupada por dia: .dia é o divisor (dia da semana à esquerda, subtotal à direita) */
+  .trans{padding:0;border-bottom:none}
+  .dia{display:grid;grid-template-columns:52px 1fr 130px 110px;gap:16px;align-items:baseline;padding:24px 0 8px;border-bottom:1px solid var(--line)}
+  .dia .eyebrow{grid-column:1/3}
+  .dia .st{grid-column:4;font:700 11px var(--gro);color:var(--t3);text-align:right;white-space:nowrap}
+  .dia .st.in{color:var(--ele)}
+  .grupo.plano{padding-top:10px}
+  .trans .tx{cursor:pointer}
+  .trans .tx:focus-visible{outline:2px solid rgba(104,64,255,.6);outline-offset:2px;border-radius:6px}
+  .trans .tx.nova{background:rgba(161,255,98,.12);box-shadow:inset 3px 0 0 var(--ele)}
+  .anim .trans .tx{transition:padding-left .35s var(--ease),background 1.8s var(--ease),box-shadow 1.8s var(--ease),opacity .3s var(--ease)}
+  /* selos na linha (candidata a shared: mesma pílula do .rec .tag do hub) */
+  .trans .tx .ds .tag{display:inline-block;margin-left:8px;vertical-align:2px;font:700 9px var(--gro);letter-spacing:.14em;text-transform:uppercase;
+    padding:2px 7px;border-radius:999px;border:1px solid var(--line);color:var(--t3);white-space:nowrap}
+  .trans .tx.prev{opacity:.55}
+  .trans .tx.prev:hover,.trans .tx.prev:focus-visible{opacity:.85}
+  .trans .tx.tr .v{color:var(--t2)}
+  .ver-prev{background:none;border:none;cursor:pointer;padding:12px 0 2px;font:500 12px var(--int);color:var(--t3);transition:color .3s var(--ease)}
+  .ver-prev:hover{color:var(--t1)}
+  .sem-resultado{font:400 13px var(--int);color:var(--t3);padding:28px 0 8px}
+  .mais-wrap{display:flex;justify-content:center;padding:22px 0 20px}
+  .lista-foot{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;padding:18px 0 0;border-top:1px solid var(--line);font:400 12.5px var(--int);color:var(--t3)}
+  .lista-foot .tot b{color:var(--t1);font-weight:700}
+  .lista-foot .tot b.ele{color:var(--ele)}
+  .pergunte{padding:28px 0 0}
+  .pergunte .falar{margin-top:0}
+  /* linha "Mais em Finanças:" (regra 9 do brief; candidata a shared) */
+  .mais-fin{display:flex;gap:6px 18px;flex-wrap:wrap;align-items:baseline;padding:22px 0 64px;margin-top:24px;border-top:1px solid var(--line);font:400 12.5px var(--int);color:var(--t3)}
+  .mais-fin a{color:var(--t2);transition:color .3s var(--ease)}
+  .mais-fin a:hover{color:var(--t1)}
+
+  /* T2 · painel de edição: a peça .painel vem do shared; aqui só os campos que Transações acrescenta */
+  .painel .tipo .chip{flex:1;justify-content:center}
+  .painel textarea.ck-note{resize:vertical;min-height:72px;font:400 13px/1.5 var(--int)}
+  .painel .aviso{border-left:3px solid var(--roxo);padding:8px 12px;font:400 12.5px/1.55 var(--int);color:var(--t2)}
+  .painel .aviso b{color:var(--t1);font-weight:600}
+  .painel .erro-campo{font:500 12px var(--int);color:var(--coral);margin-top:8px}
+
+  /* anotação do protótipo (fora do fluxo, inert) */
+  .proto-estados{border-top:3px double var(--line-h);margin-top:72px;padding-top:34px;padding-bottom:80px}
+  .proto-estados > .wrap > .eyebrow{color:var(--coral)}
+  .pe-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(24px,3vw,48px);margin-top:26px;align-items:start}
+  .pe h4{font:700 10px var(--gro);letter-spacing:.18em;text-transform:uppercase;color:var(--t3);margin-bottom:14px}
+  .pe p.n{font:400 12.5px/1.6 var(--int);color:var(--t2);margin-top:10px}
+  .pe p.n b{color:var(--t1);font-weight:600}
+  .pe .captura{grid-template-columns:1fr;border-color:rgba(104,64,255,.55);border-radius:14px;padding:14px;gap:8px}
+  .pe .vazio{font:500 15px var(--gro);letter-spacing:-.01em;color:var(--t1);margin-bottom:10px}
+  .pe .vazio small{display:block;font:400 12.5px var(--int);color:var(--t3);margin-top:6px}
+  .pe .skel span{display:block;height:10px;border-radius:5px;background:var(--s2)}
+  .pe .skel .ds{width:60%}.pe .skel .ct{width:70%}.pe .skel .v{margin-left:auto;width:80%}
+  .anim .pe .skel span{animation:pulso 1.4s var(--ease) infinite alternate}
+  @keyframes pulso{from{opacity:.55}to{opacity:1}}
+  .pe .erro{display:flex;justify-content:space-between;align-items:baseline;gap:12px;border-left:3px solid var(--coral);padding:10px 14px;font:400 13px var(--int);color:var(--coral)}
+  .pe .erro button{background:none;border:none;color:var(--t1);font:600 12.5px var(--int);cursor:pointer;padding:0;white-space:nowrap}
+  .pe .aviso{margin-top:12px;border-left:3px solid var(--roxo);padding:8px 12px;font:400 12.5px/1.55 var(--int);color:var(--t2)}
+  .pe .aviso b{color:var(--t1);font-weight:600}
+  .fontes-sy{margin-top:44px;max-width:760px}
+  .fontes-sy h3{font:500 22px/1.2 var(--gro);letter-spacing:-.025em;margin-top:8px}
+  .fontes-sy p{font:400 13.5px/1.6 var(--int);color:var(--t2);margin-top:10px}
+  .fontes-sy ul{list-style:none;margin-top:18px}
+  .fontes-sy li{display:grid;grid-template-columns:220px 1fr;gap:18px;padding:13px 0;border-bottom:1px solid var(--line);font:400 13px/1.55 var(--int);color:var(--t2)}
+  .fontes-sy li code{font:600 12.5px var(--gro);color:var(--t1);letter-spacing:-.01em}
+  .fontes-sy li code small{font:400 11.5px var(--int);color:var(--t3)}
+  @media (max-width:960px){
+    .captura{grid-template-columns:1fr 1fr}
+    .busca{margin-left:0;width:100%}
+    .pe-grid{grid-template-columns:1fr}
+    .fontes-sy li{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- chrome -->
+<header class="bar">
+  <a class="brand" href="meu-dia-d.html">
+    <svg width="19" height="19" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="2" x2="32" y2="11" stroke="#a1ff62" stroke-width="7" stroke-linecap="round"/><polygon points="32,8 40,34 24,34" fill="#6840ff"/><polygon points="32,58 24,34 40,34" fill="#f4f4f4" opacity=".35"/></svg>
+    <span class="wm">Sync<em>Life</em></span></a>
+  <span class="date">Sexta · 3 de outubro de 2026</span>
+  <div class="acts">
+    <button class="btn-sm ghost coach-pill" type="button" data-coach-open>
+      <svg width="15" height="15" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="5" x2="32" y2="12" stroke="#a1ff62" stroke-width="4.5" stroke-linecap="round"/><line x1="59" y1="32" x2="52" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="32" y1="59" x2="32" y2="52" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="5" y1="32" x2="12" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><polygon points="32,8 38,32 26,32" fill="#6840ff"/><polygon points="32,55 26,32 38,32" fill="#f4f4f4" opacity=".3"/><circle cx="32" cy="32" r="3.5" fill="#151313"/></svg>
+      Fale com Sy</button>
+    <button class="btn-sm roxo" type="button" data-foco-captura>+ Registrar</button>
+  </div>
+</header>
+<nav class="modbar" aria-label="Áreas">
+  <div class="in">
+    <a href="meu-dia-d.html">Meu dia</a>
+    <a class="on" href="financas-a.html" aria-current="page"><span class="n">01</span>Finanças</a>
+    <a href="#"><span class="n">02</span>Futuro</a>
+    <a href="#"><span class="n">03</span>Tempo</a>
+    <a href="#"><span class="n">04</span>Corpo</a>
+    <a href="#"><span class="n">05</span>Mente</a>
+    <a href="#"><span class="n">06</span>Patrimônio</a>
+    <a href="#"><span class="n">07</span>Carreira</a>
+    <a href="#"><span class="n">08</span>Experiências</a>
+    <a href="#">Conquistas</a>
+    <a href="#">Configurações</a>
+  </div>
+</nav>
+
+<main>
+  <div class="wrap">
+
+    <a class="voltar boot b1" href="financas-a.html">← <b>01</b> Finanças · outubro</a>
+
+    <!-- 1. cabeçalho curto com o mês navegável -->
+    <header class="titulo boot b1">
+      <p class="eyebrow"><a href="financas-a.html"><b>01</b> · Finanças</a></p>
+      <div class="tline">
+        <h1>Transações · <span id="h-mes">outubro</span></h1>
+        <div class="mesnav" role="group" aria-label="Mês">
+          <button class="mn" type="button" id="m-ant" aria-label="Mês anterior"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 5 8 12 15 19"/></svg></button>
+          <span class="ml" id="m-label" aria-live="polite">outubro de 2026</span>
+          <button class="mn" type="button" id="m-prox" aria-label="Próximo mês" disabled><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 5 16 12 9 19"/></svg></button>
+          <button class="hoje" type="button" id="m-hoje" hidden>Voltar para hoje</button>
+        </div>
+      </div>
+      <p class="sub" id="h-sub"><span class="num" id="h-count">34</span> transações em outubro · entradas <span class="num">R$&nbsp;5.000</span> · saídas <span class="num">R$&nbsp;3.160</span></p>
+    </header>
+
+    <!-- 2. filtros em pílula -->
+    <div class="filtros boot b2" role="toolbar" aria-label="Filtros">
+      <button class="chip on" type="button" data-tipo="todas" aria-pressed="true">Todas</button>
+      <button class="chip" type="button" data-tipo="in" aria-pressed="false">Entradas</button>
+      <button class="chip" type="button" data-tipo="out" aria-pressed="false">Saídas</button>
+      <button class="chip" type="button" data-tipo="tr" aria-pressed="false">Transferências</button>
+      <button class="chip" type="button" data-tipo="rec" aria-pressed="false">Recorrentes</button>
+      <span class="sep" aria-hidden="true"></span>
+      <div class="sel">
+        <select id="f-cat" aria-label="Categoria">
+          <option value="todas">Todas as categorias</option>
+          <option>Mercado</option><option>Moradia</option><option>Lazer</option><option>Transporte</option><option>Saúde</option>
+          <option>Investimento</option><option>Assinaturas</option><option>Impostos</option><option>Renda</option><option>Renda extra</option>
+        </select>
+      </div>
+      <div class="sel">
+        <select id="f-ordem" aria-label="Ordenar">
+          <option value="recente">Mais recente</option><option value="antigo">Mais antigo</option>
+          <option value="maior">Maior valor</option><option value="menor">Menor valor</option>
+        </select>
+      </div>
+      <label class="busca">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="16.5" y2="16.5"/></svg>
+        <input id="f-q" type="search" placeholder="Buscar na descrição" aria-label="Buscar na descrição">
+      </label>
+    </div>
+
+    <!-- 3. captura inline -->
+    <form class="captura boot b3" id="captura" aria-label="Registrar transação" autocomplete="off">
+      <input class="ck-note" name="desc" id="cap-desc" type="text" placeholder="Descrição" aria-label="Descrição" required>
+      <input class="ck-note num" name="valor" type="text" inputmode="decimal" placeholder="0,00" aria-label="Valor em reais" required>
+      <div class="sel">
+        <select name="cat" aria-label="Categoria">
+          <option>Mercado</option><option>Moradia</option><option>Lazer</option><option>Transporte</option><option>Saúde</option>
+          <option>Investimento</option><option>Assinaturas</option><option>Impostos</option><option>Renda</option><option>Renda extra</option>
+        </select>
+      </div>
+      <input class="ck-note num" name="data" type="date" value="2026-10-03" min="2026-09-01" max="2026-10-31" aria-label="Data">
+      <button class="btn-sm roxo" type="submit">Registrar</button>
+      <div class="cap-foot">
+        <span>Enter registra · Renda e Renda extra entram como entrada · data futura entra como prevista</span>
+        <output id="cap-out" aria-live="polite"></output>
+        <button class="link" type="button" id="cap-mais">Transferência, método e observações →</button>
+      </div>
+    </form>
+
+    <!-- 4. lista densa: previstos do mês no topo, depois os dias -->
+    <section class="trans rv" id="lista" aria-label="Transações">
+      <div class="grupo previstos"><div class="dia"><p class="eyebrow">Previstos até o fim de outubro</p><span class="st num in">+ R$&nbsp;1.504,30</span></div><div class="tx prev" role="button" tabindex="0" data-id="p0" aria-label="Editar Aluguel, – R$ 1.200,00, previsto"><span class="d num">6 out</span><span class="ds"><span class="nm">Aluguel</span><span class="tag">Recorrente</span><span class="tag">Previsto</span></span><span class="ct">Moradia</span><span class="v num">– R$&nbsp;1.200,00</span></div><div class="tx prev" role="button" tabindex="0" data-id="p1" aria-label="Editar Aporte automático, – R$ 580,00, previsto"><span class="d num">8 out</span><span class="ds"><span class="nm">Aporte automático</span><span class="tag">Recorrente</span><span class="tag">Previsto</span></span><span class="ct">Investimento</span><span class="v num">– R$&nbsp;580,00</span></div><div class="tx prev" role="button" tabindex="0" data-id="p2" aria-label="Editar Internet, – R$ 89,90, previsto"><span class="d num">8 out</span><span class="ds"><span class="nm">Internet</span><span class="tag">Recorrente</span><span class="tag">Previsto</span></span><span class="ct">Assinaturas</span><span class="v num">– R$&nbsp;89,90</span></div><button type="button" class="ver-prev" aria-expanded="false">Ver os 9 previstos</button></div>
+      <div class="grupo" data-date="2026-10-03"><div class="dia"><p class="eyebrow">Sexta</p><span class="st num">– R$&nbsp;182,40</span></div><div class="tx" role="button" tabindex="0" data-id="t1" aria-label="Editar Mercado Central, – R$ 182,40"><span class="d num">3 out</span><span class="ds"><span class="nm">Mercado Central</span></span><span class="ct">Mercado</span><span class="v num">– R$&nbsp;182,40</span></div></div>
+      <div class="grupo" data-date="2026-10-02"><div class="dia"><p class="eyebrow">Quinta</p><span class="st num in">+ R$&nbsp;550,00</span></div><div class="tx in" role="button" tabindex="0" data-id="t2" aria-label="Editar Freela landing page, + R$ 850,00"><span class="d num">2 out</span><span class="ds"><span class="nm">Freela landing page</span></span><span class="ct">Renda extra</span><span class="v num">+ R$&nbsp;850,00</span></div><div class="tx tr" role="button" tabindex="0" data-id="x1" aria-label="Editar Reserva para o CDB, R$ 300,00"><span class="d num">2 out</span><span class="ds"><span class="nm">Reserva para o CDB</span><span class="tag">Transf.</span></span><span class="ct">Nubank → Inter</span><span class="v num">R$&nbsp;300,00</span></div><div class="tx" role="button" tabindex="0" data-id="t3" aria-label="Editar Aporte CDB, – R$ 300,00"><span class="d num">2 out</span><span class="ds"><span class="nm">Aporte CDB</span></span><span class="ct">Investimento</span><span class="v num">– R$&nbsp;300,00</span></div></div>
+      <p class="sem-resultado" id="sem-resultado" hidden>Nada com esse filtro.</p>
+    </section>
+    <div class="mais-wrap"><button class="btn-sm ghost" type="button" id="mais">Carregar mais</button></div>
+
+    <!-- 5. rodapé da lista: o total é do mês inteiro, não do que está na tela -->
+    <div class="lista-foot rv">
+      <span><span class="num" id="f-count">4 de 34</span> na tela</span>
+      <span class="tot"><span id="f-mes">Outubro inteiro</span> · Entradas <b class="num" id="f-ent">+ R$&nbsp;5.000,00</b> · Saídas <b class="num" id="f-sai">– R$&nbsp;3.160,00</b> · Saldo <b class="num ele" id="f-saldo">+ R$&nbsp;1.840,00</b></span>
+    </div>
+
+    <!-- Sy: só pela camada -->
+    <div class="pergunte rv">
+      <button class="falar" type="button" data-coach-open data-coach-seed="Sobre estas transações: ">Perguntar sobre estas transações →</button>
+    </div>
+
+    <nav class="mais-fin" aria-label="Mais em Finanças">
+      <span>Mais em Finanças:</span>
+      <a href="financas-orcamentos.html">Orçamentos</a>
+      <a href="financas-recorrentes.html">Recorrentes</a>
+      <a href="financas-planejamento.html">Planejamento</a>
+      <a href="financas-calendario.html">Calendário</a>
+      <a href="financas-relatorios.html">Relatórios</a>
+      <a href="financas-importar.html">Importar extrato</a>
+    </nav>
+  </div>
+
+  <!-- rodapé -->
+  <footer class="colofao">
+    <span>Fechamento projetado de outubro: <b class="num">R$&nbsp;2.120</b></span>
+    <div class="r">
+      <span>34 transações <b class="num">em outubro</b></span>
+      <span>Última sincronização às <b class="num">14:05</b></span>
+    </div>
+  </footer>
+</main>
+
+<!-- camada de Sy (precisa vir antes do .painel no DOM: app.js pega o primeiro .camada) -->
+<div class="scrim"></div>
+<aside class="camada" aria-label="Sy">
+  <header class="chead">
+    <p class="eyebrow"><b>Sy</b> · lendo: suas transações</p>
+    <button class="x" type="button" aria-label="Fechar">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </header>
+  <div class="cbody">
+    <div class="cempty">
+      <p class="hello">Já li as suas 34 transações de outubro. O que você quer saber?</p>
+      <div class="csug">
+        <button class="chip" type="button">Quanto ainda posso gastar em lazer?</button>
+        <button class="chip" type="button">Onde foi o maior gasto da semana?</button>
+        <button class="chip" type="button">O que ainda vai sair este mês?</button>
+      </div>
+    </div>
+    <div class="cthread" hidden>
+      <div class="divider">Hoje · 14:02</div>
+      <div class="bub u">Quanto ainda posso gastar em lazer esse mês?</div>
+      <div class="bub a">Quase nada: <strong class="num">R$&nbsp;10</strong> até quinta. Você usou <span class="w">R$&nbsp;410 dos R$&nbsp;420</span> do orçamento, e o cinema de ontem (<strong class="num">R$&nbsp;64</strong>) foi o que encostou no teto. A boa notícia: o fechamento projeta <strong class="num">R$&nbsp;2.120</strong>.
+        <span class="meta">Fontes: orçamento Lazer · 34 transações · projeção do mês</span>
+      </div>
+      <div class="bub u">Então antecipa o aporte da Itália pra hoje.</div>
+      <div class="action" role="status">
+        <div class="al">Ação executada</div>
+        <p>Transferência de <b class="num">R$&nbsp;580</b> pra <b>Viagem Itália</b> agendada pra hoje, 16:00. A meta vai a <b class="num">70%</b> e o saldo projetado segue positivo em <b class="num">R$&nbsp;1.540</b>.</p>
+        <span class="done"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Confirmado por você · 14:04</span>
+      </div>
+      <div class="typing" aria-label="Sy digitando"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i></div>
+    </div>
+  </div>
+  <form class="cask"><div class="in">
+    <input type="text" placeholder="Pergunte sobre estas transações">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+  </div></form>
+  <a class="cfull" href="conversa.html">Conversa completa →</a>
+</aside>
+
+<!-- painel lateral de edição (peça .painel do shared; não é a camada de Sy) -->
+<aside class="painel" id="editor" role="dialog" aria-modal="true" aria-labelledby="e-titulo">
+  <header class="phead">
+    <div>
+      <p class="eyebrow"><b>01</b> · Transação</p>
+      <h2 id="e-titulo">Editar transação</h2>
+    </div>
+    <button class="x" type="button" aria-label="Fechar">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </header>
+  <form id="eform" class="pbody" autocomplete="off">
+    <p class="aviso" id="e-aviso" hidden>Ocorrência de <b id="e-aviso-nome">uma recorrente</b>. Editar muda só este lançamento.</p>
+    <div class="f">
+      <span class="eyebrow">Tipo</span>
+      <div class="tipo" role="group" aria-label="Tipo">
+        <button class="chip on" type="button" data-tipo="out" aria-pressed="true">Despesa</button>
+        <button class="chip" type="button" data-tipo="in" aria-pressed="false">Receita</button>
+        <button class="chip" type="button" data-tipo="tr" aria-pressed="false">Transferência</button>
+      </div>
+    </div>
+    <div class="f">
+      <label class="eyebrow" for="e-desc">Descrição</label>
+      <input class="ck-note" id="e-desc" name="desc" type="text" placeholder="Ex.: Mercado Central">
+    </div>
+    <div class="f2">
+      <div class="f">
+        <label class="eyebrow" for="e-valor">Valor</label>
+        <input class="ck-note num" id="e-valor" name="valor" type="text" inputmode="decimal" placeholder="0,00">
+      </div>
+      <div class="f">
+        <label class="eyebrow" for="e-data">Data</label>
+        <input class="ck-note num" id="e-data" name="data" type="date" min="2026-09-01" max="2026-10-31">
+      </div>
+    </div>
+    <div class="f" id="e-f-cat">
+      <label class="eyebrow" for="e-cat">Categoria</label>
+      <div class="sel">
+        <select id="e-cat" name="cat">
+          <option>Mercado</option><option>Moradia</option><option>Lazer</option><option>Transporte</option>
+          <option>Saúde</option><option>Investimento</option><option>Assinaturas</option><option>Impostos</option>
+        </select>
+      </div>
+    </div>
+    <div class="f" id="e-f-contas" hidden>
+      <div class="f2">
+        <div class="f">
+          <label class="eyebrow" for="e-de">De</label>
+          <div class="sel"><select id="e-de" name="de"></select></div>
+        </div>
+        <div class="f">
+          <label class="eyebrow" for="e-para">Para</label>
+          <div class="sel"><select id="e-para" name="para"></select></div>
+        </div>
+      </div>
+      <p class="erro-campo" id="e-erro" role="alert" hidden>Escolha contas diferentes.</p>
+    </div>
+    <div class="f" id="e-f-met">
+      <label class="eyebrow" for="e-met">Método</label>
+      <div class="sel">
+        <select id="e-met" name="met">
+          <option value="pix">Pix</option><option value="credito">Crédito</option><option value="debito">Débito</option>
+          <option value="dinheiro">Dinheiro</option><option value="transferencia">Transferência</option><option value="boleto">Boleto</option>
+        </select>
+      </div>
+    </div>
+    <div class="f">
+      <label class="eyebrow" for="e-obs">Observações</label>
+      <textarea class="ck-note" id="e-obs" name="obs" rows="3" placeholder="Opcional"></textarea>
+    </div>
+  </form>
+  <div class="pfoot">
+    <div class="confirma" id="e-confirma" hidden role="status">
+      <span>Excluir <b id="e-conf-nome">esta transação</b>? Não dá para desfazer.</span>
+      <button class="sim" type="button" id="e-conf-sim">Excluir</button>
+      <button type="button" id="e-conf-nao">Cancelar</button>
+    </div>
+    <div class="acts">
+      <button class="btn-sm ghost perigo" type="button" id="e-excluir">Excluir</button>
+      <button class="btn-sm roxo" type="submit" form="eform" id="e-salvar">Salvar</button>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══ anotação do protótipo: estados + o que Sy lê aqui (fora do fluxo) ═══ -->
+<section class="proto-estados" inert>
+  <div class="wrap">
+    <p class="eyebrow">Estados · anotação do protótipo</p>
+    <div class="pe-grid">
+      <div class="pe">
+        <h4>Vazio · captura em destaque</h4>
+        <p class="vazio">Nenhuma transação em outubro ainda<small>Registre a primeira abaixo. Sy passa a ler o mês a partir dela.</small></p>
+        <form class="captura">
+          <input class="ck-note" type="text" placeholder="Descrição" aria-label="Descrição">
+          <input class="ck-note num" type="text" inputmode="decimal" placeholder="0,00" aria-label="Valor em reais">
+          <div class="sel"><select aria-label="Categoria"><option>Mercado</option></select></div>
+          <input class="ck-note num" type="date" value="2026-10-03" aria-label="Data">
+          <button class="btn-sm roxo" type="button">Registrar</button>
+        </form>
+      </div>
+      <div class="pe">
+        <h4>Carregando · 3 linhas esqueleto</h4>
+        <div class="trans" aria-hidden="true">
+          <div class="tx skel"><span class="d"></span><span class="ds"></span><span class="ct"></span><span class="v"></span></div>
+          <div class="tx skel"><span class="d"></span><span class="ds"></span><span class="ct"></span><span class="v"></span></div>
+          <div class="tx skel"><span class="d"></span><span class="ds"></span><span class="ct"></span><span class="v"></span></div>
+        </div>
+        <p class="n">Trocar de mês mostra o mesmo esqueleto no lugar da lista; cabeçalho, filtros e captura ficam.</p>
+      </div>
+      <div class="pe">
+        <h4>Erro · linha coral</h4>
+        <div class="erro" role="alert"><span>Não consegui carregar.</span><button type="button">Tentar de novo</button></div>
+        <p class="n">Erro ao salvar fica no painel, acima de Salvar, com o mesmo tom. Nada some da lista até salvar de verdade.</p>
+      </div>
+      <div class="pe">
+        <h4>Mês sem transações</h4>
+        <p class="vazio">Nenhuma transação em agosto<small>Os previstos do mês, se houver, continuam no topo.</small></p>
+        <p class="n">Fora do mês atual, <b>Voltar para hoje</b> aparece ao lado do mês. No protótipo, o mês navega entre setembro e outubro, os dois que o mock detalha; no app, qualquer mês.</p>
+      </div>
+      <div class="pe">
+        <h4>Filtro sem resultado</h4>
+        <p class="vazio">Nada com esse filtro.</p>
+        <p class="n">O total do rodapé continua sendo o do <b>mês inteiro</b> (correção do v3, que somava só a página). Filtros e busca mudam só a contagem na tela.</p>
+      </div>
+      <div class="pe">
+        <h4>Fim da lista · carregar mais</h4>
+        <p class="n"><b>Carregar mais</b> traz a próxima página (20 no app; 4 no protótipo, para o botão aparecer) e some quando o mês acaba. Sem paginação numérica. O mock detalha 5 das 34 transações de outubro.</p>
+      </div>
+      <div class="pe">
+        <h4>Previsto e recorrente</h4>
+        <p class="n">Lançamento com data futura entra como <b>Previsto</b>, esmaecido, no bloco do topo, e não conta no total do mês até a data chegar. Os 3 próximos aparecem; o resto abre em <b>Ver os 9 previstos</b>.</p>
+        <p class="aviso">Ocorrência de <b>Aluguel</b>. Editar muda só este lançamento.</p>
+      </div>
+      <div class="pe">
+        <h4>Transferência</h4>
+        <p class="n">Troca categoria e método por <b>De</b> e <b>Para</b> (contas de <code>user_accounts</code>, sempre diferentes; escolher a mesma troca a outra). Descrição vazia vira <b>Nubank → Inter</b>. Não entra em entradas nem saídas, nem no subtotal do dia.</p>
+        <p class="n">O mock não tem transferência: a linha de 2 out usa o dia e o valor do Aporte CDB.</p>
+      </div>
+      <div class="pe">
+        <h4>Plano FREE · paridade do v3</h4>
+        <p class="n">Transações não têm limite no FREE. Ao criar: <b>+5 XP</b> e a sequência de registro seguem no backend, sem aviso na tela (só <b>Registrado.</b>). Aporte com meta de 02 Futuro continua sincronizando o progresso da meta.</p>
+      </div>
+    </div>
+
+    <div class="fontes-sy">
+      <p class="eyebrow"><b>01</b> · Finanças</p>
+      <h3>O que Sy lê aqui</h3>
+      <p>Pacote de contexto que esta tela entrega a Sy (o que <code>buildModuleContext</code> expõe para Finanças). É daqui que saem as fontes citadas sob cada resposta na camada.</p>
+      <ul>
+        <li><code>transactions <small>(mês aberto)</small></code><span>O que entrou e saiu, por dia, categoria e método, com as observações. Inclui os previstos e as transferências, separados. É a base dos subtotais do dia e de qualquer "onde foi o maior gasto".</span></li>
+        <li><code>recurring_transactions</code><span>De onde vêm os lançamentos com selo Recorrente e o que ainda vai sair (aluguel dia 6, internet dia 8). Permite projetar o fechamento do mês, não só o saldo de hoje.</span></li>
+        <li><code>user_accounts</code><span>De onde o dinheiro sai e onde fica. Separa transferência de gasto e dá o saldo por conta quando a pergunta é "dá para antecipar?".</span></li>
+        <li><code>budgets</code><span>O teto de cada categoria. Diz a Sy quanto ainda cabe em lazer, mercado ou moradia antes de comentar um gasto novo.</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<script src="../shared/mock-data.js"></script>
+<script src="../shared/app.js"></script>
+<script>SLApp.boot()</script>
+<script type="module">import { ligarSy40 } from '../shared/sy40.js'; ligarSy40()</script>
+<script>
+// Transações r2 (Fase 2). A lista sai de SL_MOCK.transacoes + SL_MOCK.fin (recorrentes, calendario.extras, contas, relatorios).
+// O HTML estático de #lista é o mesmo que esta função desenha no boot (E-02: sem JS a página está completa).
+(function () {
+  var M = window.SL_MOCK, F = M.fin, NB = ' ', HOJE = '2026-10-03';
+  var MOB = document.documentElement.classList.contains('mob');
+  var MES = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+  var DIAS = ['domingo','segunda','terça','quarta','quinta','sexta','sábado'];
+  var MESES = ['2026-09', '2026-10'];                       // meses com linhas no mock
+  var NOME = { '2026-09': 'setembro', '2026-10': 'outubro' }, REL = { '2026-09': 'set', '2026-10': 'out' };
+  var CATS = { out: ['Mercado','Moradia','Lazer','Transporte','Saúde','Investimento','Assinaturas','Impostos'], in: ['Renda','Renda extra'] };
+  var METODOS = { pix: 'Pix', credito: 'Crédito', debito: 'Débito', dinheiro: 'Dinheiro', transferencia: 'Transferência', boleto: 'Boleto' };
+  var PAGE = 4; // no protótipo a página é curta para o "Carregar mais" aparecer; no app, 20
+
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function brl(n) { return M.fmtBRL(Math.abs(n)).replace('R$ ', 'R$' + NB); }
+  function brl0(n) { return M.fmtBRL0(Math.round(Math.abs(n))).replace('R$ ', 'R$' + NB); }
+  function assinado(n) { return (n < 0 ? '– ' : '+ ') + brl(n); }
+  function dataCurta(iso) { var p = iso.split('-'); return parseInt(p[2], 10) + ' ' + MES[parseInt(p[1], 10) - 1]; }
+  function isoDe(curto) { var p = curto.split(' '); return '2026-' + pad(MES.indexOf(p[1]) + 1) + '-' + pad(parseInt(p[0], 10)); }
+  // calendário do mock: 3 de outubro de 2026 é sexta (deslocamento de 1 dia sobre o calendário real; igual ao template)
+  function diaSemana(iso) { var d = new Date(iso + 'T12:00:00'); var n = DIAS[(d.getDay() + 6) % 7]; return n.charAt(0).toUpperCase() + n.slice(1); }
+  function parseValor(s) { s = String(s).replace(/[R$\s ]/g, '').replace(/\./g, '').replace(',', '.'); var n = parseFloat(s); return isNaN(n) ? 0 : Math.abs(n); }
+  function valorCampo(n) { return M.fmtBRL(Math.abs(n)).replace('R$ ', ''); }
+  function mesDe(iso) { return iso.slice(0, 7); }
+  function prev(r) { return r.date > HOJE; }
+  function conta(id) { var c = F.contas.filter(function (x) { return x.id === id; })[0]; return c ? c.nome : ''; }
+  function recDe(nome) { return F.recorrentes.itens.filter(function (x) { return x.nome === nome; })[0] || null; }
+  function sinal(r) { return r.tipo === 'in' ? 1 : r.tipo === 'out' ? -1 : 0; }
+  function ctTxt(r) { return r.tipo === 'tr' ? conta(r.de) + ' → ' + conta(r.para) : r.cat; }
+  function valorTxt(r) { return r.tipo === 'tr' ? brl(r.valor) : assinado(sinal(r) * r.valor); }
+  function clampData(d) { return d < '2026-09-01' ? '2026-09-01' : d > '2026-10-31' ? '2026-10-31' : d; }
+
+  // ── dados ──
+  var MET_MOCK = ['credito', 'pix', 'transferencia', 'debito', 'transferencia', 'credito', 'credito', 'debito'];
+  var MET_REC = { 'Salário': 'transferencia', 'Aporte automático': 'transferencia', 'Internet': 'credito', 'Streaming': 'credito', 'Contador do MEI': 'boleto' };
+  var rows = [], seq = 1;
+  M.transacoes.forEach(function (t, i) {
+    var rec = recDe(t.desc);
+    rows.push({ id: 't' + (i + 1), date: isoDe(t.d), desc: t.desc, cat: t.cat, tipo: t.valor > 0 ? 'in' : 'out', valor: Math.abs(t.valor),
+      metodo: MET_MOCK[i] || 'pix', obs: '', rec: rec ? rec.id : null, ord: -i * 10 });
+  });
+  // transferência entre contas: o mock não tem uma; usa o dia e o valor do Aporte CDB (o dinheiro foi para o Inter antes do aporte)
+  var cdb = rows.filter(function (r) { return r.desc === 'Aporte CDB'; })[0];
+  if (cdb) rows.push({ id: 'x1', date: cdb.date, desc: 'Reserva para o CDB', cat: '', tipo: 'tr', de: F.contas[0].id, para: F.contas[1].id,
+    valor: cdb.valor, metodo: 'transferencia', obs: 'Saiu do Nubank para o aporte no Inter.', rec: null, ord: cdb.ord + 5 });
+  // previstos: as recorrentes que ainda vão acontecer em outubro (fin.calendario.extras)
+  F.calendario.extras.forEach(function (e, i) {
+    if (e.tipo !== 'recorrente') return;
+    var date = '2026-10-' + pad(e.d); if (date <= HOJE) return;
+    var rec = recDe(e.desc);
+    rows.push({ id: 'p' + i, date: date, desc: e.desc, cat: rec ? rec.cat : '', tipo: e.valor > 0 ? 'in' : 'out', valor: Math.abs(e.valor),
+      metodo: MET_REC[e.desc] || 'pix', obs: rec && rec.nota ? rec.nota.charAt(0).toUpperCase() + rec.nota.slice(1) + '.' : '', rec: rec ? rec.id : null, ord: -i });
+  });
+  var rel = F.relatorios.mensal, tot = {};
+  MESES.forEach(function (m) { tot[m] = { ent: rel[REL[m]].rec, sai: rel[REL[m]].desp, n: m === '2026-10' ? 34 : null }; });
+  function aplicaTot(r, s) {
+    if (prev(r) || r.tipo === 'tr') return;
+    var t = tot[mesDe(r.date)]; if (!t) return;
+    if (r.tipo === 'in') t.ent += s * r.valor; else t.sai += s * r.valor;
+    if (t.n != null) t.n += s;
+  }
+  function porId(id) { return rows.filter(function (r) { return r.id === id; })[0]; }
+
+  // ── estado ──
+  var st = { mes: '2026-10', tipo: 'todas', cat: 'todas', q: '', ordem: 'recente', mostrar: PAGE, prevAberto: false };
+  var lista = document.getElementById('lista'), sem = document.getElementById('sem-resultado'), mais = document.getElementById('mais');
+  function filtrando() { return st.tipo !== 'todas' || st.cat !== 'todas' || !!st.q; }
+  function passa(r) {
+    if (st.tipo === 'in' && r.tipo !== 'in') return false;
+    if (st.tipo === 'out' && r.tipo !== 'out') return false;
+    if (st.tipo === 'tr' && r.tipo !== 'tr') return false;
+    if (st.tipo === 'rec' && !r.rec) return false;
+    if (st.cat !== 'todas' && r.cat !== st.cat) return false;
+    if (st.q && (r.desc + ' ' + ctTxt(r)).toLowerCase().indexOf(st.q) < 0) return false;
+    return true;
+  }
+
+  // ── desenho ──
+  function tag(t) { return '<span class="tag">' + t + '</span>'; }
+  function linha(r) {
+    var el = document.createElement('div');
+    el.className = 'tx' + (r.tipo === 'in' ? ' in' : '') + (r.tipo === 'tr' ? ' tr' : '') + (prev(r) ? ' prev' : '');
+    el.setAttribute('role', 'button'); el.tabIndex = 0; el.dataset.id = r.id;
+    var tags = (r.tipo === 'tr' ? tag('Transf.') : '') + (r.rec ? tag('Recorrente') : '') + (prev(r) ? tag('Previsto') : '');
+    var d = '<span class="d num">' + dataCurta(r.date) + '</span>', ds = '<span class="ds"><span class="nm"></span>' + tags + '</span>';
+    var ct = '<span class="ct"></span>', v = '<span class="v num">' + valorTxt(r) + '</span>';
+    el.innerHTML = MOB ? d + ds + v + ct : d + ds + ct + v;
+    el.querySelector('.nm').textContent = r.desc;
+    el.querySelector('.ct').textContent = ctTxt(r);
+    el.setAttribute('aria-label', 'Editar ' + r.desc + ', ' + valorTxt(r).replace(NB, ' ') + (prev(r) ? ', previsto' : ''));
+    return el;
+  }
+  function divisor(rotulo, soma, temValor) {
+    var dv = document.createElement('div'); dv.className = 'dia';
+    dv.innerHTML = '<p class="eyebrow"></p><span class="st num' + (soma > 0 ? ' in' : '') + '">' + (temValor ? assinado(soma) : '') + '</span>';
+    dv.querySelector('.eyebrow').textContent = rotulo; return dv;
+  }
+  function soma(rs) { var s = 0, tem = false; rs.forEach(function (r) { if (r.tipo !== 'tr') { s += sinal(r) * r.valor; tem = true; } }); return [s, tem]; }
+  function blocoPrev(prevs) {
+    var g = document.createElement('div'); g.className = 'grupo previstos';
+    var sm = soma(prevs);
+    g.appendChild(divisor('Previstos até o fim de ' + NOME[st.mes], sm[0], sm[1]));
+    var todos = st.prevAberto || filtrando();
+    (todos ? prevs : prevs.slice(0, 3)).forEach(function (r) { g.appendChild(linha(r)); });
+    if (prevs.length > 3 && !filtrando()) {
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'ver-prev'; b.setAttribute('aria-expanded', st.prevAberto);
+      b.textContent = st.prevAberto ? 'Mostrar só os próximos 3' : 'Ver os ' + prevs.length + ' previstos';
+      g.appendChild(b);
+    }
+    return g;
+  }
+  function render() {
+    var doMes = rows.filter(function (r) { return mesDe(r.date) === st.mes; });
+    var real = doMes.filter(function (r) { return !prev(r) && passa(r); });
+    var prevs = doMes.filter(function (r) { return prev(r) && passa(r); });
+    var porData = st.ordem === 'recente' || st.ordem === 'antigo', asc = st.ordem === 'antigo' || st.ordem === 'menor';
+    real.sort(function (a, b) {
+      if (porData) { if (a.date !== b.date) return (a.date < b.date ? -1 : 1) * (asc ? 1 : -1); return (a.ord - b.ord) * (asc ? 1 : -1); }
+      return (a.valor - b.valor) * (asc ? 1 : -1);
+    });
+    prevs.sort(function (a, b) { return a.date !== b.date ? (a.date < b.date ? -1 : 1) : b.ord - a.ord; });
+    var vis = real.slice(0, st.mostrar);
+    var frag = document.createDocumentFragment();
+    if (porData) {
+      var bp = prevs.length ? blocoPrev(prevs) : null;
+      if (bp && !asc) frag.appendChild(bp);
+      var g = null, dataG = null;
+      vis.forEach(function (r) {
+        if (r.date !== dataG) {
+          dataG = r.date; g = document.createElement('div'); g.className = 'grupo'; g.dataset.date = r.date;
+          var doDia = vis.filter(function (x) { return x.date === r.date; }), sm = soma(doDia);
+          g.appendChild(divisor(diaSemana(r.date) + (MOB ? ' · ' + dataCurta(r.date) : ''), sm[0], sm[1]));
+          frag.appendChild(g);
+        }
+        g.appendChild(linha(r));
+      });
+      if (bp && asc) frag.appendChild(bp);
+    } else {
+      var plano = document.createElement('div'); plano.className = 'grupo plano';
+      vis.concat(prevs).sort(function (a, b) { return (a.valor - b.valor) * (asc ? 1 : -1); }).forEach(function (r) { plano.appendChild(linha(r)); });
+      if (plano.children.length) frag.appendChild(plano);
+    }
+    Array.prototype.slice.call(lista.children).forEach(function (c) { if (c !== sem) c.remove(); });
+    lista.insertBefore(frag, sem);
+    sem.hidden = vis.length + prevs.length > 0;
+    mais.hidden = real.length <= st.mostrar;
+    var t = tot[st.mes];
+    document.getElementById('f-count').textContent = vis.length + (t.n != null ? ' de ' + t.n : (vis.length === 1 ? ' exibida' : ' exibidas'));
+    var nome = NOME[st.mes], Nome = nome.charAt(0).toUpperCase() + nome.slice(1);
+    document.getElementById('f-mes').textContent = Nome + ' inteiro';
+    document.getElementById('f-ent').textContent = '+ ' + brl(t.ent);
+    document.getElementById('f-sai').textContent = '– ' + brl(t.sai);
+    var saldo = t.ent - t.sai, fs = document.getElementById('f-saldo');
+    fs.textContent = assinado(saldo); fs.classList.toggle('ele', saldo > 0);
+    document.getElementById('h-sub').innerHTML = (t.n != null ? '<span class="num" id="h-count">' + t.n + '</span> transações em ' + nome : Nome + ' fechado')
+      + ' · entradas <span class="num">' + brl0(t.ent) + '</span> · saídas <span class="num">' + brl0(t.sai) + '</span>';
+  }
+  function destacar(id) {
+    var el = lista.querySelector('.tx[data-id="' + id + '"]'); if (!el) return;
+    el.classList.add('nova');
+    requestAnimationFrame(function () { requestAnimationFrame(function () { el.classList.remove('nova'); }); });
+  }
+
+  // ── mês ──
+  var mAnt = document.getElementById('m-ant'), mProx = document.getElementById('m-prox'), mHoje = document.getElementById('m-hoje');
+  function setMes(m) {
+    st.mes = m; st.mostrar = PAGE; st.prevAberto = false;
+    document.getElementById('h-mes').textContent = NOME[m];
+    document.getElementById('m-label').textContent = NOME[m] + ' de 2026';
+    var i = MESES.indexOf(m);
+    mAnt.disabled = i <= 0; mProx.disabled = i >= MESES.length - 1;
+    mHoje.hidden = m === mesDe(HOJE);
+    render();
+  }
+  mAnt.addEventListener('click', function () { var i = MESES.indexOf(st.mes); if (i > 0) setMes(MESES[i - 1]); });
+  mProx.addEventListener('click', function () { var i = MESES.indexOf(st.mes); if (i < MESES.length - 1) setMes(MESES[i + 1]); });
+  mHoje.addEventListener('click', function () { setMes(mesDe(HOJE)); mAnt.focus(); });
+
+  // ── filtros, ordem, busca, carregar mais ──
+  document.querySelectorAll('.filtros .chip[data-tipo]').forEach(function (c) {
+    c.addEventListener('click', function () {
+      document.querySelectorAll('.filtros .chip[data-tipo]').forEach(function (q) { q.classList.remove('on'); q.setAttribute('aria-pressed', 'false'); });
+      c.classList.add('on'); c.setAttribute('aria-pressed', 'true'); st.tipo = c.dataset.tipo; render();
+    });
+  });
+  document.querySelectorAll('.filtros .chip[data-cat]').forEach(function (c) { // mobile: categoria em pílula (tocar de novo limpa)
+    c.addEventListener('click', function () {
+      var ligar = !c.classList.contains('on');
+      document.querySelectorAll('.filtros .chip[data-cat]').forEach(function (q) { q.classList.remove('on'); q.setAttribute('aria-pressed', 'false'); });
+      if (ligar) { c.classList.add('on'); c.setAttribute('aria-pressed', 'true'); }
+      st.cat = ligar ? c.dataset.cat : 'todas'; render();
+    });
+  });
+  var fCat = document.getElementById('f-cat'); if (fCat) fCat.addEventListener('change', function () { st.cat = this.value; render(); });
+  document.getElementById('f-ordem').addEventListener('change', function () { st.ordem = this.value; render(); });
+  document.getElementById('f-q').addEventListener('input', function () { st.q = this.value.trim().toLowerCase(); render(); });
+  mais.addEventListener('click', function () {
+    var antes = lista.querySelectorAll('.grupo:not(.previstos) .tx').length;
+    st.mostrar += PAGE; render();
+    var novo = lista.querySelectorAll('.grupo:not(.previstos) .tx')[antes]; if (novo) novo.focus({ preventScroll: true });
+  });
+  lista.addEventListener('click', function (e) {
+    var b = e.target.closest('.ver-prev'); if (b) { st.prevAberto = !st.prevAberto; render(); var nb = lista.querySelector('.ver-prev'); if (nb) nb.focus({ preventScroll: true }); return; }
+    var r = e.target.closest('.tx'); if (r && r.dataset.id) abrir(porId(r.dataset.id));
+  });
+  lista.addEventListener('keydown', function (e) {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.classList.contains('tx')) { e.preventDefault(); abrir(porId(e.target.dataset.id)); }
+  });
+
+  // ── editor: painel (desktop) ou sheet (mobile); mesmos ids ──
+  var ed = document.getElementById('editor'), form = document.getElementById('eform');
+  var scrim = document.querySelector('.scrim'), camada = document.querySelector('.camada');
+  var confirma = document.getElementById('e-confirma'), titulo = document.getElementById('e-titulo'), out = document.getElementById('e-out');
+  var bExcluir = document.getElementById('e-excluir'), bSalvar = document.getElementById('e-salvar');
+  var selCat = document.getElementById('e-cat'), selDe = document.getElementById('e-de'), selPara = document.getElementById('e-para');
+  var fCatE = document.getElementById('e-f-cat'), fContas = document.getElementById('e-f-contas'), fMet = document.getElementById('e-f-met');
+  var aviso = document.getElementById('e-aviso'), erro = document.getElementById('e-erro');
+  var atual = null, tipo = 'out';
+  F.contas.forEach(function (c) { [selDe, selPara].forEach(function (s) { var o = document.createElement('option'); o.value = c.id; o.textContent = c.nome; s.appendChild(o); }); });
+  function popCats(t, val) {
+    selCat.innerHTML = '';
+    CATS[t].forEach(function (c) { var o = document.createElement('option'); o.textContent = c; selCat.appendChild(o); });
+    if (val && CATS[t].indexOf(val) >= 0) selCat.value = val;
+  }
+  function phDesc() { form.desc.placeholder = tipo === 'tr' ? conta(selDe.value) + ' → ' + conta(selPara.value) : 'Ex.: Mercado Central'; }
+  function setTipo(t) {
+    var val = selCat.value; tipo = t;
+    ed.querySelectorAll('.tipo .chip').forEach(function (c) { var on = c.dataset.tipo === t; c.classList.toggle('on', on); c.setAttribute('aria-pressed', on); });
+    fCatE.hidden = t === 'tr'; fContas.hidden = t !== 'tr'; fMet.hidden = t === 'tr';
+    if (t !== 'tr') popCats(t, val);
+    erro.hidden = true; phDesc();
+  }
+  function rotulo() {
+    var tr = tipo === 'tr';
+    titulo.textContent = atual ? (tr ? 'Editar transferência' : 'Editar transação') : (tr ? 'Nova transferência' : 'Nova transação');
+  }
+  function contasDiferentes(mudou) {
+    if (selDe.value !== selPara.value) { erro.hidden = true; return; }
+    var outro = mudou === selDe ? selPara : selDe;
+    outro.value = F.contas.filter(function (c) { return c.id !== mudou.value; })[0].id;
+  }
+  function abrir(r, pre) {
+    atual = r || null; confirma.hidden = true; erro.hidden = true; if (out) out.textContent = '';
+    form.reset();
+    if (r) {
+      form.desc.value = r.desc; form.valor.value = valorCampo(r.valor); form.data.value = r.date;
+      form.met.value = r.metodo; form.obs.value = r.obs || '';
+      if (r.tipo === 'tr') { selDe.value = r.de; selPara.value = r.para; }
+      setTipo(r.tipo); if (r.tipo !== 'tr') selCat.value = r.cat;
+      document.getElementById('e-conf-nome').textContent = r.desc;
+      aviso.hidden = !r.rec;
+      if (r.rec) document.getElementById('e-aviso-nome').textContent = (recDe(r.desc) || { nome: r.desc }).nome;
+    } else {
+      pre = pre || {};
+      form.desc.value = pre.desc || ''; form.valor.value = pre.valor || ''; form.data.value = pre.data || HOJE; form.met.value = 'pix';
+      selDe.value = F.contas[0].id; selPara.value = F.contas[1].id;
+      setTipo(pre.cat && CATS.in.indexOf(pre.cat) >= 0 ? 'in' : 'out'); if (pre.cat) selCat.value = pre.cat;
+      aviso.hidden = true;
+    }
+    rotulo(); bExcluir.hidden = !r; bSalvar.textContent = r ? 'Salvar' : 'Registrar';
+    ed.classList.add('open'); scrim.classList.add('open');
+    if (!r || !MOB) form.desc.focus({ preventScroll: true });
+  }
+  function fechar() {
+    if (!ed.classList.contains('open')) return;
+    ed.classList.remove('open');
+    if (!camada || !camada.classList.contains('open')) scrim.classList.remove('open');
+    if (atual) { var el = lista.querySelector('.tx[data-id="' + atual.id + '"]'); if (el) el.focus({ preventScroll: true }); }
+    atual = null;
+  }
+  ed.querySelector('.x').addEventListener('click', fechar);
+  scrim.addEventListener('click', fechar);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') fechar(); });
+  ed.querySelectorAll('.tipo .chip').forEach(function (c) { c.addEventListener('click', function () { setTipo(c.dataset.tipo); rotulo(); }); });
+  selDe.addEventListener('change', function () { contasDiferentes(selDe); phDesc(); });
+  selPara.addEventListener('change', function () { contasDiferentes(selPara); phDesc(); });
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var val = parseValor(form.valor.value), desc = form.desc.value.trim();
+    if (tipo === 'tr') {
+      if (selDe.value === selPara.value) { erro.hidden = false; selPara.focus(); return; }
+      if (!desc) desc = conta(selDe.value) + ' → ' + conta(selPara.value);
+    }
+    if (!desc) { form.desc.focus(); return; }
+    if (!val) { form.valor.focus(); return; }
+    var dados = { date: clampData(form.data.value || HOJE), desc: desc, tipo: tipo, valor: val, cat: tipo === 'tr' ? '' : selCat.value,
+      de: tipo === 'tr' ? selDe.value : null, para: tipo === 'tr' ? selPara.value : null,
+      metodo: tipo === 'tr' ? 'transferencia' : form.met.value, obs: form.obs.value.trim() };
+    var r;
+    if (atual) { aplicaTot(atual, -1); for (var k in dados) atual[k] = dados[k]; r = atual; aplicaTot(r, 1); }
+    else { r = dados; r.id = 'n' + seq; r.ord = 1000 + seq++; r.rec = null; rows.push(r); aplicaTot(r, 1); }
+    if (mesDe(r.date) !== st.mes) setMes(mesDe(r.date)); else render();
+    destacar(r.id);
+    if (!atual && MOB) { out.textContent = 'Registrado.'; setTimeout(fechar, 650); return; }
+    if (!atual && capOut) avisar('Registrado.');
+    fechar();
+  });
+  bExcluir.addEventListener('click', function () { confirma.hidden = false; document.getElementById('e-conf-sim').focus(); });
+  document.getElementById('e-conf-nao').addEventListener('click', function () { confirma.hidden = true; bExcluir.focus(); });
+  document.getElementById('e-conf-sim').addEventListener('click', function () {
+    if (!atual) return;
+    var r = atual; atual = null; rows.splice(rows.indexOf(r), 1); aplicaTot(r, -1); render();
+    ed.classList.remove('open'); if (!camada || !camada.classList.contains('open')) scrim.classList.remove('open');
+    mAnt.focus({ preventScroll: true });
+  });
+
+  // ── captura: inline no desktop; no mobile o + do bar e o Registrar da bottom bar abrem o sheet ──
+  var cap = document.getElementById('captura'), capOut = document.getElementById('cap-out');
+  function avisar(t) { capOut.textContent = t; clearTimeout(capOut._t); capOut._t = setTimeout(function () { capOut.textContent = ''; }, 2200); }
+  if (cap) {
+    cap.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var desc = cap.desc.value.trim(), val = parseValor(cap.valor.value), cat = cap.cat.value;
+      if (!desc || !val) { (desc ? cap.valor : cap.desc).focus(); return; }
+      var r = { id: 'n' + seq, ord: 1000 + seq++, date: clampData(cap.data.value || HOJE), desc: desc, cat: cat, tipo: CATS.in.indexOf(cat) >= 0 ? 'in' : 'out',
+        valor: val, metodo: 'pix', obs: '', rec: null };
+      rows.push(r); aplicaTot(r, 1);
+      if (mesDe(r.date) !== st.mes) setMes(mesDe(r.date)); else render();
+      destacar(r.id);
+      cap.desc.value = ''; cap.valor.value = ''; cap.desc.focus();
+      avisar(prev(r) ? 'Registrado como previsto.' : 'Registrado.');
+    });
+    document.getElementById('cap-mais').addEventListener('click', function () {
+      abrir(null, { desc: cap.desc.value.trim(), valor: cap.valor.value, cat: cap.cat.value, data: cap.data.value });
+    });
+    document.querySelectorAll('[data-foco-captura]').forEach(function (b) {
+      b.addEventListener('click', function () { cap.desc.focus(); cap.scrollIntoView({ block: 'center', behavior: 'smooth' }); });
+    });
+  }
+  document.querySelectorAll('[data-abrir-captura]').forEach(function (b) { b.addEventListener('click', function () { abrir(null); }); });
+
+  setMes(st.mes);
+})();
+</script>
+</body>
+</html>

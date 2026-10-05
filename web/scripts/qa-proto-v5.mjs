@@ -41,8 +41,9 @@ for (const arq of arquivos) {
       n: vis.length,
     }
   }, PROIBIDAS.source)
-  await p.addStyleTag({ content: '.camada:not(.open),.scrim:not(.open),.painel:not(.open){display:none!important}' })
-  await p.evaluate(() => document.querySelectorAll('.rv,.boot').forEach((e) => e.classList.add('in')))
+  await p.addStyleTag({ content: '.camada:not(.open),.scrim:not(.open),.painel:not(.open){display:none!important} html.mob .bbar{position:static!important} *,*::before,*::after{transition:none!important;animation:none!important}' })
+  await p.evaluate(() => document.querySelectorAll('.rv,.boot,.draw').forEach((e) => e.classList.add('in')))
+  await p.waitForTimeout(200)
   await p.screenshot({ path: path.join(OUT, arq.replace(/[\/]/g, '_').replace('.html', '.png')), fullPage: true })
   linhas.push({ arq, erros: erros.length, overflow: r.overflow, proibidas: r.proibidas || '', revista: r.revista || '', caveat: r.caveat, syLe: r.syLe, alvos40: r.alvosPequenos })
   for (const e of erros) console.log(`  [${arq}] ${e.slice(0, 200)}`)

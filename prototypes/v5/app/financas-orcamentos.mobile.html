@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dk mob">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
+<title>SyncLife · Orçamentos · mobile · v5</title>
+<!-- Fase 2 · Finanças · Orçamentos MOBILE dedicado (390×844). T2 com linhas de barra (.orc), 1 coluna.
+     subbar sticky (← Finanças) → cabeçalho com mês e Sy em 1 linha → números 2×2 → filtros em scroll-x → envelopes
+     → fora de envelope + 50-30-20 → laboratório empilhado → Mais em Finanças → rodapé → bottom bar.
+     Captura e edição num só sheet (.sheet-form): Registrar da bottom bar e o + do bar abrem "Novo envelope"; tocar numa linha abre a edição.
+     Sem modbar (bottom bar no lugar). A camada de Sy vem antes do #sheetAreas no DOM. E-02: sem JS a página está completa. -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Cline x1='32' y1='6' x2='32' y2='13' stroke='%23a1ff62' stroke-width='6' stroke-linecap='round'/%3E%3Cpolygon points='32,10 39,34 25,34' fill='%236840ff'/%3E%3Cpolygon points='32,57 25,34 39,34' fill='%23575353'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/base.css">
+<link rel="stylesheet" href="../shared/app.css">
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.185.1/build/three.module.js"}}</script>
+<style>
+  .wrap{--wrap-max:100%;padding-left:20px;padding-right:20px}
+
+  /* subbar sticky (igual a life-score-v2.mobile.html) */
+  .subbar{position:sticky;top:56px;z-index:50;display:flex;align-items:center;gap:12px;height:48px;margin:0 -20px;padding:0 20px;
+    background:rgba(21,19,19,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  .subbar .voltar{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding-right:6px;font:500 13px var(--int);color:var(--t2)}
+  .subbar .curto{font:500 14px var(--gro);letter-spacing:-.02em;color:var(--t1);margin-left:auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+  /* alvos de toque >= 40px sobre o chrome compartilhado (como em _t2-lista.mobile) */
+  html.mob .brand{min-height:40px}
+  html.mob .bar .btn-sm{min-height:40px}
+  html.mob .camada .cask .in{padding-top:0;padding-bottom:0}
+  html.mob .camada .cask input{min-height:44px}
+  html.mob .camada .cfull{padding-top:0;padding-bottom:env(safe-area-inset-bottom)}
+
+  /* cabeçalho: eyebrow-link, título, mês, Sy */
+  html.mob .titulo{padding:14px 0 22px}
+  .titulo .eyebrow a{display:inline-flex;align-items:center;min-height:40px}
+  html.mob .titulo h1{margin-top:2px}
+  .mes{display:flex;align-items:center;justify-content:space-between;border:1px solid var(--line);border-radius:999px;padding:2px;margin-top:16px}
+  .mes button{width:40px;height:40px;border-radius:50%;border:none;background:none;color:var(--t2);cursor:pointer;font:500 17px var(--int)}
+  .mes span{font:600 13.5px var(--gro);letter-spacing:-.01em;color:var(--t1)}
+  .mes-out{display:block;font:400 11.5px var(--int);color:var(--t3);text-align:center;margin-top:6px;min-height:1em}
+  html.mob .sy{margin-top:18px}
+
+  /* números 2×2 compactos */
+  .lnums{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--line)}
+  .lnums > div{padding:16px 14px;border-bottom:1px solid var(--line)}
+  .lnums > div:nth-child(odd){padding-left:0;border-right:1px solid var(--line)}
+  .lnums > div:nth-child(even){padding-right:0}
+  .lnums > div:nth-child(n+3){border-bottom:none}
+  .lnums .v{font:700 21px/1 var(--gro);letter-spacing:-.035em;margin-top:8px}
+  .lnums .v.w{color:var(--coral)}
+  .lnums .d{font:400 11px/1.4 var(--int);color:var(--t3);margin-top:6px}
+
+  /* filtros em scroll-x */
+  .filtros{display:flex;align-items:center;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 -20px;padding:16px 20px 14px;border-bottom:1px solid var(--line)}
+  .filtros::-webkit-scrollbar{display:none}
+  .filtros .chip{min-height:40px;white-space:nowrap;flex:none;font-size:13px;align-items:center}
+  .filtros .chip .n{font:700 10.5px var(--gro)}
+
+  /* envelopes (linhas .orc do shared) + marca do alerta + selos */
+  .envs{padding:2px 0 0}
+  .envs .orc{cursor:pointer;min-height:48px;padding:15px 0 16px}
+  .envs .orc:focus-visible{outline:2px solid rgba(104,64,255,.6);outline-offset:2px;border-radius:6px}
+  .envs .orc .nm{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:14.5px}
+  .envs .orc.nova{background:rgba(161,255,98,.10);box-shadow:inset 3px 0 0 var(--ele)}
+  .anim .envs .orc{transition:padding-left .35s var(--ease),background 1.8s var(--ease),box-shadow 1.8s var(--ease)}
+  .barra{grid-column:1/-1;position:relative}
+  .barra .track{height:4px;background:var(--s2);border-radius:2px;overflow:hidden}
+  .barra .track i{display:block;height:100%;width:var(--w);background:var(--t2);border-radius:2px}
+  .anim .barra .track i{transition:width .7s var(--ease)}
+  .orc.warn .barra .track i{background:var(--coral)}
+  .barra .marca{position:absolute;top:-4px;left:var(--a);width:1.5px;height:12px;background:var(--t3);border-radius:1px;transform:translateX(-50%)}
+  .tag{font:700 9px var(--gro);letter-spacing:.14em;text-transform:uppercase;padding:3px 8px;border-radius:999px;border:1px solid var(--line);color:var(--t3);white-space:nowrap}
+  .tag.warn{border-color:rgba(248,65,49,.45);color:var(--coral)}
+  .tag.estourado{background:var(--coral);border-color:var(--coral);color:#fff}
+  .tag.roll{border-color:rgba(161,255,98,.4);color:var(--ele)}
+  .tag.prev{border-color:rgba(104,64,255,.6);color:var(--t1)}
+  .sem-resultado{font:400 13px var(--int);color:var(--t3);padding:22px 0 6px}
+  .envs-foot{display:flex;flex-direction:column;gap:4px;padding:14px 0 0;font:400 12.5px/1.6 var(--int);color:var(--t3)}
+  .envs-foot b{color:var(--t1);font-weight:700}
+
+  /* linhas quietas: fora de envelope, 50-30-20 */
+  .quieta{padding:14px 0 4px;border-top:1px solid var(--line);margin-top:16px;font:400 12.5px/1.6 var(--int);color:var(--t3)}
+  .quieta + .quieta{margin-top:0}
+  .quieta b{color:var(--t2);font-weight:600}
+  .quieta .lk{display:flex;align-items:center;min-height:40px;background:none;border:none;cursor:pointer;padding:0;font:500 13px var(--int);color:var(--t2)}
+
+  /* laboratório (peça do shared, html.mob) */
+  .lab-head{padding:30px 0 14px}
+  .lab-head h2{font:500 21px/1.2 var(--gro);letter-spacing:-.03em;margin-top:8px}
+  .lab-head p{font:400 12px/1.5 var(--int);color:var(--t3);margin-top:6px}
+  html.mob .lab{border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .imp label b{font:700 11px var(--gro);color:var(--roxo);margin-right:4px}
+
+  /* Mais em Finanças */
+  .mais{padding:22px 0 30px}
+  .mais .links{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .mais .links a{display:inline-flex;align-items:center;min-height:40px;padding:0 14px;border:1px solid var(--line);border-radius:999px;font:500 12.5px var(--int);color:var(--t2)}
+
+  /* sheet de captura / edição (mesmo de _t2-lista.mobile) */
+  .sheet-form{position:fixed;left:0;right:0;bottom:0;z-index:80;max-height:clamp(420px,86dvh,760px);background:var(--s1);border-top:1px solid var(--line-h);border-radius:22px 22px 0 0;
+    display:flex;flex-direction:column;transform:translateY(105%);visibility:hidden;transition:transform .55s var(--ease),visibility 0s .55s;box-shadow:0 -24px 60px -30px rgba(0,0,0,.6)}
+  .sheet-form.open{transform:none;visibility:visible;transition-delay:0s}
+  .sheet-form .handle{width:44px;height:4px;border-radius:2px;background:var(--line-h);margin:10px auto 0}
+  .sheet-form .shead{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 20px 16px;border-bottom:1px solid var(--line)}
+  .sheet-form .shead h2{font:500 19px var(--gro);letter-spacing:-.02em;margin-top:6px}
+  .sheet-form .x{background:none;border:1px solid var(--line);border-radius:999px;width:40px;height:40px;display:inline-flex;align-items:center;justify-content:center;color:var(--t2);cursor:pointer;flex:none}
+  .sheet-form .sbody{flex:1;overflow-y:auto;padding:18px 20px 6px;display:flex;flex-direction:column;gap:16px}
+  .sheet-form .f .eyebrow{display:block;margin-bottom:8px}
+  .sheet-form .ck-note{width:100%;display:block;padding:13px 16px;font-size:14px;min-height:46px}
+  .sheet-form textarea.ck-note{resize:none;min-height:72px;font:400 14px/1.5 var(--int)}
+  .sheet-form .sel{margin-top:0}
+  .sheet-form .sel select{min-height:46px}
+  .sheet-form .tipo{display:flex;gap:8px}
+  .sheet-form .tipo .chip{min-height:44px;flex:1;justify-content:center;align-items:center;font-size:13px}
+  .sheet-form .f2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .sheet-form .sfoot{padding:14px 20px calc(18px + env(safe-area-inset-bottom));border-top:1px solid var(--line);display:flex;flex-direction:column;gap:12px}
+  .sheet-form .acts{display:flex;gap:10px}
+  .sheet-form .acts .btn-sm{min-height:48px;justify-content:center;font-size:14px}
+  .sheet-form .acts .roxo{flex:1}
+  .sheet-form .btn-sm.ghost.perigo{padding:12px 18px}
+  .sheet-form .confirma{display:block;font-size:13px}
+  .sheet-form .confirma .cb{display:flex;gap:18px;margin-top:4px}
+  .sheet-form .confirma button{min-height:40px;font-size:13.5px}
+  .sheet-form .sfoot output{font:600 12.5px var(--int);color:var(--ele);text-align:center;min-height:1em}
+  .trava{display:flex;flex-direction:column;gap:4px;border:1px dashed var(--line-h);border-radius:12px;padding:11px 16px;font:500 14px var(--int);color:var(--t1)}
+  .trava small{font:400 11.5px var(--int);color:var(--t3)}
+  .base{border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .base div{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:10px 0;font:400 12.5px var(--int);color:var(--t3)}
+  .base div + div{border-top:1px solid var(--line)}
+  .base b{font:700 13.5px var(--gro);color:var(--t1)}
+  .base b.ele{color:var(--ele)}
+  .hint{font:400 11.5px/1.5 var(--int);color:var(--t3);margin-top:8px}
+  @media (prefers-reduced-motion:reduce){.sheet-form{transition:none}}
+
+  /* anotação do protótipo (fora do fluxo, inert) */
+  .proto-estados{border-top:3px double var(--line-h);margin-top:24px;padding-top:30px;padding-bottom:72px}
+  .proto-estados > .wrap > .eyebrow{color:var(--coral)}
+  .pe-grid{display:grid;grid-template-columns:1fr;gap:34px;margin-top:22px}
+  .pe h4{font:700 10px var(--gro);letter-spacing:.18em;text-transform:uppercase;color:var(--t3);margin-bottom:12px}
+  .pe .vazio{font:500 16px var(--gro);letter-spacing:-.01em;color:var(--t1)}
+  .pe .vazio small{display:block;font:400 12.5px/1.55 var(--int);color:var(--t3);margin-top:6px}
+  .pe .copia{border-top:1px solid var(--line);margin-top:10px}
+  .pe .copia label{display:grid;grid-template-columns:22px 1fr auto;gap:10px;align-items:center;min-height:44px;border-bottom:1px solid var(--line);font:400 13.5px var(--int);color:var(--t1)}
+  .pe .copia input{accent-color:var(--roxo);width:16px;height:16px}
+  .pe .copia .num{font:700 13px var(--gro);color:var(--t2)}
+  .pe .copia small{font:400 11px var(--int);color:var(--t3);margin-left:6px}
+  .pe .copia-btn{width:100%;justify-content:center;min-height:48px;margin-top:12px}
+  .pe-nota{font:400 12px/1.6 var(--int);color:var(--t3);margin-top:10px}
+  .pe-nota b{color:var(--t2);font-weight:600}
+  .pe .skel{padding:14px 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr 80px;gap:10px}
+  .pe .skel span{display:block;height:10px;border-radius:5px;background:var(--s2)}
+  .pe .skel .b{grid-column:1/-1;height:4px}
+  .anim .pe .skel span{animation:pulso 1.4s var(--ease) infinite alternate}
+  @keyframes pulso{from{opacity:.55}to{opacity:1}}
+  .pe .erro{display:flex;justify-content:space-between;align-items:baseline;gap:12px;border-left:3px solid var(--coral);padding:10px 14px;font:400 13px var(--int);color:var(--coral)}
+  .pe .erro button{background:none;border:none;color:var(--t1);font:600 12.5px var(--int);cursor:pointer;padding:0;white-space:nowrap}
+  .pe .lnums{border-top:1px solid var(--line)}
+  .pe .lnums > div{border-bottom:none}
+  .fontes-sy{margin-top:40px}
+  .fontes-sy h3{font:500 20px/1.2 var(--gro);letter-spacing:-.025em;margin-top:8px}
+  .fontes-sy p{font:400 13px/1.6 var(--int);color:var(--t2);margin-top:10px}
+  .fontes-sy ul{list-style:none;margin-top:14px}
+  .fontes-sy li{padding:12px 0;border-bottom:1px solid var(--line);font:400 12.5px/1.55 var(--int);color:var(--t2)}
+  .fontes-sy li code{display:block;font:600 12.5px var(--gro);color:var(--t1);letter-spacing:-.01em;margin-bottom:4px}
+  .fontes-sy li code small{font:400 11.5px var(--int);color:var(--t3)}
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- chrome: com a bottom bar, o bar fica só com a marca e o +; o modbar sai -->
+<header class="bar">
+  <a class="brand" href="#">
+    <svg width="19" height="19" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="2" x2="32" y2="11" stroke="#a1ff62" stroke-width="7" stroke-linecap="round"/><polygon points="32,8 40,34 24,34" fill="#6840ff"/><polygon points="32,58 24,34 40,34" fill="#f4f4f4" opacity=".35"/></svg>
+    <span class="wm">Sync<em>Life</em></span></a>
+  <div class="acts">
+    <button class="btn-sm roxo" type="button" aria-label="Registrar" data-abrir-captura>+</button>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- 1. subbar sticky -->
+  <div class="subbar">
+    <a class="voltar" href="financas-a.mobile.html">← Finanças</a>
+    <span class="curto">Orçamentos</span>
+  </div>
+
+  <!-- 2. cabeçalho + mês + Sy em 1 linha -->
+  <header class="titulo boot b1">
+    <p class="eyebrow"><a href="financas-a.mobile.html"><b>01</b>&nbsp;· Finanças</a></p>
+    <h1>Orçamentos · outubro</h1>
+    <div class="mes" role="group" aria-label="Mês">
+      <button type="button" data-mes="-1" aria-label="Mês anterior, setembro">‹</button>
+      <span class="num">outubro de 2026</span>
+      <button type="button" data-mes="1" aria-label="Próximo mês, novembro">›</button>
+    </div>
+    <output class="mes-out" id="mes-out" aria-live="polite"></output>
+    <div class="sy">
+      <span class="sy40" aria-hidden="true"><canvas></canvas></span>
+      <div>
+        <p class="fala" id="syFala">Lazer e Assinaturas passaram do alerta. Lazer tem <b class="num w">R$&nbsp;10</b> para 28 dias.</p>
+        <p class="fontes">Atualizado às 7h12 · fontes: 6 orçamentos, 34 transações, receitas de outubro</p>
+        <button class="falar" type="button" data-coach-open data-coach-seed="Sobre os orçamentos de outubro: ">Falar com Sy sobre os orçamentos →</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 3. números 2×2 -->
+  <section class="lnums boot b2" aria-label="Números do mês">
+    <div><p class="eyebrow">Orçado</p><div class="v num" id="n-orcado">R$&nbsp;3.790</div><div class="d" id="n-orcado-d"><span class="num">6</span> envelopes</div></div>
+    <div><p class="eyebrow">Gasto</p><div class="v num" id="n-gasto">R$&nbsp;2.860</div><div class="d" id="n-gasto-d"><span class="num">75%</span> do orçado</div></div>
+    <div><p class="eyebrow">Disponível</p><div class="v num" id="n-disp">R$&nbsp;930</div><div class="d"><span class="num">28</span> dias até o fim do mês</div></div>
+    <div><p class="eyebrow">Não alocado</p><div class="v num" id="n-livre">R$&nbsp;1.210</div><div class="d" id="n-livre-d">receitas de <span class="num">R$&nbsp;5.000</span> menos o orçado</div></div>
+  </section>
+
+  <!-- 4. filtros em scroll-x -->
+  <div class="filtros boot b3" role="toolbar" aria-label="Filtros">
+    <button class="chip on" type="button" data-f="todos" aria-pressed="true">Todos <span class="n num" id="c-todos">6</span></button>
+    <button class="chip" type="button" data-f="atencao" aria-pressed="false">Pedem atenção <span class="n num" id="c-atencao">2</span></button>
+    <button class="chip" type="button" data-f="ok" aria-pressed="false">Dentro do alerta <span class="n num" id="c-ok">4</span></button>
+  </div>
+
+  <!-- 5. envelopes -->
+  <section class="envs rv" id="envs" aria-label="Envelopes de outubro">
+    <div id="lista">
+      <div class="orc" role="button" tabindex="0" data-cat="Moradia" style="--w:69%;--a:85%" aria-label="Editar envelope Moradia, R$ 1.240,00 de R$ 1.800,00"><span class="nm">Moradia</span><span class="v num"><b>R$&nbsp;1.240,00</b> de R$&nbsp;1.800,00</span><div class="barra"><div class="track"><i></i></div><span class="marca"></span></div><span class="sub num">69% · sobram R$&nbsp;560,00 · 28 dias · alerta em 85%</span></div>
+      <div class="orc" role="button" tabindex="0" data-cat="Mercado" style="--w:80%;--a:85%" aria-label="Editar envelope Mercado, R$ 520,00 de R$ 650,00"><span class="nm">Mercado</span><span class="v num"><b>R$&nbsp;520,00</b> de R$&nbsp;650,00</span><div class="barra"><div class="track"><i></i></div><span class="marca"></span></div><span class="sub num">80% · sobram R$&nbsp;130,00 · 28 dias · alerta em 85%</span></div>
+      <div class="orc warn" role="button" tabindex="0" data-cat="Lazer" style="--w:98%;--a:80%" aria-label="Editar envelope Lazer, R$ 410,00 de R$ 420,00"><span class="nm">Lazer <span class="tag warn">Atenção</span></span><span class="v num"><b>R$&nbsp;410,00</b> de R$&nbsp;420,00</span><div class="barra"><div class="track"><i></i></div><span class="marca"></span></div><span class="sub num">98% · sobram R$&nbsp;10,00 · 28 dias · alerta em 80%</span></div>
+      <div class="orc" role="button" tabindex="0" data-cat="Transporte" style="--w:78%;--a:85%" aria-label="Editar envelope Transporte, R$ 310,00 de R$ 400,00"><span class="nm">Transporte</span><span class="v num"><b>R$&nbsp;310,00</b> de R$&nbsp;400,00</span><div class="barra"><div class="track"><i></i></div><span class="marca"></span></div><span class="sub num">78% · sobram R$&nbsp;90,00 · 28 dias · alerta em 85%</span></div>
+      <div class="orc" role="button" tabindex="0" data-cat="Saúde" style="--w:60%;--a:85%" aria-label="Editar envelope Saúde, R$ 180,00 de R$ 300,00"><span class="nm">Saúde <span class="tag roll">Rollover + R$&nbsp;50</span></span><span class="v num"><b>R$&nbsp;180,00</b> de R$&nbsp;300,00</span><div class="barra"><div class="track"><i></i></div><span class="marca"></span></div><span class="sub num">60% · sobram R$&nbsp;120,00 · 28 dias · alerta em 85%</span></div>
+      <div class="orc warn" role="button" tabindex="0" data-cat="Assinaturas" style="--w:91%;--a:90%" aria-label="Editar envelope Assinaturas, R$ 200,00 de R$ 220,00"><span class="nm">Assinaturas <span class="tag warn">Atenção</span></span><span class="v num"><b>R$&nbsp;200,00</b> de R$&nbsp;220,00</span><div class="barra"><div class="track"><i></i></div><span class="marca"></span></div><span class="sub num">91% · sobram R$&nbsp;20,00 · 28 dias · alerta em 90%</span></div>
+    </div>
+    <p class="sem-resultado" id="sem-resultado" hidden>Nenhum envelope com esse filtro.</p>
+    <div class="envs-foot">
+      <span><span class="num" id="f-count">6 envelopes</span> · a marca na barra é o alerta</span>
+      <span>Gasto <b class="num" id="f-gasto">R$&nbsp;2.860,00</b> de <b class="num" id="f-orcado">R$&nbsp;3.790,00</b></span>
+      <span>Disponível <b class="num" id="f-disp">R$&nbsp;930,00</b></span>
+    </div>
+
+    <div class="quieta" id="fora"><span>Fora de envelope em outubro: <span id="fora-lista">Investimento <b class="num">R$&nbsp;300,00</b></span></span><button class="lk" type="button" id="fora-criar" data-cat="Investimento">Criar envelope para Investimento →</button></div>
+    <div class="quieta" id="regra"><span>Referência 50-30-20 sobre a renda de <b class="num">R$&nbsp;5.000</b>: necessidades <b class="num">R$&nbsp;2.500</b> · desejos <b class="num">R$&nbsp;1.500</b> · poupança <b class="num">R$&nbsp;1.000</b></span><button class="lk" type="button" id="regra-x">Dispensar</button></div>
+  </section>
+
+  <!-- 6. laboratório -->
+  <div class="lab-head rv">
+    <p class="eyebrow">Uma escolha, mais de um efeito</p>
+    <h2>E se o teto de Lazer fosse outro?</h2>
+    <p>Experimente antes de decidir. Nada é lançado.</p>
+  </div>
+  <section class="lab rv" aria-label="Laboratório do teto de Lazer">
+    <div class="perg">
+      <p class="eyebrow"><b>01 · 02</b> · Finanças, Futuro</p>
+      <h3>Lazer tem <span class="num">R$&nbsp;10</span> para 28 dias, com teto de <span class="num">R$&nbsp;420</span>.</h3>
+      <p>Subir o teto alivia o mês e sai do que sobraria. Nenhuma opção é a certa: a prioridade é sua.</p>
+      <div class="opcoes" role="group" aria-label="Teto de Lazer">
+        <button class="opc" type="button" data-teto="420" aria-pressed="true"><span>Manter <span class="num">R$&nbsp;420</span></span><span class="n num">atual</span></button>
+        <button class="opc" type="button" data-teto="470" aria-pressed="false"><span>Subir para <span class="num">R$&nbsp;470</span></span><span class="n num">+ R$&nbsp;50</span></button>
+        <button class="opc" type="button" data-teto="520" aria-pressed="false"><span>Subir para <span class="num">R$&nbsp;520</span></span><span class="n num">+ R$&nbsp;100</span></button>
+      </div>
+    </div>
+    <div class="efei">
+      <div class="et"><b id="cenTitulo">Manter <span class="num">R$&nbsp;420</span></b><span class="eyebrow">Simulação</span></div>
+      <div class="imp" aria-live="polite">
+        <div><label><b>01</b>Fechamento projetado</label><strong class="num" id="impFech">R$&nbsp;2.120</strong><small id="impFechNota">igual ao de hoje</small></div>
+        <div><label><b>01</b>Poupança do mês</label><strong class="num" id="impPoup">39%</strong><small id="impPoupNota">R$&nbsp;1.950 poupados das receitas</small></div>
+        <div><label><b>02</b>Para antecipar a Itália</label><strong class="num ok" id="impIta">R$&nbsp;320</strong><small id="impItaNota">além do aporte fixo de R$&nbsp;580</small></div>
+      </div>
+      <div class="expl">
+        <span class="sy40" aria-hidden="true"><canvas></canvas></span>
+        <p id="cenCopy">Você mantém o teto. <b>Lazer fica com R$&nbsp;10 para 28 dias</b>, o fechamento segue em R$&nbsp;2.120 e sobram R$&nbsp;320 para antecipar a Itália, além do aporte de R$&nbsp;580.</p>
+      </div>
+      <details class="evid">
+        <summary>De onde vêm esses efeitos?</summary>
+        <p>O teto não muda o que já saiu (<span class="num">R$&nbsp;410</span> em Lazer); muda quanto o mês ainda deixa sair, supondo que você use o teto inteiro. Cada <span class="num">R$&nbsp;1</span> a mais no teto sai do fechamento projetado (<span class="num">R$&nbsp;2.120</span>) e do que fica poupado (<span class="num">R$&nbsp;1.950</span>, <span class="num">39%</span> das receitas de <span class="num">R$&nbsp;5.000</span>). O que passar de <span class="num">R$&nbsp;1.800</span> no fechamento pode antecipar a Itália, além do aporte fixo de <span class="num">R$&nbsp;580</span>; a meta está em <span class="num">R$&nbsp;8.600</span> de <span class="num">R$&nbsp;12.700</span>.</p>
+        <p>Fontes: orçamento Lazer, 34 transações de outubro, projeção do mês, meta Viagem Itália.</p>
+      </details>
+      <div class="aplicar">
+        <button class="btn-sm roxo" type="button" id="aplicar">Experimentar nesta tela →</button>
+        <span>Prévia local, com desfazer. O envelope de Lazer não muda.</span>
+      </div>
+      <div class="recibo" id="recibo" role="status" hidden><span id="reciboTxt"></span><button type="button" id="desfazer">Desfazer</button></div>
+    </div>
+  </section>
+
+  <!-- 7. mais em Finanças -->
+  <nav class="mais rv" aria-label="Mais em Finanças">
+    <p class="eyebrow">Mais em Finanças</p>
+    <div class="links">
+      <a href="financas-transacoes.mobile.html">Transações</a>
+      <a href="financas-recorrentes.mobile.html">Recorrentes</a>
+      <a href="financas-planejamento.mobile.html">Planejamento</a>
+      <a href="financas-calendario.mobile.html">Calendário</a>
+      <a href="financas-relatorios.mobile.html">Relatórios</a>
+      <a href="financas-importar.mobile.html">Importar extrato</a>
+    </div>
+  </nav>
+</main>
+
+<!-- rodapé -->
+<footer class="colofao">
+  <span>Fechamento projetado de outubro: <b class="num" id="colo-fech">R$&nbsp;2.120</b></span>
+  <div class="r">
+    <span><b class="num" id="colo-n">6</b> envelopes em outubro</span>
+    <span>Última sincronização às <b class="num">14:05</b></span>
+  </div>
+</footer>
+
+<!-- bottom bar: 5 itens (markup de _intencao.mobile.html); Registrar abre "Novo envelope" -->
+<nav class="bbar" aria-label="Navegação principal">
+  <a href="meu-dia-d.mobile.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="3"/><line x1="4" y1="10" x2="20" y2="10"/><circle cx="12" cy="15" r="1.4" fill="currentColor" stroke="none"/></svg>
+    <span>Meu dia</span></a>
+  <a class="on" href="financas-a.mobile.html" aria-current="page"><span class="g num">01</span><span>Finanças</span></a>
+  <button class="sypill" type="button" data-coach-open><span class="sy40" aria-hidden="true"><canvas></canvas></span><span>Fale com Sy</span></button>
+  <button type="button" data-areas-open aria-haspopup="dialog" aria-controls="sheetAreas" aria-expanded="false">
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="8" cy="8" r="2.3"/><circle cx="16" cy="8" r="2.3"/><circle cx="8" cy="16" r="2.3"/><circle cx="16" cy="16" r="2.3"/></svg>
+    <span>Áreas</span></button>
+  <button type="button" data-abrir-captura>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    <span>Registrar</span></button>
+</nav>
+
+<!-- camada de Sy: sheet (antes do #sheetAreas e do .sheet-form: app.js pega a primeira .camada) -->
+<div class="scrim"></div>
+<aside class="camada sheet" aria-label="Sy">
+  <div class="handle"></div>
+  <header class="chead">
+    <p class="eyebrow"><b>Sy</b> · lendo: seus orçamentos</p>
+    <button class="x" type="button" aria-label="Fechar">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </header>
+  <div class="cbody">
+    <div class="cempty">
+      <p class="hello">Já li os seus 6 envelopes de outubro. O que você quer saber?</p>
+      <div class="csug">
+        <button class="chip" type="button">Quanto ainda posso gastar em lazer?</button>
+        <button class="chip" type="button">Qual envelope está largo demais?</button>
+        <button class="chip" type="button">E se eu subir o teto de lazer para R$&nbsp;470?</button>
+      </div>
+    </div>
+    <div class="cthread" hidden>
+      <div class="divider">Hoje · 14:02</div>
+      <div class="bub u">Quanto ainda posso gastar em lazer?</div>
+      <div class="bub a">Quase nada: <strong class="num">R$&nbsp;10</strong> para 28 dias. Você usou <span class="w">R$&nbsp;410 dos R$&nbsp;420</span> e já passou do alerta de <strong class="num">80%</strong>. Moradia é o envelope com mais folga: <strong class="num">R$&nbsp;560</strong>.
+        <span class="meta">Fontes: orçamento Lazer · orçamento Moradia · 34 transações</span>
+      </div>
+      <div class="bub u">E se eu subir o teto de lazer para R$&nbsp;470?</div>
+      <div class="bub a">O fechamento projetado cai para <strong class="num">R$&nbsp;2.070</strong> e a poupança do mês para <strong class="num">38%</strong>; sobram <strong class="num">R$&nbsp;270</strong> para antecipar a Itália. Dá para ver isso nesta tela, no laboratório, antes de decidir.
+        <span class="meta">Fontes: orçamento Lazer · projeção do mês · meta Viagem Itália</span>
+      </div>
+    </div>
+  </div>
+  <form class="cask"><div class="in">
+    <input type="text" placeholder="Pergunte sobre os orçamentos">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+  </div></form>
+  <a class="cfull" href="#sy">Conversa completa →</a>
+</aside>
+
+<!-- sheet de Áreas -->
+<aside class="camada sheet areas" id="sheetAreas" role="dialog" aria-label="Áreas">
+  <div class="handle"></div>
+  <header class="chead">
+    <p class="eyebrow">Áreas</p>
+    <button class="x" type="button" aria-label="Fechar" data-areas-close>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </header>
+  <div class="cbody">
+    <a class="arow" href="financas-a.mobile.html"><span class="n num">01</span><span>Finanças</span><span class="sc num">83</span></a>
+    <a class="arow" href="#"><span class="n num">02</span><span>Futuro</span><span class="sc num">79</span></a>
+    <a class="arow" href="#"><span class="n num">03</span><span>Tempo</span><span class="sc num">71</span></a>
+    <a class="arow" href="#"><span class="n num">04</span><span>Corpo</span><span class="sc num">69</span></a>
+    <a class="arow" href="#"><span class="n num">05</span><span>Mente</span><span class="sc num">58</span></a>
+    <a class="arow" href="#"><span class="n num">06</span><span>Patrimônio</span><span class="sc num">76</span></a>
+    <a class="arow" href="#"><span class="n num">07</span><span>Carreira</span><span class="sc num">69</span></a>
+    <a class="arow" href="#"><span class="n num">08</span><span>Experiências</span><span class="sc num">78</span></a>
+    <div class="asep" aria-hidden="true"></div>
+    <a class="arow extra" href="#"><span class="n num" aria-hidden="true"></span><span>Conquistas<small>24/61 badges</small></span><span class="sc num">12 dias</span></a>
+    <a class="arow extra" href="#"><span class="n num" aria-hidden="true"></span><span>Configurações</span><span class="sc"></span></a>
+  </div>
+</aside>
+
+<!-- sheet de captura / edição de envelope -->
+<aside class="sheet-form" id="sheet" role="dialog" aria-modal="true" aria-labelledby="s-titulo">
+  <div class="handle"></div>
+  <header class="shead">
+    <div>
+      <p class="eyebrow"><b>01</b> · Envelope de outubro</p>
+      <h2 id="s-titulo">Novo envelope</h2>
+    </div>
+    <button class="x" type="button" aria-label="Fechar">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </header>
+  <form id="sform" class="sbody" autocomplete="off">
+    <div class="f" id="s-cat-novo">
+      <label class="eyebrow" for="s-cat">Categoria sem envelope</label>
+      <div class="sel"><select id="s-cat" name="cat"><option>Investimento</option><option>Impostos</option><option>Trabalho</option></select></div>
+    </div>
+    <div class="f" id="s-cat-fixa" hidden>
+      <span class="eyebrow">Categoria</span>
+      <p class="trava"><span id="s-cat-nome">Lazer</span><small>Fixa depois de criada. Para trocar, exclua e crie outro envelope.</small></p>
+    </div>
+    <div class="f2">
+      <div class="f">
+        <label class="eyebrow" for="s-limite" id="s-limite-l">Limite mensal</label>
+        <input class="ck-note num" id="s-limite" name="limite" type="text" inputmode="decimal" placeholder="0,00" required>
+      </div>
+      <div class="f">
+        <label class="eyebrow" for="s-alerta">Alerta em</label>
+        <div class="sel">
+          <select id="s-alerta" name="alerta">
+            <option value="50">50%</option><option value="55">55%</option><option value="60">60%</option><option value="65">65%</option>
+            <option value="70">70%</option><option value="75">75%</option><option value="80" selected>80%</option><option value="85">85%</option>
+            <option value="90">90%</option><option value="95">95%</option><option value="100">100%</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="base" id="s-base" hidden aria-live="polite">
+      <div><span>Sobra de setembro</span><b class="num" id="s-sobra">nenhuma</b></div>
+      <div><span>Limite em outubro</span><b class="num" id="s-efetivo">R$&nbsp;420,00</b></div>
+      <div><span>Gasto em outubro</span><b class="num" id="s-gasto">R$&nbsp;410,00</b></div>
+    </div>
+    <div class="f">
+      <span class="eyebrow">Rollover</span>
+      <div class="tipo" role="group" aria-label="Rollover">
+        <button class="chip on" type="button" data-roll="0" aria-pressed="true">Não levar</button>
+        <button class="chip" type="button" data-roll="1" aria-pressed="false">Levar a sobra</button>
+      </div>
+      <p class="hint" id="s-roll-hint">O que sobrar em outubro não passa para novembro.</p>
+    </div>
+    <div class="f">
+      <label class="eyebrow" for="s-obs">Observações</label>
+      <textarea class="ck-note" id="s-obs" name="obs" rows="2" placeholder="Opcional"></textarea>
+    </div>
+  </form>
+  <div class="sfoot">
+    <div class="confirma" id="s-confirma" hidden role="status">
+      <span>Excluir o envelope <b id="s-conf-nome">Lazer</b>? Os gastos continuam em Transações; só o teto some. Não dá para desfazer.</span>
+      <div class="cb"><button class="sim" type="button" id="s-conf-sim">Excluir</button><button type="button" id="s-conf-nao">Cancelar</button></div>
+    </div>
+    <div class="acts">
+      <button class="btn-sm ghost perigo" type="button" id="s-excluir" hidden>Excluir</button>
+      <button class="btn-sm roxo" type="submit" form="sform" id="s-salvar">Criar envelope</button>
+    </div>
+    <output id="s-out" aria-live="polite"></output>
+  </div>
+</aside>
+
+<!-- ═══ anotação do protótipo: estados + o que Sy lê aqui (fora do fluxo) ═══ -->
+<section class="proto-estados" inert>
+  <div class="wrap">
+    <p class="eyebrow">Estados · anotação do protótipo</p>
+    <div class="pe-grid">
+      <div class="pe">
+        <h4>Mês vazio · copiar do mês anterior</h4>
+        <p class="vazio">Nenhum envelope em novembro ainda<small>Copie os de outubro e ajuste depois, ou toque em Registrar para criar o primeiro.</small></p>
+        <div class="copia">
+          <label><input type="checkbox" checked><span>Moradia</span><span class="num">R$&nbsp;1.800</span></label>
+          <label><input type="checkbox" checked><span>Mercado</span><span class="num">R$&nbsp;650</span></label>
+          <label><input type="checkbox" checked><span>Lazer</span><span class="num">R$&nbsp;420</span></label>
+          <label><input type="checkbox" checked><span>Transporte</span><span class="num">R$&nbsp;400</span></label>
+          <label><input type="checkbox" checked><span>Saúde<small>rollover</small></span><span class="num">R$&nbsp;250</span></label>
+          <label><input type="checkbox" checked><span>Assinaturas</span><span class="num">R$&nbsp;220</span></label>
+        </div>
+        <button class="btn-sm roxo copia-btn" type="button">Copiar 6 envelopes</button>
+        <p class="pe-nota">Copia limite base, alerta e rollover; a sobra não se copia. No mobile a lista vem num bloco da própria tela, sem sheet.</p>
+      </div>
+      <div class="pe">
+        <h4>Carregando · 3 linhas esqueleto</h4>
+        <div aria-hidden="true">
+          <div class="skel"><span style="width:45%"></span><span></span><span class="b"></span></div>
+          <div class="skel"><span style="width:60%"></span><span></span><span class="b"></span></div>
+          <div class="skel"><span style="width:38%"></span><span></span><span class="b"></span></div>
+        </div>
+      </div>
+      <div class="pe">
+        <h4>Erro · linha coral</h4>
+        <div class="erro" role="alert"><span>Não consegui carregar os envelopes.</span><button type="button">Tentar de novo</button></div>
+      </div>
+      <div class="pe">
+        <h4>Orçamento maior que a renda</h4>
+        <div class="lnums">
+          <div><p class="eyebrow">Orçado</p><div class="v num">R$&nbsp;5.400</div></div>
+          <div><p class="eyebrow">Não alocado</p><div class="v num w">– R$&nbsp;400</div><div class="d">Orçamento maior que a renda</div></div>
+        </div>
+        <p class="pe-nota">Exemplo ilustrativo, fora do mock.</p>
+      </div>
+      <div class="pe">
+        <h4>Estourado · alerta · FREE</h4>
+        <p class="pe-nota">≥ 100%: selo <span class="tag estourado">Estourado</span>, barra cheia, sub "passou R$&nbsp;X". Acima do alerta do envelope: <span class="tag warn">Atenção</span>. <b>Um só critério:</b> o alerta de cada envelope. Limite FREE: o v3 não tem (<b>decisão pendente</b>); o mock é PRO.</p>
+      </div>
+    </div>
+
+    <div class="fontes-sy">
+      <p class="eyebrow"><b>01</b> · Finanças</p>
+      <h3>O que Sy lê aqui</h3>
+      <p>Pacote de contexto que esta tela entrega a Sy (o que <code>buildModuleContext</code> expõe para Finanças, recortado em orçamentos).</p>
+      <ul>
+        <li><code>budgets <small>(outubro)</small></code><span>Categoria, limite base, <code>alert_threshold</code>, rollover, sobra do mês anterior e observações de cada envelope.</span></li>
+        <li><code>transactions <small>(outubro)</small></code><span>O gasto por categoria que enche cada barra, e o que saiu fora de envelope.</span></li>
+        <li><code>transactions <small>(receitas realizadas)</small></code><span>A base do "não alocado" e da referência 50-30-20.</span></li>
+        <li><code>recurring_transactions</code><span>O que ainda vai sair até o fim do mês; entra no fechamento projetado do laboratório.</span></li>
+        <li><code>goals</code><span>A meta Viagem Itália (02 Futuro), para o efeito "quanto sobra para antecipar".</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<script src="../shared/mock-data.js"></script>
+<script src="../shared/app.js"></script>
+<script>SLApp.boot()</script>
+<script type="module">import { ligarSy40 } from '../shared/sy40.js'; ligarSy40()</script>
+<script>
+(function () {
+  var O = window.SL_MOCK.fin.orcamentos, NB = ' ';
+  var SEM_ENVELOPE = ['Investimento', 'Impostos', 'Trabalho'];
+  var DIAS = O.diasRestantes;
+  var $ = function (s) { return document.querySelector(s); };
+  function n2(n) { return Math.abs(n).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+  function brl2(n) { return 'R$' + NB + n2(n); }
+  function brl0(n) { return 'R$' + NB + Math.abs(n).toLocaleString('pt-BR', { maximumFractionDigits: 0 }); }
+  function parseValor(s) { s = String(s).replace(/[R$\s ]/g, '').replace(/\./g, '').replace(',', '.'); var n = parseFloat(s); return isNaN(n) ? 0 : Math.abs(n); }
+
+  var envs = O.envelopes.map(function (e) { return { cat: e.cat, limite: e.limite, gasto: e.gasto, alerta: e.alerta, rollover: e.rollover, sobra: e.sobraAnterior || 0, nota: e.nota || '' }; });
+  var fora = {}; Object.keys(O.foraDeEnvelope).forEach(function (k) { fora[k] = O.foraDeEnvelope[k]; });
+  var previa = null, filtro = 'todos';
+  function efetivo(e) { return e.limite + e.sobra; }
+  function pct(e) { return Math.round(e.gasto / efetivo(e) * 100); }
+  function estado(e) { var p = pct(e); return p >= 100 ? 'estourado' : p >= e.alerta ? 'atencao' : 'ok'; }
+  function achar(cat) { for (var i = 0; i < envs.length; i++) if (envs[i].cat === cat) return envs[i]; return null; }
+  function livres() { return SEM_ENVELOPE.concat(O.envelopes.map(function (e) { return e.cat; })).filter(function (c, i, a) { return a.indexOf(c) === i && !achar(c); }); }
+
+  function linhaHTML(e) {
+    var p = pct(e), st = estado(e), resto = efetivo(e) - e.gasto, tags = '';
+    if (st === 'estourado') tags += ' <span class="tag estourado">Estourado</span>';
+    else if (st === 'atencao') tags += ' <span class="tag warn">Atenção</span>';
+    if (e.sobra) tags += ' <span class="tag roll">Rollover + ' + brl0(e.sobra) + '</span>';
+    if (previa && e.cat === O.lab.envelope) tags += ' <span class="tag prev">Prévia</span>';
+    return '<span class="nm">' + e.cat + tags + '</span><span class="v num"><b>' + brl2(e.gasto) + '</b> de ' + brl2(efetivo(e)) + '</span>' +
+      '<div class="barra"><div class="track"><i></i></div><span class="marca"></span></div>' +
+      '<span class="sub num">' + p + '% · ' + (resto >= 0 ? 'sobram ' : 'passou ') + brl2(resto) + ' · ' + DIAS + ' dias · alerta em ' + e.alerta + '%</span>';
+  }
+  function render() {
+    var lista = $('#lista'), antigos = {};
+    lista.querySelectorAll('.orc').forEach(function (r) { antigos[r.dataset.cat] = r; });
+    var n = { todos: 0, atencao: 0, ok: 0 }, vis = 0, orc = 0, gasto = 0;
+    envs.forEach(function (e) {
+      var r = antigos[e.cat]; delete antigos[e.cat];
+      if (!r) { r = document.createElement('div'); r.className = 'orc'; r.setAttribute('role', 'button'); r.tabIndex = 0; r.dataset.cat = e.cat; }
+      lista.appendChild(r);
+      var st = estado(e);
+      r.innerHTML = linhaHTML(e); r.classList.toggle('warn', st !== 'ok');
+      r.style.setProperty('--w', Math.min(100, pct(e)) + '%'); r.style.setProperty('--a', e.alerta + '%');
+      r.setAttribute('aria-label', 'Editar envelope ' + e.cat + ', ' + brl2(e.gasto).replace(NB, ' ') + ' de ' + brl2(efetivo(e)).replace(NB, ' '));
+      n.todos++; n[st === 'ok' ? 'ok' : 'atencao']++;
+      var ok = filtro === 'todos' || (filtro === 'ok' ? st === 'ok' : st !== 'ok');
+      r.hidden = !ok; if (ok) vis++;
+      orc += efetivo(e); gasto += e.gasto;
+    });
+    Object.keys(antigos).forEach(function (k) { antigos[k].remove(); });
+    $('#sem-resultado').hidden = vis > 0;
+    $('#c-todos').textContent = n.todos; $('#c-atencao').textContent = n.atencao; $('#c-ok').textContent = n.ok;
+    var disp = orc - gasto, livre = O.receitasRealizadas - orc;
+    $('#n-orcado').textContent = brl0(orc);
+    $('#n-orcado-d').innerHTML = '<span class="num">' + envs.length + '</span> envelope' + (envs.length === 1 ? '' : 's') + (previa ? ' · prévia' : '');
+    $('#n-gasto').textContent = brl0(gasto);
+    $('#n-gasto-d').innerHTML = '<span class="num">' + (orc ? Math.round(gasto / orc * 100) : 0) + '%</span> do orçado';
+    $('#n-disp').textContent = (disp < 0 ? '– ' : '') + brl0(disp);
+    var nl = $('#n-livre'); nl.textContent = (livre < 0 ? '– ' : '') + brl0(livre); nl.classList.toggle('w', livre < 0);
+    $('#n-livre-d').innerHTML = livre < 0 ? 'Orçamento maior que a renda' : 'receitas de <span class="num">' + brl0(O.receitasRealizadas) + '</span> menos o orçado';
+    $('#f-count').textContent = envs.length + ' envelope' + (envs.length === 1 ? '' : 's');
+    $('#f-gasto').textContent = brl2(gasto); $('#f-orcado').textContent = brl2(orc); $('#f-disp').textContent = (disp < 0 ? '– ' : '') + brl2(disp);
+    $('#colo-n').textContent = envs.length;
+    var ks = Object.keys(fora).filter(function (k) { return fora[k] > 0; });
+    $('#fora').hidden = !ks.length;
+    if (ks.length) {
+      $('#fora-lista').innerHTML = ks.map(function (k) { return k + ' <b class="num">' + brl2(fora[k]) + '</b>'; }).join(' · ');
+      $('#fora-criar').dataset.cat = ks[0]; $('#fora-criar').textContent = 'Criar envelope para ' + ks[0] + ' →';
+    }
+  }
+  function destacar(cat) {
+    var r = $('#lista').querySelector('.orc[data-cat="' + cat + '"]'); if (!r) return;
+    r.classList.add('nova');
+    requestAnimationFrame(function () { requestAnimationFrame(function () { r.classList.remove('nova'); }); });
+  }
+
+  document.querySelectorAll('[data-mes]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var o = $('#mes-out');
+      o.textContent = b.dataset.mes === '-1' ? 'Setembro fica fora do protótipo.' : 'Novembro ainda vazio: ver "Mês vazio" na anotação.';
+      clearTimeout(o._t); o._t = setTimeout(function () { o.textContent = ''; }, 2600);
+    });
+  });
+  document.querySelectorAll('.filtros .chip').forEach(function (c) {
+    c.addEventListener('click', function () {
+      document.querySelectorAll('.filtros .chip').forEach(function (q) { q.classList.remove('on'); q.setAttribute('aria-pressed', 'false'); });
+      c.classList.add('on'); c.setAttribute('aria-pressed', 'true'); filtro = c.dataset.f; render();
+    });
+  });
+  $('#regra-x').addEventListener('click', function () { $('#regra').hidden = true; });
+
+  // ── sheet: captura (novo) e edição ──
+  var sheet = $('#sheet'), scrim = $('.scrim'), camada = $('.camada'), form = $('#sform'), confirma = $('#s-confirma'), out = $('#s-out');
+  var atual = null, roll = false;
+  function setRoll(v) {
+    roll = v;
+    sheet.querySelectorAll('[data-roll]').forEach(function (c) { var on = (c.dataset.roll === '1') === v; c.classList.toggle('on', on); c.setAttribute('aria-pressed', on); });
+    $('#s-roll-hint').textContent = v ? 'O que sobrar em outubro soma ao limite de novembro.' : 'O que sobrar em outubro não passa para novembro.';
+  }
+  function base() {
+    if (!atual) return;
+    $('#s-sobra').textContent = atual.sobra ? '+ ' + brl2(atual.sobra) : 'nenhuma';
+    $('#s-sobra').className = 'num' + (atual.sobra ? ' ele' : '');
+    $('#s-efetivo').textContent = brl2((parseValor(form.limite.value) || 0) + atual.sobra);
+    $('#s-gasto').textContent = brl2(atual.gasto);
+  }
+  function abrirSheet() { confirma.hidden = true; out.textContent = ''; sheet.classList.add('open'); scrim.classList.add('open'); }
+  function abrirNovo(cat) {
+    var lv = livres(); atual = null; form.reset(); setRoll(false);
+    form.cat.innerHTML = lv.map(function (c) { return '<option>' + c + '</option>'; }).join('');
+    if (cat && lv.indexOf(cat) >= 0) form.cat.value = cat;
+    $('#s-cat-novo').hidden = false; $('#s-cat-fixa').hidden = true; $('#s-base').hidden = true;
+    $('#s-titulo').textContent = 'Novo envelope'; $('#s-limite-l').textContent = 'Limite mensal';
+    $('#s-salvar').textContent = 'Criar envelope'; $('#s-salvar').disabled = !lv.length; $('#s-excluir').hidden = true;
+    abrirSheet(); form.limite.focus({ preventScroll: true });
+  }
+  function abrirEdicao(r) {
+    atual = achar(r.dataset.cat); if (!atual) return;
+    $('#s-cat-novo').hidden = true; $('#s-cat-fixa').hidden = false; $('#s-base').hidden = false;
+    $('#s-cat-nome').textContent = atual.cat; $('#s-conf-nome').textContent = atual.cat;
+    $('#s-titulo').textContent = atual.cat; $('#s-limite-l').textContent = 'Limite base';
+    form.limite.value = n2(atual.limite); form.alerta.value = String(atual.alerta); form.obs.value = atual.nota;
+    setRoll(atual.rollover); base();
+    $('#s-salvar').textContent = 'Salvar'; $('#s-salvar').disabled = false; $('#s-excluir').hidden = false;
+    abrirSheet();
+  }
+  function fechar() {
+    if (!sheet.classList.contains('open')) return;
+    sheet.classList.remove('open');
+    if (!camada || !camada.classList.contains('open')) scrim.classList.remove('open');
+    var cat = atual && atual.cat; atual = null;
+    var r = cat && $('#lista').querySelector('.orc[data-cat="' + cat + '"]'); if (r) r.focus({ preventScroll: true });
+  }
+  document.querySelectorAll('[data-abrir-captura]').forEach(function (b) { b.addEventListener('click', function () { abrirNovo(); }); });
+  $('#fora-criar').addEventListener('click', function () { abrirNovo(this.dataset.cat); });
+  $('#lista').addEventListener('click', function (e) { var r = e.target.closest('.orc'); if (r) abrirEdicao(r); });
+  $('#lista').addEventListener('keydown', function (e) {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.classList.contains('orc')) { e.preventDefault(); abrirEdicao(e.target); }
+  });
+  sheet.querySelector('.x').addEventListener('click', fechar);
+  scrim.addEventListener('click', fechar);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') fechar(); });
+  sheet.querySelectorAll('[data-roll]').forEach(function (c) { c.addEventListener('click', function () { setRoll(c.dataset.roll === '1'); }); });
+  form.limite.addEventListener('input', base);
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var lim = parseValor(form.limite.value); if (!lim) { form.limite.focus(); return; }
+    if (atual) {
+      atual.limite = lim; atual.alerta = parseInt(form.alerta.value, 10); atual.rollover = roll; atual.nota = form.obs.value.trim();
+      var c = atual.cat; render(); destacar(c); fechar(); return;
+    }
+    var cat = form.cat.value; if (!cat) return;
+    envs.push({ cat: cat, limite: lim, gasto: fora[cat] || 0, alerta: parseInt(form.alerta.value, 10), rollover: roll, sobra: 0, nota: form.obs.value.trim() });
+    delete fora[cat]; render(); destacar(cat);
+    out.textContent = 'Envelope criado.'; setTimeout(fechar, 650);
+  });
+  $('#s-excluir').addEventListener('click', function () { confirma.hidden = false; $('#s-conf-sim').focus(); });
+  $('#s-conf-nao').addEventListener('click', function () { confirma.hidden = true; $('#s-excluir').focus(); });
+  $('#s-conf-sim').addEventListener('click', function () {
+    if (!atual) return;
+    var cat = atual.cat; envs = envs.filter(function (x) { return x !== atual; });
+    if (atual.gasto) fora[cat] = atual.gasto;
+    atual = null; render();
+    sheet.classList.remove('open'); if (!camada || !camada.classList.contains('open')) scrim.classList.remove('open');
+  });
+
+  // ── laboratório (efeitos do mock lab.efeitos) ──
+  var L = O.lab, sel = String(L.tetoAtual);
+  var origem = { fala: $('#syFala').innerHTML, fech: $('#colo-fech').textContent };
+  function efeitos(t) {
+    var ef = L.efeitos[t], d = t - L.tetoAtual, lz = achar(L.envelope), gasto = lz ? lz.gasto : 0, alerta = lz ? lz.alerta : 80, pc = Math.round(gasto / t * 100);
+    return { ef: ef, d: d, resto: t - gasto, pc: pc, acima: pc >= alerta, alerta: alerta, poupado: L.poupadoBase - d };
+  }
+  function escolher(t) {
+    sel = String(t); var x = efeitos(+t), ef = x.ef;
+    document.querySelectorAll('[data-teto]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.teto === sel)); });
+    $('#cenTitulo').innerHTML = (x.d ? 'Subir para ' : 'Manter ') + '<span class="num">' + brl0(+t) + '</span>';
+    $('#impFech').textContent = brl0(ef.fechamento); $('#impFech').className = 'num' + (x.d ? ' w' : '');
+    $('#impFechNota').textContent = x.d ? '– ' + brl0(x.d) + ' no fechamento' : 'igual ao de hoje';
+    $('#impPoup').textContent = ef.poupancaPct + '%'; $('#impPoup').className = 'num' + (x.d ? ' w' : '');
+    $('#impPoupNota').textContent = brl0(x.poupado) + ' poupados das receitas';
+    $('#impIta').textContent = brl0(ef.aporteExtraItalia);
+    $('#impItaNota').textContent = x.d ? '– ' + brl0(x.d) + ' para a Itália · além do aporte de ' + brl0(L.aporteItaliaMes) : 'além do aporte fixo de ' + brl0(L.aporteItaliaMes);
+    var c;
+    if (!x.d) c = 'Você mantém o teto. <b>Lazer fica com ' + brl0(x.resto) + ' para ' + DIAS + ' dias</b>, o fechamento segue em ' + brl0(ef.fechamento) + ' e sobram ' + brl0(ef.aporteExtraItalia) + ' para antecipar a Itália, além do aporte de ' + brl0(L.aporteItaliaMes) + '.';
+    else if (x.acima) c = 'Mais ' + brl0(x.d) + ' dão <b>' + brl0(x.resto) + ' para ' + DIAS + ' dias</b>, mas Lazer continua acima do alerta de ' + x.alerta + '% (' + x.pc + '%). O fechamento cai para ' + brl0(ef.fechamento) + ' e a Itália recebe ' + brl0(x.d) + ' a menos de antecipação.';
+    else c = 'Com ' + brl0(x.d) + ' a mais, <b>Lazer volta para baixo do alerta</b> (' + x.pc + '%), com ' + brl0(x.resto) + ' para ' + DIAS + ' dias. O custo é o mesmo valor saindo do fechamento (' + brl0(ef.fechamento) + ') e da antecipação da Itália (' + brl0(ef.aporteExtraItalia) + ').';
+    $('#cenCopy').innerHTML = c;
+  }
+  function aplicar() {
+    var t = +sel, x = efeitos(t), lz = achar(L.envelope); if (!lz) return;
+    if (!previa) previa = { limiteAntes: lz.limite };
+    previa.teto = t; lz.limite = t; render(); destacar(L.envelope);
+    $('#colo-fech').textContent = brl0(x.ef.fechamento);
+    $('#syFala').innerHTML = x.d
+      ? 'Prévia com teto de <b class="num">' + brl0(t) + '</b>: Lazer fica com <b class="num' + (x.acima ? ' w' : '') + '">' + brl0(x.resto) + '</b> para ' + DIAS + ' dias' + (x.acima ? ' e segue acima do alerta.' : ', abaixo do alerta.')
+      : origem.fala;
+    $('#reciboTxt').innerHTML = x.d
+      ? '<b>Teto de ' + brl0(t) + '</b> entrou na prévia: veja a linha de Lazer e os números do topo. O envelope não foi alterado.'
+      : '<b>Manter ' + brl0(t) + '</b>: nada muda na tela.';
+    $('#recibo').hidden = false;
+  }
+  function desfazer() {
+    var lz = achar(L.envelope); if (previa && lz) lz.limite = previa.limiteAntes;
+    previa = null; render();
+    $('#colo-fech').textContent = origem.fech; $('#syFala').innerHTML = origem.fala;
+    $('#recibo').hidden = true; escolher(L.tetoAtual); $('#aplicar').focus();
+  }
+  document.querySelectorAll('[data-teto]').forEach(function (b) { b.addEventListener('click', function () { escolher(b.dataset.teto); }); });
+  $('#aplicar').addEventListener('click', aplicar);
+  $('#desfazer').addEventListener('click', desfazer);
+
+  render(); escolher(L.tetoAtual);
+})();
+</script>
+</body>
+</html>

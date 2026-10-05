@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife · Recorrentes · v5</title>
+<!-- Fase 2 · Finanças · Recorrentes (T2, brief §4.3). Desktop 1440.
+     Voltar → cabeçalho curto (4 números quietos + % da renda comprometida) → filtros em pílula → captura inline
+     → lista agrupada por frequência | próximos 30 dias ao lado → Mais em Finanças → rodapé.
+     Sy só pela camada. Edição no .painel (shared); excluir com .confirma inline. Fonte: SL_MOCK.fin.recorrentes.
+     E-02: sem JS a página está completa (o HTML entre os marcadores gen: é a mesma saída do render). -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Cline x1='32' y1='6' x2='32' y2='13' stroke='%23a1ff62' stroke-width='6' stroke-linecap='round'/%3E%3Cpolygon points='32,10 39,34 25,34' fill='%236840ff'/%3E%3Cpolygon points='32,57 25,34 39,34' fill='%23575353'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/base.css">
+<link rel="stylesheet" href="../shared/app.css">
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.185.1/build/three.module.js"}}</script>
+<style>
+  .wrap{--wrap-max:1180px;padding-left:clamp(20px,4vw,56px);padding-right:clamp(20px,4vw,56px)}
+
+  /* voltar para o hub (mesma peça do T3) */
+  .voltar{display:inline-flex;align-items:center;gap:8px;margin-top:28px;font:500 12.5px var(--int);color:var(--t3);transition:color .3s var(--ease)}
+  .voltar:hover{color:var(--t1)}
+
+  /* T2 · cabeçalho curto */
+  .titulo{padding:22px 0 22px}
+  .titulo .eyebrow a{color:inherit;transition:color .3s var(--ease)}
+  .titulo .eyebrow a:hover{color:var(--t1)}
+  .titulo .sub{font:400 14px var(--int);color:var(--t2);margin-top:12px}
+  .titulo .sub .num,.titulo .sub b{color:var(--t1);font-weight:600}
+
+  /* candidata a shared: 4 números quietos (T2 não tem KPI strip: mesma .nums do hub, em escala menor) */
+  .nums.quieto{border-top:1px solid var(--line)}
+  .nums.quieto > div{padding:20px clamp(16px,2.2vw,30px)}
+  .nums.quieto > div:first-child{padding-left:0}
+  .nums.quieto .v{font-size:clamp(22px,2vw,28px);margin-top:10px}
+  .nums.quieto .v.ele{color:var(--ele)}
+  /* % da renda comprometida: 1 linha com trilho fino */
+  .compr{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center;padding:16px 0 4px}
+  .compr p{font:400 13px var(--int);color:var(--t2)}
+  .compr p b{font:700 15px var(--gro);color:var(--t1);letter-spacing:-.02em}
+  .compr .track{height:3px;background:var(--s2);border-radius:2px;overflow:hidden;max-width:420px}
+  .compr .track i{display:block;height:100%;width:var(--w,53%);background:var(--t2);border-radius:2px}
+
+  /* T2 · filtros em pílula */
+  .filtros{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:22px 0 16px}
+  .filtros .chip{padding:8px 14px;font-size:12px}
+  .filtros .chip .n{margin-left:6px}
+
+  /* T2 · captura inline (1 linha; Enter registra) */
+  .captura{display:grid;grid-template-columns:116px minmax(0,1fr) 124px 140px 150px 160px auto;gap:10px;align-items:center;padding:16px 0 14px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .captura .ck-note{width:100%;min-width:0;height:44px;padding:0 14px}
+  .captura .ck-note.num{font-size:14px}
+  .captura input[type=date]{color-scheme:dark}
+  .captura .sel{margin-top:0}
+  .captura .sel select{height:44px;padding:0 34px 0 14px}
+  .captura .sel::after{right:14px}
+  .captura .btn-sm.roxo{height:44px;padding:0 20px;font-size:13px;justify-content:center}
+  .cap-foot{grid-column:1/-1;display:flex;justify-content:space-between;align-items:baseline;gap:16px;font:400 11.5px var(--int);color:var(--t3)}
+  .cap-foot .mais{background:none;border:none;padding:0;cursor:pointer;font:600 11.5px var(--int);color:var(--t2)}
+  .cap-foot .mais:hover{color:var(--t1)}
+  .cap-foot output{color:var(--ele);font-weight:600;min-height:1em}
+
+  /* corpo: lista agrupada | próximos 30 dias */
+  .corpo{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:clamp(36px,4.4vw,64px);align-items:start;padding-top:4px}
+  .grp-h{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:26px 0 8px;border-bottom:1px solid var(--line)}
+  .grp-h .st{font:700 11px var(--gro);color:var(--t3);white-space:nowrap}
+  .grp-h .st .in{color:var(--ele)}
+  .rr{display:grid;grid-template-columns:minmax(0,1fr) 150px 140px auto;gap:14px;align-items:baseline;padding:13px 0;border-bottom:1px solid var(--line);cursor:pointer}
+  .anim .rr{transition:padding-left .35s var(--ease),background 1.8s var(--ease),box-shadow 1.8s var(--ease)}
+  .rr:hover{padding-left:6px}
+  .rr.nova{background:rgba(161,255,98,.12);box-shadow:inset 3px 0 0 var(--ele)}
+  .rr .n1{font:500 14px var(--int);color:var(--t1)}
+  .rr .nm small,.rr .qd small,.rr .v small{display:block;font:400 11.5px var(--int);color:var(--t3);margin-top:3px;letter-spacing:0}
+  .rr .qd{font:500 12.5px var(--int);color:var(--t2)}
+  .rr .v{font:700 13.5px var(--gro);color:var(--t2);text-align:right;white-space:nowrap}
+  .rr .v small{font-family:var(--gro);font-weight:500}
+  .rr.in .v{color:var(--ele)}
+  .rr .ac{display:flex;justify-content:flex-end;gap:14px}
+  .rr .ac button{background:none;border:none;padding:0;cursor:pointer;font:600 12px var(--int);color:var(--t3);transition:color .3s var(--ease)}
+  .rr .ac button:hover{color:var(--t1)}
+  .rr .ac button.perigo:hover{color:var(--coral)}
+  .rr .ac button:focus-visible{outline:2px solid rgba(104,64,255,.6);outline-offset:3px;border-radius:4px}
+  .rr.pausada .nm,.rr.pausada .qd,.rr.pausada .v{opacity:.5}
+  .rr.pausada .n1{text-decoration:line-through}
+  .rr + .confirma{margin:8px 0 6px}
+  .sem-resultado{font:400 13px var(--int);color:var(--t3);padding:28px 0 8px}
+  .status{font:600 12px var(--int);color:var(--ele);min-height:1.4em;padding-top:12px}
+
+  .p30{position:sticky;top:84px}
+  .p30 > .eyebrow{display:block;padding:0 0 8px}
+    .pr{display:grid;grid-template-columns:50px minmax(0,1fr) auto;gap:12px;align-items:baseline;padding:12px 0;border-bottom:1px solid var(--line)}
+  .pr .d{font:700 11px var(--gro);letter-spacing:.06em;text-transform:uppercase;color:var(--t3)}
+  .pr .d small{display:block;font:500 10px var(--gro);letter-spacing:.06em;margin-top:3px}
+  .pr .nm{font:500 13.5px var(--int);color:var(--t1)}
+  .pr .tag{display:inline-block;font:700 9px var(--gro);letter-spacing:.14em;padding:2px 7px;border-radius:999px;border:1px solid rgba(248,65,49,.4);color:var(--coral);text-transform:uppercase;margin-left:8px;vertical-align:1px}
+  .pr .v{font:700 13px var(--gro);color:var(--t2);white-space:nowrap}
+  .pr.in .v{color:var(--ele)}
+  .prox-foot{font:400 12px/1.6 var(--int);color:var(--t3);padding-top:12px}
+  .prox-foot b{color:var(--t1);font-weight:700;font-family:var(--gro)}
+  .prox-foot b.ele{color:var(--ele)}
+  .p30 .vazio-p{font:400 13px var(--int);color:var(--t3);padding:14px 0}
+  .prox-h{display:flex;justify-content:space-between;align-items:baseline;padding:26px 0 8px;border-bottom:1px solid var(--line)}
+  .prox-h small{font:400 11.5px var(--int);color:var(--t3)}
+
+  .pergunte{padding:30px 0 10px}
+  .pergunte .falar{margin-top:0}
+  .mais-fin{padding:18px 0 56px;font:400 12.5px/1.9 var(--int);color:var(--t3)}
+  .mais-fin a{color:var(--t2);margin-left:10px;transition:color .3s var(--ease)}
+  .mais-fin a:hover{color:var(--t1)}
+
+  /* painel: campos próprios desta tela (o resto é .painel do shared) */
+  .painel textarea.ck-note{resize:vertical;min-height:72px;font:400 13px/1.5 var(--int)}
+  .painel .aviso{font:400 12px/1.55 var(--int);color:var(--t3)}
+  .painel .acts .esq{display:flex;gap:8px}
+  .painel .erro-f{font:500 12px var(--int);color:var(--coral);min-height:1em}
+
+  /* anotação do protótipo (fora do fluxo, inert) */
+  .proto-estados{border-top:3px double var(--line-h);margin-top:40px;padding-top:34px;padding-bottom:80px}
+  .proto-estados > .wrap > .eyebrow{color:var(--coral)}
+  .pe-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(24px,3vw,48px);margin-top:26px;align-items:start}
+  .pe h4{font:700 10px var(--gro);letter-spacing:.18em;text-transform:uppercase;color:var(--t3);margin-bottom:14px}
+  .pe .vazio{font:500 15px var(--gro);letter-spacing:-.01em;color:var(--t1);margin-bottom:10px}
+  .pe .vazio small{display:block;font:400 12.5px/1.55 var(--int);color:var(--t3);margin-top:6px}
+  .pe .captura{grid-template-columns:1fr;border:1px solid rgba(104,64,255,.55);border-radius:14px;padding:14px;gap:8px}
+  .pe .skel span{display:block;height:10px;border-radius:5px;background:var(--s2)}
+  .pe .skel{display:grid;grid-template-columns:1fr 80px;gap:14px;padding:14px 0;border-bottom:1px solid var(--line)}
+  .anim .pe .skel span{animation:pulso 1.4s var(--ease) infinite alternate}
+  @keyframes pulso{from{opacity:.55}to{opacity:1}}
+  .pe .erro{display:flex;justify-content:space-between;align-items:baseline;gap:12px;border-left:3px solid var(--coral);padding:10px 14px;font:400 13px var(--int);color:var(--coral)}
+  .pe .erro button{background:none;border:none;color:var(--t1);font:600 12.5px var(--int);cursor:pointer;padding:0;white-space:nowrap}
+  .pe .lim{border-left:3px solid var(--roxo);padding:10px 14px;font:400 13px/1.6 var(--int);color:var(--t2)}
+  .pe .lim b{color:var(--t1)}
+  .pe .lim a{color:var(--t1);font-weight:600;text-decoration:underline}
+  .pe-nota{font:400 12.5px/1.6 var(--int);color:var(--t3);margin-top:10px}
+  .pe-nota b{color:var(--t2);font-weight:600}
+  .pe .rr{cursor:default;grid-template-columns:1fr auto}
+  .fontes-sy{margin-top:44px;max-width:780px}
+  .fontes-sy h3{font:500 22px/1.2 var(--gro);letter-spacing:-.025em;margin-top:8px}
+  .fontes-sy p{font:400 13.5px/1.6 var(--int);color:var(--t2);margin-top:10px}
+  .fontes-sy ul{list-style:none;margin-top:18px}
+  .fontes-sy li{display:grid;grid-template-columns:240px 1fr;gap:18px;padding:13px 0;border-bottom:1px solid var(--line);font:400 13px/1.55 var(--int);color:var(--t2)}
+  .fontes-sy li code{font:600 12.5px var(--gro);color:var(--t1);letter-spacing:-.01em}
+  .fontes-sy li code small{font:400 11.5px var(--int);color:var(--t3)}
+  @media (max-width:1100px){
+    .corpo{grid-template-columns:1fr}
+    .captura{grid-template-columns:1fr 1fr 1fr}
+    .rr{grid-template-columns:minmax(0,1fr) 140px 130px}
+    .rr .ac{grid-column:1/-1;justify-content:flex-start}
+    .pe-grid{grid-template-columns:1fr}
+    .fontes-sy li{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- chrome -->
+<header class="bar">
+  <a class="brand" href="#">
+    <svg width="19" height="19" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="2" x2="32" y2="11" stroke="#a1ff62" stroke-width="7" stroke-linecap="round"/><polygon points="32,8 40,34 24,34" fill="#6840ff"/><polygon points="32,58 24,34 40,34" fill="#f4f4f4" opacity=".35"/></svg>
+    <span class="wm">Sync<em>Life</em></span></a>
+  <span class="date">Sexta · 3 de outubro de 2026</span>
+  <div class="acts">
+    <button class="btn-sm ghost coach-pill" type="button" data-coach-open>
+      <svg width="15" height="15" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="5" x2="32" y2="12" stroke="#a1ff62" stroke-width="4.5" stroke-linecap="round"/><line x1="59" y1="32" x2="52" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="32" y1="59" x2="32" y2="52" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="5" y1="32" x2="12" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><polygon points="32,8 38,32 26,32" fill="#6840ff"/><polygon points="32,55 26,32 38,32" fill="#f4f4f4" opacity=".3"/><circle cx="32" cy="32" r="3.5" fill="#151313"/></svg>
+      Fale com Sy</button>
+    <button class="btn-sm roxo" type="button" data-foco-captura>+ Registrar</button>
+  </div>
+</header>
+<nav class="modbar" aria-label="Áreas">
+  <div class="in">
+    <a href="meu-dia-d.html">Meu dia</a>
+    <a class="on" href="financas-a.html"><span class="n">01</span>Finanças</a>
+    <a href="#"><span class="n">02</span>Futuro</a>
+    <a href="#"><span class="n">03</span>Tempo</a>
+    <a href="#"><span class="n">04</span>Corpo</a>
+    <a href="#"><span class="n">05</span>Mente</a>
+    <a href="#"><span class="n">06</span>Patrimônio</a>
+    <a href="#"><span class="n">07</span>Carreira</a>
+    <a href="#"><span class="n">08</span>Experiências</a>
+    <a href="#">Conquistas</a>
+    <a href="#">Configurações</a>
+  </div>
+</nav>
+
+<main>
+  <div class="wrap">
+    <a class="voltar boot b1" href="financas-a.html">← Finanças · outubro</a>
+
+    <!-- 1. cabeçalho curto -->
+    <header class="titulo boot b1">
+      <p class="eyebrow"><a href="financas-a.html"><b>01</b> · Finanças</a></p>
+      <h1>Recorrentes</h1>
+      <p class="sub" id="h-sub"><span class="num">9</span> ativas · <span class="num">1</span> pausada · a próxima sai em <span class="num">3</span> dias: <b>Aluguel</b></p>
+    </header>
+
+    <!-- 2. números (por mês, recorrentes ativas) -->
+    <section class="nums quieto boot b2" id="nums" aria-label="Recorrentes por mês"><!--gen:nums--><div><p class="eyebrow">Saída mensal</p><div class="v num">R$ 2.656</div><div class="d num">8 saídas ativas</div></div><div><p class="eyebrow">Entrada mensal</p><div class="v num">R$ 4.150</div><div class="d num">1 entrada ativa</div></div><div><p class="eyebrow">Impacto líquido</p><div class="v num ele">+ R$ 1.494</div><div class="d num">sobra por mês</div></div><div><p class="eyebrow">Custo anual</p><div class="v num">R$ 31.876</div><div class="d num">saídas × 12 meses</div></div><!--/gen:nums--></section>
+    <div class="compr boot b2" id="compr"><!--gen:compr--><p><b class="num">53%</b> da sua renda comprometida · sobre <span class="num">R$ 5.000</span>, a renda do seu perfil</p><div class="track" style="--w:53%"><i></i></div><!--/gen:compr--></div>
+
+    <!-- 3. filtros em pílula -->
+    <div class="filtros boot b3" role="toolbar" aria-label="Filtros">
+      <button class="chip on" type="button" data-f="todas" aria-pressed="true">Todas</button>
+      <button class="chip" type="button" data-f="out" aria-pressed="false">Saídas</button>
+      <button class="chip" type="button" data-f="in" aria-pressed="false">Entradas</button>
+      <button class="chip" type="button" data-f="pausadas" aria-pressed="false">Pausadas</button>
+    </div>
+
+    <!-- 4. captura inline -->
+    <form class="captura boot b3" id="captura" aria-label="Registrar recorrente" autocomplete="off" novalidate>
+      <div class="sel"><select name="tipo" aria-label="Tipo"><option value="out">Saída</option><option value="in">Entrada</option></select></div>
+      <input class="ck-note" name="nome" id="cap-nome" type="text" placeholder="Nome, ex.: Aluguel" aria-label="Nome" required>
+      <input class="ck-note num" name="valor" type="text" inputmode="decimal" placeholder="0,00" aria-label="Valor em reais" required>
+      <div class="sel"><select name="freq" aria-label="Frequência">
+        <option value="semanal">Semanal</option><option value="quinzenal">Quinzenal</option><option value="mensal" selected>Mensal</option><option value="trimestral">Trimestral</option><option value="anual">Anual</option>
+      </select></div>
+      <input class="ck-note num" name="dia" type="number" min="1" max="31" placeholder="Dia do mês" aria-label="Dia do mês" data-so-dia>
+      <input class="ck-note num" name="inicio" type="date" value="2026-10-03" aria-label="Início" data-so-intervalo hidden>
+      <div class="sel"><select name="cat" aria-label="Categoria">
+        <option>Moradia</option><option>Assinaturas</option><option>Investimento</option><option>Saúde</option><option>Transporte</option><option>Impostos</option><option>Mercado</option><option>Lazer</option><option>Educação</option><option>Renda</option><option>Renda extra</option>
+      </select></div>
+      <button class="btn-sm roxo" type="submit">Registrar</button>
+      <div class="cap-foot">
+        <span>Enter registra · começa hoje · <button class="mais" type="button" id="cap-mais">Mais campos: início, fim, observações →</button></span>
+        <output id="cap-out" aria-live="polite"></output>
+      </div>
+    </form>
+
+    <!-- 5. lista agrupada por frequência | próximos 30 dias -->
+    <div class="corpo">
+      <section class="lista rv" aria-label="Todas as recorrentes">
+        <div id="lista"><!--gen:lista--><div class="grp" data-freq="mensal"><div class="grp-h"><p class="eyebrow">Mensais · <span class="num">7</span></p><span class="st num">– R$ 2.045,70 · <span class="in">+ R$ 4.150,00</span> por mês</span></div><div class="rr" data-id="r2"><div class="nm"><span class="n1">Aluguel</span><small>Moradia</small></div><span class="qd">dia 6<small>próx. 6 out</small></span><span class="v num">– R$ 1.200,00</span><span class="ac"><button type="button" data-acao="editar" aria-label="Editar Aluguel">Editar</button><button type="button" data-acao="pausar" aria-label="Pausar Aluguel">Pausar</button><button class="perigo" type="button" data-acao="excluir" aria-label="Excluir Aluguel">Excluir</button></span></div><div class="rr" data-id="r3"><div class="nm"><span class="n1">Aporte automático</span><small>Investimento · vai para a meta Viagem Itália</small></div><span class="qd">dia 8<small>próx. 8 out</small></span><span class="v num">– R$ 580,00</span><span class="ac"><button type="button" data-acao="editar" aria-label="Editar Aporte automático">Editar</button><button type="button" data-acao="pausar" aria-label="Pausar Aporte automático">Pausar</button><button class="perigo" type="button" data-acao="excluir" aria-label="Excluir Aporte automático">Excluir</button></span></div><div class="rr" data-id="r4"><div class="nm"><span class="n1">Internet</span><small>Assinaturas</small></div><span class="qd">dia 8<small>próx. 8 out</small></span><span class="v num">– R$ 89,90</span><span class="ac"><button type="button" data-acao="editar" aria-label="Editar Internet">Editar</button><button type="button" data-acao="pausar" aria-label="Pausar Internet">Pausar</button><button class="perigo" type="button" data-acao="excluir" aria-label="Excluir Internet">Excluir</button></span></div><div class="rr" data-id="r5"><div class="nm"><span class="n1">Streaming</span><small>Assinaturas</small></div><span class="qd">dia 12<small>próx. 12 out</small></span><span class="v num">– R$ 55,90</span><span class="ac"><button type="button" data-acao="editar" aria-label="Editar Streaming">Editar</button><button type="button" data-acao="pausar" aria-label="Pausar Streaming">Pausar</button><button class="perigo" type="button" data-acao="excluir" aria-label="Excluir Streaming">Excluir</button></span></div><div class="rr" data-id="r6"><div class="nm"><span class="n1">Academia</span><small>Saúde</small></div><span class="qd">dia 15<small>próx. 15 out</small></span><span class="v num">– R$ 119,90</span><span class="ac"><button type="button" data-acao="editar" aria-label="Editar Academia">Editar</button><button type="button" data-acao="pausar" aria-label="Pausar Academia">Pausar</button><button class="perigo" type="button" data-acao="excluir" aria-label="Excluir Academia">Excluir</button></span></div><div class="rr pausada" data-id="r10"><div class="nm"><span class="n1">App de idiomas</span><small>Assinaturas · pausada, não gera lançamentos</small></div><span class="qd">dia 22<small>pausada</small></span><span class="v num">– R$ 39,90</span><span class="ac"><button type="button" data-acao="editar" aria-label="Editar App de idiomas">Editar</button><button type="button" data-acao="pausar" aria-label="Retomar App de idiomas">Retomar</button><button class="perigo" type="button" data-acao="excluir" aria-label="Excluir App de idiomas">Excluir</button></span></div><div class="rr in" data-id="r1"><div class="nm"><span class="n1">Salário</span><small>Renda</small></div><span class="qd">dia 30<small>próx. 30 out</small></span><span class="v num">+ R$ 4.150,00</span><span class="ac"><button type="button" data-acao="editar" aria-label="Editar Salário">Editar</button><button type="button" data-acao="pausar" aria-label="Pausar Salário">Pausar</button><button class="perigo" type="button" data-acao="excluir" aria-label="Excluir Salário">Excluir</button></span></div></div><div class="grp" data-freq="quinzenal"><div class="grp-h"><p class="eyebrow">Quinzenais · <span class="num">1</span></p><span class="st num">≈ – R$ 390,60 por mês</span></div><div class="rr" data-id="r7"><div class="nm"><span class="n1">Faxina</span><small>Moradia</small></div><span class="qd">a cada 14 dias<small>próx. 14 out</small></span><span class="v num">– R$ 180,00<small>≈ R$ 390,60/mês</small></span><span class="ac"><button type="button" data-acao="editar" aria-label="Editar Faxina">Editar</button><button type="button" data-acao="pausar" aria-label="Pausar Faxina">Pausar</button><button class="perigo" type="button" data-acao="excluir" aria-label="Excluir Faxina">Excluir</button></span></div></div><div class="grp" data-freq="trimestral"><div class="grp-h"><p class="eyebrow">Trimestrais · <span class="num">1</span></p><span class="st num">≈ – R$ 80,00 por mês</span></div><div class="rr" data-id="r9"><div class="nm"><span class="n1">Contador do MEI</span><small>Impostos</small></div><span class="qd">dia 20, a cada 3 meses<small>próx. 20 out</small></span><span class="v num">– R$ 240,00<small>≈ R$ 80,00/mês</small></span><span class="ac"><button type="button" data-acao="editar" aria-label="Editar Contador do MEI">Editar</button><button type="button" data-acao="pausar" aria-label="Pausar Contador do MEI">Pausar</button><button class="perigo" type="button" data-acao="excluir" aria-label="Excluir Contador do MEI">Excluir</button></span></div></div><div class="grp" data-freq="anual"><div class="grp-h"><p class="eyebrow">Anuais · <span class="num">1</span></p><span class="st num">≈ – R$ 140,00 por mês</span></div><div class="rr" data-id="r8"><div class="nm"><span class="n1">Seguro do carro</span><small>Transporte</small></div><span class="qd">10 de março<small>próx. 10 mar 2027</small></span><span class="v num">– R$ 1.680,00<small>≈ R$ 140,00/mês</small></span><span class="ac"><button type="button" data-acao="editar" aria-label="Editar Seguro do carro">Editar</button><button type="button" data-acao="pausar" aria-label="Pausar Seguro do carro">Pausar</button><button class="perigo" type="button" data-acao="excluir" aria-label="Excluir Seguro do carro">Excluir</button></span></div></div><!--/gen:lista--></div>
+        <p class="sem-resultado" id="sem-resultado" hidden>Nada com esse filtro.</p>
+        <p class="status" id="status" role="status" aria-live="polite"></p>
+      </section>
+
+      <aside class="p30 rv" aria-label="Próximos 30 dias">
+        <div class="prox-h"><p class="eyebrow">Próximos 30 dias</p><small>até 2 nov</small></div>
+        <div id="prox"><!--gen:prox--><div class="pr" data-id="r2"><span class="d num">6 out<small>seg</small></span><span class="nm">Aluguel<span class="tag">em 3 dias</span></span><span class="v num">– R$ 1.200,00</span></div><div class="pr" data-id="r3"><span class="d num">8 out<small>qua</small></span><span class="nm">Aporte automático<span class="tag">em 5 dias</span></span><span class="v num">– R$ 580,00</span></div><div class="pr" data-id="r4"><span class="d num">8 out<small>qua</small></span><span class="nm">Internet<span class="tag">em 5 dias</span></span><span class="v num">– R$ 89,90</span></div><div class="pr" data-id="r5"><span class="d num">12 out<small>dom</small></span><span class="nm">Streaming</span><span class="v num">– R$ 55,90</span></div><div class="pr" data-id="r7"><span class="d num">14 out<small>ter</small></span><span class="nm">Faxina</span><span class="v num">– R$ 180,00</span></div><div class="pr" data-id="r6"><span class="d num">15 out<small>qua</small></span><span class="nm">Academia</span><span class="v num">– R$ 119,90</span></div><div class="pr" data-id="r9"><span class="d num">20 out<small>seg</small></span><span class="nm">Contador do MEI</span><span class="v num">– R$ 240,00</span></div><div class="pr" data-id="r7"><span class="d num">28 out<small>ter</small></span><span class="nm">Faxina</span><span class="v num">– R$ 180,00</span></div><div class="pr in" data-id="r1"><span class="d num">30 out<small>qui</small></span><span class="nm">Salário</span><span class="v num">+ R$ 4.150,00</span></div><p class="prox-foot">Saem <b class="num">R$ 2.645,70</b> e entram <b class="num ele">R$ 4.150,00</b> até 2 nov. Aviso em coral quando faltam 7 dias ou menos.</p><!--/gen:prox--></div>
+      </aside>
+    </div>
+
+    <!-- Sy: só pela camada -->
+    <div class="pergunte rv">
+      <button class="falar" type="button" data-coach-open data-coach-seed="Sobre as recorrentes: ">Perguntar sobre as recorrentes →</button>
+    </div>
+
+    <nav class="mais-fin" aria-label="Mais em Finanças">Mais em Finanças:
+      <a href="financas-transacoes.html">Transações</a>
+      <a href="financas-orcamentos.html">Orçamentos</a>
+      <a href="financas-planejamento.html">Planejamento</a>
+      <a href="financas-calendario.html">Calendário</a>
+      <a href="financas-relatorios.html">Relatórios</a>
+      <a href="financas-importar.html">Importar extrato</a>
+    </nav>
+  </div>
+
+  <!-- rodapé -->
+  <footer class="colofao">
+    <span>Fechamento projetado de outubro: <b class="num">R$&nbsp;2.120</b></span>
+    <div class="r">
+      <span id="rod-ativas"><b class="num">9</b> ativas · <b class="num">1</b> pausada</span>
+      <span>Última sincronização às <b class="num">14:05</b></span>
+    </div>
+  </footer>
+</main>
+
+<!-- camada de Sy (antes do .painel no DOM: app.js pega o primeiro .camada) -->
+<div class="scrim"></div>
+<aside class="camada" aria-label="Sy">
+  <header class="chead">
+    <p class="eyebrow"><b>Sy</b> · lendo: suas recorrentes</p>
+    <button class="x" type="button" aria-label="Fechar">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </header>
+  <div class="cbody">
+    <div class="cempty">
+      <p class="hello">Já li as suas 9 recorrentes ativas: <span class="num">R$&nbsp;2.656</span> saem todo mês, 53% da sua renda. O que você quer saber?</p>
+      <div class="csug">
+        <button class="chip" type="button">O que vence esta semana?</button>
+        <button class="chip" type="button">Qual assinatura eu poderia cortar?</button>
+        <button class="chip" type="button">Quanto as recorrentes pesam no ano?</button>
+      </div>
+    </div>
+    <div class="cthread" hidden>
+      <div class="divider">Hoje · 14:02</div>
+      <div class="bub u">O que vence esta semana?</div>
+      <div class="bub a">Três saídas até quarta, que somam <strong class="num">R$&nbsp;1.869,90</strong>: Aluguel (<strong class="num">R$&nbsp;1.200,00</strong>) na segunda, dia 6, e Aporte automático (<strong class="num">R$&nbsp;580,00</strong>) e Internet (<strong class="num">R$&nbsp;89,90</strong>) na quarta, dia 8. As três já estão no fechamento projetado de outubro, <strong class="num">R$&nbsp;2.120</strong>.
+        <span class="meta">Fontes: 9 recorrentes · próximos 30 dias · projeção do mês</span>
+      </div>
+      <div class="typing" aria-label="Sy digitando"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i></div>
+    </div>
+  </div>
+  <form class="cask"><div class="in">
+    <input type="text" placeholder="Pergunte sobre as recorrentes">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+  </div></form>
+  <a class="cfull" href="conversa.html">Conversa completa →</a>
+</aside>
+
+<!-- painel lateral (shared .painel): nova recorrente / editar -->
+<aside class="painel" id="painel" role="dialog" aria-modal="true" aria-labelledby="p-titulo">
+  <header class="phead">
+    <div>
+      <p class="eyebrow"><b>01</b> · Recorrente</p>
+      <h2 id="p-titulo">Editar recorrente</h2>
+    </div>
+    <button class="x" type="button" aria-label="Fechar">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </header>
+  <form id="pform" class="pbody" autocomplete="off" novalidate>
+    <div class="f">
+      <span class="eyebrow">Tipo</span>
+      <div class="tipo" role="group" aria-label="Tipo">
+        <button class="chip on" type="button" data-tipo="out" aria-pressed="true">Saída</button>
+        <button class="chip" type="button" data-tipo="in" aria-pressed="false">Entrada</button>
+      </div>
+    </div>
+    <div class="f">
+      <label class="eyebrow" for="p-nome">Nome</label>
+      <input class="ck-note" id="p-nome" name="nome" type="text" placeholder="Ex.: Aluguel, Salário, Streaming" required>
+    </div>
+    <div class="f2">
+      <div class="f">
+        <label class="eyebrow" for="p-valor">Valor</label>
+        <input class="ck-note num" id="p-valor" name="valor" type="text" inputmode="decimal" placeholder="0,00" required>
+      </div>
+      <div class="f">
+        <label class="eyebrow" for="p-freq">Frequência</label>
+        <div class="sel"><select id="p-freq" name="freq">
+          <option value="semanal">Semanal</option><option value="quinzenal">Quinzenal</option><option value="mensal">Mensal</option><option value="trimestral">Trimestral</option><option value="anual">Anual</option>
+        </select></div>
+      </div>
+    </div>
+    <div class="f2">
+      <div class="f" id="p-dia-f" data-so-dia>
+        <label class="eyebrow" for="p-dia">Dia do mês</label>
+        <input class="ck-note num" id="p-dia" name="dia" type="number" min="1" max="31" inputmode="numeric">
+      </div>
+      <div class="f">
+        <label class="eyebrow" for="p-inicio">Início</label>
+        <input class="ck-note num" id="p-inicio" name="inicio" type="date">
+      </div>
+    </div>
+    <div class="f2">
+      <div class="f">
+        <label class="eyebrow" for="p-fim">Fim (opcional)</label>
+        <input class="ck-note num" id="p-fim" name="fim" type="date">
+      </div>
+      <div class="f">
+        <label class="eyebrow" for="p-cat">Categoria</label>
+        <div class="sel"><select id="p-cat" name="cat">
+          <option>Moradia</option><option>Assinaturas</option><option>Investimento</option><option>Saúde</option><option>Transporte</option><option>Impostos</option><option>Mercado</option><option>Lazer</option><option>Educação</option><option>Renda</option><option>Renda extra</option>
+        </select></div>
+      </div>
+    </div>
+    <div class="f">
+      <label class="eyebrow" for="p-obs">Observações</label>
+      <textarea class="ck-note" id="p-obs" name="obs" rows="3" placeholder="Opcional"></textarea>
+    </div>
+    <p class="aviso" id="p-aviso">Mudanças valem para os próximos lançamentos. Os já registrados ficam como estão.</p>
+    <p class="erro-f" id="p-erro" role="alert"></p>
+  </form>
+  <div class="pfoot">
+    <div class="confirma" id="p-confirma" hidden role="status">
+      <span>Excluir <b id="p-conf-nome">esta recorrente</b>? Os lançamentos já registrados ficam; os próximos deixam de ser gerados.</span>
+      <button class="sim" type="button" id="p-conf-sim">Excluir</button>
+      <button type="button" id="p-conf-nao">Cancelar</button>
+    </div>
+    <div class="acts">
+      <span class="esq">
+        <button class="btn-sm ghost perigo" type="button" id="p-excluir">Excluir</button>
+        <button class="btn-sm ghost" type="button" id="p-pausar">Pausar</button>
+      </span>
+      <button class="btn-sm roxo" type="submit" form="pform" id="p-salvar">Salvar</button>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══ anotação do protótipo: estados + o que Sy lê aqui (fora do fluxo) ═══ -->
+<section class="proto-estados" inert>
+  <div class="wrap">
+    <p class="eyebrow">Estados · anotação do protótipo</p>
+    <div class="pe-grid">
+      <div class="pe">
+        <h4>Vazio · captura em destaque</h4>
+        <p class="vazio">Nenhuma recorrente ainda<small>Registre o aluguel, o salário ou uma assinatura. Os 4 números e os próximos 30 dias aparecem a partir da primeira.</small></p>
+        <form class="captura">
+          <input class="ck-note" type="text" placeholder="Nome, ex.: Aluguel" aria-label="Nome">
+          <input class="ck-note num" type="text" placeholder="0,00" aria-label="Valor">
+          <div class="sel"><select aria-label="Frequência"><option>Mensal</option></select></div>
+          <button class="btn-sm roxo" type="button">Registrar</button>
+        </form>
+      </div>
+      <div class="pe">
+        <h4>Carregando · esqueleto</h4>
+        <div aria-hidden="true">
+          <div class="skel"><span style="width:62%"></span><span></span></div>
+          <div class="skel"><span style="width:48%"></span><span></span></div>
+          <div class="skel"><span style="width:70%"></span><span></span></div>
+        </div>
+        <p class="pe-nota">Os 4 números mostram <b>R$&nbsp;–</b> até a lista chegar; nada de zero falso.</p>
+      </div>
+      <div class="pe">
+        <h4>Erro · linha coral</h4>
+        <div class="erro" role="alert"><span>Não consegui carregar as recorrentes.</span><button type="button">Tentar de novo</button></div>
+        <p class="pe-nota">Erro ao pausar ou salvar: a linha volta ao estado anterior e a mesma linha coral aparece sob ela.</p>
+      </div>
+      <div class="pe">
+        <h4>Limite do plano FREE · 5 ativas</h4>
+        <div class="lim">Você tem <b class="num">5</b> recorrentes ativas, o limite do plano FREE. Pause uma para registrar outra, ou <a href="#">conheça o PRO</a>.</div>
+        <p class="pe-nota">Substitui a captura inline e o "Registrar" do painel. Como no v3, pausadas contam no limite (só a exclusão libera vaga). O mock é <b>PRO</b>: <span class="num">9</span> ativas e <span class="num">1</span> pausada.</p>
+      </div>
+      <div class="pe">
+        <h4>Pausada · na própria lista</h4>
+        <div class="rr pausada"><div class="nm"><span class="n1">App de idiomas</span><small>Assinaturas · pausada, não gera lançamentos</small></div><span class="v num">– R$&nbsp;39,90</span></div>
+        <p class="pe-nota">Esmaecida, nome riscado, fora dos 4 números e dos próximos 30 dias. "Retomar" calcula a próxima data a partir de hoje. Ao vivo: Pausar e Retomar em cada linha.</p>
+      </div>
+      <div class="pe">
+        <h4>Encerrada · fim no passado</h4>
+        <p class="vazio" style="font-size:14px">Some da lista ativa e vai para "Encerradas" no fim da página, esmaecida, com a data do fim.<small>Fim antes do início é recusado no painel: "O fim precisa ser depois do início."</small></p>
+      </div>
+    </div>
+
+    <div class="fontes-sy">
+      <p class="eyebrow"><b>01</b> · Finanças</p>
+      <h3>O que Sy lê aqui</h3>
+      <p>Pacote de contexto desta tela (o que <code>buildModuleContext</code> expõe para Finanças, recortado em recorrentes). É daqui que saem as fontes sob cada resposta na camada. Regra de normalização do mock: <span class="num">semanal ×4,33 · quinzenal ×2,17 · trimestral ÷3 · anual ÷12</span>; aviso quando faltam 7 dias ou menos.</p>
+      <ul>
+        <li><code>recurring_transactions</code><span>type, name, amount, frequency, day_of_month, start_date, end_date, is_paused, is_active, category_id, notes. Base dos 4 números, dos grupos e dos próximos 30 dias. Excluir é lógico (is_active = false).</span></li>
+        <li><code>profiles <small>(monthly_income)</small></code><span>A renda do perfil, <span class="num">R$&nbsp;5.000</span>: base dos <span class="num">53%</span> comprometidos. O v3 dividia por <span class="num">3.000</span> fixo.</span></li>
+        <li><code>transactions <small>(recurring_id)</small></code><span>Os lançamentos que cada recorrente já gerou. Ficam quando a recorrente é pausada ou excluída.</span></li>
+        <li><code>budgets</code><span>Se a recorrente cabe no envelope da categoria (Moradia, Saúde). Sy usa para dizer o que sobra no envelope depois do aluguel.</span></li>
+        <li><code>categories</code><span>Nome e tipo da categoria de cada recorrente.</span></li>
+        <li><code>goals <small>(02 Futuro)</small></code><span>Só o vínculo do Aporte automático com a meta Viagem Itália, para Sy responder "quanto falta" sem sair daqui.</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<script src="../shared/mock-data.js"></script>
+<script src="../shared/app.js"></script>
+<script>SLApp.boot()</script>
+<script type="module">import { ligarSy40 } from '../shared/sy40.js'; ligarSy40()</script>
+<script>
+(function () {
+  var M = window.SL_MOCK, R = M.fin.recorrentes, NB = ' ';
+  var HOJE = '2026-10-03', LIMITE = addDias(HOJE, 30);
+  var RENDA = parseInt(R.totais.base.replace(/\D/g, ''), 10); // profiles.monthly_income do mock
+  var MES = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+  var MESL = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+  var DSEM = ['dom','seg','ter','qua','qui','sex','sáb'];
+  var FATOR = { semanal: 4.33, quinzenal: 2.17, mensal: 1, trimestral: 1 / 3, anual: 1 / 12 };
+  var PASSO_D = { semanal: 7, quinzenal: 14 }, PASSO_M = { mensal: 1, trimestral: 3, anual: 12 };
+  var GRUPOS = [['mensal', 'Mensais'], ['semanal', 'Semanais'], ['quinzenal', 'Quinzenais'], ['trimestral', 'Trimestrais'], ['anual', 'Anuais']];
+  var ENTRADA = ['Renda', 'Renda extra'];
+  var itens = R.itens.map(function (x) { return Object.assign({}, x); });
+  var filtro = 'todas', seq = 100;
+
+  // ── datas (UTC, sem fuso) ──
+  function d2n(iso) { var p = iso.split('-'); return Date.UTC(+p[0], +p[1] - 1, +p[2]); }
+  function n2d(n) { return new Date(n).toISOString().slice(0, 10); }
+  function addDias(iso, k) { return n2d(d2n(iso) + k * 864e5); }
+  function diasNoMes(y, m) { return new Date(Date.UTC(y, m + 1, 0)).getUTCDate(); }
+  function addMeses(iso, k, dia) {
+    var p = iso.split('-'), y = +p[0], m = +p[1] - 1 + k; y += Math.floor(m / 12); m = ((m % 12) + 12) % 12;
+    var d = Math.min(dia || +p[2], diasNoMes(y, m));
+    return y + '-' + String(m + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+  }
+  function entre(a, b) { return Math.round((d2n(b) - d2n(a)) / 864e5); }
+  function curta(iso) { var p = iso.split('-'); return +p[2] + ' ' + MES[+p[1] - 1] + (p[0] !== '2026' ? ' ' + p[0] : ''); }
+  // calendário do mock: 3 de outubro de 2026 é sexta (1 dia antes do calendário real)
+  function dsem(iso) { return DSEM[(new Date(d2n(iso)).getUTCDay() + 6) % 7]; }
+
+  // ── valores ──
+  function brl(n) { return M.fmtBRL(Math.abs(n)).replace('R$ ', 'R$' + NB); }
+  function brl0(n) { return M.fmtBRL0(Math.abs(n)).replace('R$ ', 'R$' + NB); }
+  function sinal(t) { return t === 'in' ? '+ ' : '– '; }
+  function parseValor(s) { s = String(s).replace(/[R$\s ]/g, '').replace(/\./g, '').replace(',', '.'); var n = parseFloat(s); return isNaN(n) ? 0 : Math.abs(n); }
+  function valorCampo(n) { return M.fmtBRL(n).replace('R$ ', ''); }
+  function mensal(it) { return Math.round(it.valor * FATOR[it.freq] * 100) / 100; }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+  // ── próxima ocorrência e ocorrências na janela de 30 dias ──
+  function proxima(it) {
+    if (it.pausada) return null;
+    if (it.prox && it.prox >= HOJE) return it.prox;
+    var d = it.inicio || HOJE;
+    if (PASSO_D[it.freq]) { while (d < HOJE) d = addDias(d, PASSO_D[it.freq]); }
+    else {
+      var p = it.inicio.split('-'), base = p[0] + '-' + p[1] + '-01', k = 0;
+      d = addMeses(base, 0, it.dia);
+      while (d < HOJE || d < it.inicio) { k += PASSO_M[it.freq]; d = addMeses(base, k, it.dia); }
+    }
+    if (it.fim && d > it.fim) return null;
+    return d;
+  }
+  function ocorrencias(it) {
+    var out = [], d = proxima(it), k = 0;
+    while (d && d <= LIMITE && k < 10) {
+      if (it.fim && d > it.fim) break;
+      out.push(d); k++;
+      d = PASSO_D[it.freq] ? addDias(d, PASSO_D[it.freq]) : addMeses(d, PASSO_M[it.freq], it.dia);
+    }
+    return out;
+  }
+  function quando(it) {
+    if (it.freq === 'mensal') return 'dia ' + it.dia;
+    if (it.freq === 'semanal') return 'a cada 7 dias';
+    if (it.freq === 'quinzenal') return 'a cada 14 dias';
+    if (it.freq === 'trimestral') return 'dia ' + it.dia + ', a cada 3 meses';
+    var p = (it.prox || it.inicio).split('-'); return it.dia + ' de ' + MESL[+p[1] - 1];
+  }
+  function emQuanto(iso) { var n = entre(HOJE, iso); return n === 0 ? 'hoje' : n === 1 ? 'amanhã' : 'em ' + n + ' dias'; }
+
+  // ── render ──
+  function totais() {
+    var t = { sai: 0, ent: 0, nSai: 0, nEnt: 0, ativas: 0, pausadas: 0 };
+    itens.forEach(function (it) {
+      if (it.pausada) { t.pausadas++; return; }
+      t.ativas++;
+      if (it.tipo === 'in') { t.ent += mensal(it); t.nEnt++; } else { t.sai += mensal(it); t.nSai++; }
+    });
+    t.sai = Math.round(t.sai * 100) / 100; t.ent = Math.round(t.ent * 100) / 100;
+    t.liq = t.ent - t.sai; t.anual = Math.round(t.sai * 12 * 100) / 100; t.pct = Math.round(t.sai / RENDA * 100);
+    return t;
+  }
+  function plural(n, s, p) { return n + ' ' + (n === 1 ? s : p); }
+  function htmlNums(t) {
+    return '<div><p class="eyebrow">Saída mensal</p><div class="v num">' + brl0(t.sai) + '</div><div class="d num">' + plural(t.nSai, 'saída ativa', 'saídas ativas') + '</div></div>' +
+      '<div><p class="eyebrow">Entrada mensal</p><div class="v num">' + brl0(t.ent) + '</div><div class="d num">' + plural(t.nEnt, 'entrada ativa', 'entradas ativas') + '</div></div>' +
+      '<div><p class="eyebrow">Impacto líquido</p><div class="v num' + (t.liq >= 0 ? ' ele' : '') + '">' + (t.liq >= 0 ? '+ ' : '– ') + brl0(t.liq) + '</div><div class="d num">' + (t.liq >= 0 ? 'sobra por mês' : 'falta por mês') + '</div></div>' +
+      '<div><p class="eyebrow">Custo anual</p><div class="v num">' + brl0(t.anual) + '</div><div class="d num">saídas × 12 meses</div></div>';
+  }
+  function htmlCompr(t) {
+    return '<p><b class="num">' + t.pct + '%</b> da sua renda comprometida · sobre <span class="num">' + brl0(RENDA) + '</span>, a renda do seu perfil</p><div class="track" style="--w:' + Math.min(100, t.pct) + '%"><i></i></div>';
+  }
+  function htmlLinha(it) {
+    var px = proxima(it), nm = esc(it.nome);
+    var sub = '<small>' + esc(it.cat) + (it.pausada ? ' · pausada, não gera lançamentos' : it.nota ? ' · ' + esc(it.nota) : '') + '</small>';
+    var eq = it.freq !== 'mensal' ? '<small>≈ ' + brl(mensal(it)) + '/mês</small>' : '';
+    return '<div class="rr' + (it.tipo === 'in' ? ' in' : '') + (it.pausada ? ' pausada' : '') + '" data-id="' + it.id + '">' +
+      '<div class="nm"><span class="n1">' + nm + '</span>' + sub + '</div>' +
+      '<span class="qd">' + quando(it) + '<small>' + (it.pausada ? 'pausada' : px ? 'próx. ' + curta(px) : 'encerrada') + '</small></span>' +
+      '<span class="v num">' + sinal(it.tipo) + brl(it.valor) + eq + '</span>' +
+      '<span class="ac"><button type="button" data-acao="editar" aria-label="Editar ' + nm + '">Editar</button>' +
+      '<button type="button" data-acao="pausar" aria-label="' + (it.pausada ? 'Retomar ' : 'Pausar ') + nm + '">' + (it.pausada ? 'Retomar' : 'Pausar') + '</button>' +
+      '<button class="perigo" type="button" data-acao="excluir" aria-label="Excluir ' + nm + '">Excluir</button></span></div>';
+  }
+  function ordem(a, b) {
+    if (a.freq === 'mensal' && b.freq === 'mensal') return a.dia - b.dia || a.nome.localeCompare(b.nome);
+    var pa = proxima(a) || '9999', pb = proxima(b) || '9999';
+    return pa < pb ? -1 : pa > pb ? 1 : a.nome.localeCompare(b.nome);
+  }
+  function htmlLista() {
+    var h = '';
+    GRUPOS.forEach(function (g) {
+      var gs = itens.filter(function (it) { return it.freq === g[0]; }).sort(ordem);
+      if (!gs.length) return;
+      var s = 0, e = 0;
+      gs.forEach(function (it) { if (it.pausada) return; if (it.tipo === 'in') e += mensal(it); else s += mensal(it); });
+      var st;
+      if (g[0] === 'mensal') st = (s ? '– ' + brl(s) : '') + (s && e ? ' · ' : '') + (e ? '<span class="in">+ ' + brl(e) + '</span>' : '') + ' por mês';
+      else st = '≈ ' + (s ? '– ' + brl(s) : '') + (s && e ? ' · ' : '') + (e ? '<span class="in">+ ' + brl(e) + '</span>' : '') + ' por mês';
+      if (!s && !e) st = 'tudo pausado';
+      h += '<div class="grp" data-freq="' + g[0] + '"><div class="grp-h"><p class="eyebrow">' + g[1] + ' · <span class="num">' + gs.length + '</span></p><span class="st num">' + st + '</span></div>' +
+        gs.map(htmlLinha).join('') + '</div>';
+    });
+    return h;
+  }
+  function htmlProx() {
+    var oc = [];
+    itens.forEach(function (it) { ocorrencias(it).forEach(function (d) { oc.push({ d: d, it: it }); }); });
+    oc.sort(function (a, b) { return a.d < b.d ? -1 : a.d > b.d ? 1 : 0; });
+    if (!oc.length) return '<p class="vazio-p">Nada nos próximos 30 dias.</p>';
+    var s = 0, e = 0;
+    var h = oc.map(function (o) {
+      var it = o.it, n = entre(HOJE, o.d);
+      if (it.tipo === 'in') e += it.valor; else s += it.valor;
+      return '<div class="pr' + (it.tipo === 'in' ? ' in' : '') + '" data-id="' + it.id + '"><span class="d num">' + curta(o.d) + '<small>' + dsem(o.d) + '</small></span>' +
+        '<span class="nm">' + esc(it.nome) + (n <= 7 && it.tipo !== 'in' ? '<span class="tag">' + emQuanto(o.d) + '</span>' : '') + '</span>' +
+        '<span class="v num">' + sinal(it.tipo) + brl(it.valor) + '</span></div>';
+    }).join('');
+    return h + '<p class="prox-foot">Saem <b class="num">' + brl(s) + '</b> e entram <b class="num ele">' + brl(e) + '</b> até ' + curta(LIMITE) + '. Aviso em coral quando faltam 7 dias ou menos.</p>';
+  }
+  function htmlSub(t) {
+    var oc = [];
+    itens.forEach(function (it) { if (it.tipo !== 'in') { var d = proxima(it); if (d) oc.push({ d: d, it: it }); } });
+    oc.sort(function (a, b) { return a.d < b.d ? -1 : a.d > b.d ? 1 : 0; });
+    var p = '<span class="num">' + t.ativas + '</span> ' + (t.ativas === 1 ? 'ativa' : 'ativas');
+    if (t.pausadas) p += ' · <span class="num">' + t.pausadas + '</span> ' + (t.pausadas === 1 ? 'pausada' : 'pausadas');
+    if (oc.length) { var n = entre(HOJE, oc[0].d); p += ' · a próxima sai ' + (n === 0 ? 'hoje' : n === 1 ? 'amanhã' : 'em <span class="num">' + n + '</span> dias') + ': <b>' + esc(oc[0].it.nome) + '</b>'; }
+    return p;
+  }
+  function render() {
+    var t = totais();
+    document.getElementById('nums').innerHTML = htmlNums(t);
+    document.getElementById('compr').innerHTML = htmlCompr(t);
+    document.getElementById('lista').innerHTML = htmlLista();
+    document.getElementById('prox').innerHTML = htmlProx();
+    document.getElementById('h-sub').innerHTML = htmlSub(t);
+    document.getElementById('rod-ativas').innerHTML = '<b class="num">' + t.ativas + '</b> ' + (t.ativas === 1 ? 'ativa' : 'ativas') + (t.pausadas ? ' · <b class="num">' + t.pausadas + '</b> ' + (t.pausadas === 1 ? 'pausada' : 'pausadas') : '');
+    aplicarFiltro();
+  }
+  function aplicarFiltro() {
+    var vis = 0;
+    document.querySelectorAll('#lista .grp').forEach(function (g) {
+      var n = 0;
+      g.querySelectorAll('.rr').forEach(function (r) {
+        var it = achar(r.dataset.id), ok = filtro === 'todas' || (filtro === 'pausadas' ? it.pausada : it.tipo === filtro);
+        r.hidden = !ok; if (ok) n++;
+      });
+      g.hidden = !n; vis += n;
+    });
+    document.getElementById('sem-resultado').hidden = vis > 0;
+  }
+  function achar(id) { for (var i = 0; i < itens.length; i++) if (itens[i].id === id) return itens[i]; return null; }
+  function destacar(id) {
+    var el = document.querySelector('#lista .rr[data-id="' + id + '"]'); if (!el) return;
+    el.classList.add('nova');
+    requestAnimationFrame(function () { requestAnimationFrame(function () { el.classList.remove('nova'); }); });
+    return el;
+  }
+  var status = document.getElementById('status');
+  function avisar(msg) { status.textContent = msg; clearTimeout(status._t); status._t = setTimeout(function () { status.textContent = ''; }, 3200); }
+  window.SLRec = { render: render, itens: itens }; // usado só pelo script que gera o HTML estático
+
+  // ── filtros ──
+  document.querySelectorAll('.filtros .chip').forEach(function (c) {
+    c.addEventListener('click', function () {
+      document.querySelectorAll('.filtros .chip').forEach(function (q) { q.classList.remove('on'); q.setAttribute('aria-pressed', 'false'); });
+      c.classList.add('on'); c.setAttribute('aria-pressed', 'true'); filtro = c.dataset.f; aplicarFiltro();
+    });
+  });
+
+  // ── dia do mês só em mensal, trimestral e anual ──
+  function usaDia(f) { return f === 'mensal' || f === 'trimestral' || f === 'anual'; }
+  function trocarFreq(scope, f) {
+    scope.querySelectorAll('[data-so-dia]').forEach(function (el) { el.hidden = !usaDia(f); });
+    scope.querySelectorAll('[data-so-intervalo]').forEach(function (el) { el.hidden = usaDia(f); });
+  }
+
+  // ── captura inline ──
+  var cap = document.getElementById('captura'), capOut = document.getElementById('cap-out');
+  cap.freq.addEventListener('change', function () { trocarFreq(cap, this.value); });
+  cap.cat.addEventListener('change', function () { cap.tipo.value = ENTRADA.indexOf(this.value) >= 0 ? 'in' : 'out'; });
+  function lerCaptura() {
+    var f = cap.freq.value, dia = parseInt(cap.dia.value, 10);
+    return { nome: cap.nome.value.trim(), valor: parseValor(cap.valor.value), freq: f, dia: usaDia(f) ? dia : null,
+      inicio: usaDia(f) ? HOJE : (cap.inicio.value || HOJE), tipo: cap.tipo.value, cat: cap.cat.value };
+  }
+  cap.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var d = lerCaptura();
+    if (!d.nome) { cap.nome.focus(); return; }
+    if (!d.valor) { cap.valor.focus(); return; }
+    if (usaDia(d.freq) && !(d.dia >= 1 && d.dia <= 31)) { cap.dia.focus(); capOut.textContent = 'Faltou o dia do mês.'; return; }
+    var it = Object.assign({ id: 'n' + (seq++), prox: null }, d);
+    itens.push(it); render(); destacar(it.id);
+    cap.nome.value = ''; cap.valor.value = ''; cap.dia.value = ''; cap.nome.focus();
+    capOut.textContent = 'Registrado.'; clearTimeout(capOut._t); capOut._t = setTimeout(function () { capOut.textContent = ''; }, 2200);
+  });
+  document.querySelectorAll('[data-foco-captura]').forEach(function (b) {
+    b.addEventListener('click', function () { cap.nome.focus({ preventScroll: true }); cap.scrollIntoView({ block: 'center', behavior: 'smooth' }); });
+  });
+  document.getElementById('cap-mais').addEventListener('click', function () { abrir(null, lerCaptura(), this); });
+
+  // ── painel ──
+  var painel = document.getElementById('painel'), scrim = document.querySelector('.scrim'), camada = document.querySelector('.camada');
+  var form = document.getElementById('pform'), confirma = document.getElementById('p-confirma'), erro = document.getElementById('p-erro');
+  var btnExc = document.getElementById('p-excluir'), btnPau = document.getElementById('p-pausar'), btnSal = document.getElementById('p-salvar');
+  var atual = null, tipo = 'out', voltarFoco = null;
+  function setTipo(t) {
+    tipo = t;
+    painel.querySelectorAll('.tipo .chip').forEach(function (c) { var on = c.dataset.tipo === t; c.classList.toggle('on', on); c.setAttribute('aria-pressed', on); });
+  }
+  function abrir(it, pre, origem) {
+    atual = it; voltarFoco = origem || null; var d = it || pre || {};
+    form.nome.value = d.nome || ''; form.valor.value = d.valor ? valorCampo(d.valor) : '';
+    form.freq.value = d.freq || 'mensal'; form.dia.value = d.dia || ''; form.inicio.value = d.inicio || HOJE;
+    form.fim.value = d.fim || ''; form.cat.value = d.cat || 'Moradia'; form.obs.value = d.nota || '';
+    setTipo(d.tipo || 'out'); trocarFreq(painel, form.freq.value);
+    confirma.hidden = true; erro.textContent = '';
+    document.getElementById('p-titulo').textContent = it ? 'Editar recorrente' : 'Nova recorrente';
+    document.getElementById('p-aviso').hidden = !it;
+    btnExc.hidden = !it; btnPau.hidden = !it; btnSal.textContent = it ? 'Salvar' : 'Registrar';
+    if (it) { btnPau.textContent = it.pausada ? 'Retomar' : 'Pausar'; document.getElementById('p-conf-nome').textContent = it.nome; }
+    painel.classList.add('open'); scrim.classList.add('open');
+    form.nome.focus({ preventScroll: true });
+  }
+  function fechar() {
+    if (!painel.classList.contains('open')) return;
+    painel.classList.remove('open');
+    if (!camada || !camada.classList.contains('open')) scrim.classList.remove('open');
+    if (voltarFoco && document.body.contains(voltarFoco)) voltarFoco.focus({ preventScroll: true });
+    atual = null; voltarFoco = null;
+  }
+  painel.querySelector('.x').addEventListener('click', fechar);
+  scrim.addEventListener('click', fechar);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') fechar(); });
+  painel.querySelectorAll('.tipo .chip').forEach(function (c) { c.addEventListener('click', function () { setTipo(c.dataset.tipo); }); });
+  form.freq.addEventListener('change', function () { trocarFreq(painel, this.value); });
+  form.cat.addEventListener('change', function () { setTipo(ENTRADA.indexOf(this.value) >= 0 ? 'in' : 'out'); });
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var f = form.freq.value, dia = parseInt(form.dia.value, 10), val = parseValor(form.valor.value);
+    if (!form.nome.value.trim()) { erro.textContent = 'Faltou o nome.'; form.nome.focus(); return; }
+    if (!val) { erro.textContent = 'Faltou o valor.'; form.valor.focus(); return; }
+    if (usaDia(f) && !(dia >= 1 && dia <= 31)) { erro.textContent = 'O dia do mês vai de 1 a 31.'; form.dia.focus(); return; }
+    if (form.fim.value && form.fim.value <= form.inicio.value) { erro.textContent = 'O fim precisa ser depois do início.'; form.fim.focus(); return; }
+    var d = { nome: form.nome.value.trim(), valor: val, freq: f, dia: usaDia(f) ? dia : null, inicio: form.inicio.value || HOJE,
+      fim: form.fim.value || null, cat: form.cat.value, nota: form.obs.value.trim() || null, tipo: tipo };
+    var id;
+    if (atual) { var mudouData = atual.freq !== d.freq || atual.dia !== d.dia || atual.inicio !== d.inicio; Object.assign(atual, d); if (mudouData) atual.prox = null; id = atual.id; }
+    else { var it = Object.assign({ id: 'n' + (seq++), prox: null }, d); itens.push(it); id = it.id; }
+    var novo = !atual; voltarFoco = null;
+    fechar(); render(); var el = destacar(id);
+    avisar(novo ? 'Registrado.' : 'Salvo.');
+    if (el) el.querySelector('[data-acao=editar]').focus({ preventScroll: true });
+  });
+  btnPau.addEventListener('click', function () { if (!atual) return; var id = atual.id; voltarFoco = null; fechar(); pausar(id); });
+  btnExc.addEventListener('click', function () { confirma.hidden = false; document.getElementById('p-conf-sim').focus(); });
+  document.getElementById('p-conf-nao').addEventListener('click', function () { confirma.hidden = true; btnExc.focus(); });
+  document.getElementById('p-conf-sim').addEventListener('click', function () {
+    if (!atual) return; var id = atual.id; voltarFoco = null; fechar(); excluir(id);
+  });
+
+  // ── ações na linha ──
+  function pausar(id) {
+    var it = achar(id); if (!it) return;
+    it.pausada = !it.pausada; if (!it.pausada) it.prox = null;
+    render(); var el = destacar(id);
+    avisar(it.pausada ? it.nome + ' pausada. Não gera lançamentos até você retomar.' : it.nome + ' retomada. Próximo lançamento em ' + curta(proxima(it)) + '.');
+    if (el) el.querySelector('[data-acao=pausar]').focus({ preventScroll: true });
+  }
+  function excluir(id) {
+    var it = achar(id); if (!it) return;
+    itens.splice(itens.indexOf(it), 1); render();
+    avisar(it.nome + ' excluída. Os lançamentos já registrados ficam.');
+  }
+  function confirmarNaLinha(row) {
+    var it = achar(row.dataset.id), prev = row.nextElementSibling;
+    if (prev && prev.classList.contains('confirma')) { prev.querySelector('.sim').focus(); return; }
+    document.querySelectorAll('#lista .confirma').forEach(function (c) { c.remove(); });
+    var c = document.createElement('div'); c.className = 'confirma'; c.setAttribute('role', 'status');
+    c.innerHTML = '<span>Excluir <b>' + esc(it.nome) + '</b>? Os lançamentos já registrados ficam; os próximos deixam de ser gerados.</span>' +
+      '<button class="sim" type="button">Excluir</button><button type="button" class="nao">Cancelar</button>';
+    row.after(c);
+    c.querySelector('.sim').addEventListener('click', function () { excluir(it.id); });
+    c.querySelector('.nao').addEventListener('click', function () { c.remove(); row.querySelector('[data-acao=excluir]').focus(); });
+    c.querySelector('.sim').focus();
+  }
+  var lista = document.getElementById('lista');
+  lista.addEventListener('click', function (e) {
+    var row = e.target.closest('.rr'); if (!row) return;
+    var b = e.target.closest('button'), acao = b ? b.dataset.acao : 'editar';
+    if (acao === 'pausar') pausar(row.dataset.id);
+    else if (acao === 'excluir') confirmarNaLinha(row);
+    else abrir(achar(row.dataset.id), null, row.querySelector('[data-acao=editar]'));
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

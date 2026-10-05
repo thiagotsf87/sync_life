@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dk mob">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
+<title>SyncLife · Calendário · Finanças · mobile</title>
+<!-- Fase 2 · Finanças · Calendário MOBILE dedicado (390×844; brief §4.5). T3 variante "grade mensal":
+     .subbar sticky (voltar + Calendário) → cabeçalho com ‹ mês › e Hoje → números do mês (saldo até hoje grande + 2×2)
+     → grade compacta dom a sáb (células de 52px de altura, alvo de toque inteiro) com saldo da semana → legenda
+     → lista do dia selecionado embaixo → Mais em Finanças. Captura e edição em sheet; o Registrar da bottom bar (e o +
+     do bar) abrem a captura já com o dia selecionado (o v3 não deixava adicionar no mobile). Sy pela camada (sheet).
+     Bottom bar de _intencao.mobile.html (CSS e wiring no shared). E-02: sem JS a grade e o dia de hoje já estão no HTML. -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Cline x1='32' y1='6' x2='32' y2='13' stroke='%23a1ff62' stroke-width='6' stroke-linecap='round'/%3E%3Cpolygon points='32,10 39,34 25,34' fill='%236840ff'/%3E%3Cpolygon points='32,57 25,34 39,34' fill='%23575353'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/base.css">
+<link rel="stylesheet" href="../shared/app.css">
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.185.1/build/three.module.js"}}</script>
+<style>
+  .wrap{--wrap-max:100%;padding-left:20px;padding-right:20px}
+
+  /* alvos de toque >= 40px sobre o chrome compartilhado (mesmos ajustes de _t2-lista.mobile; candidatos a shared) */
+  html.mob .brand{min-height:40px}
+  html.mob .bar .btn-sm{min-height:40px}
+  html.mob .bar .btn-sm.roxo{min-width:40px;justify-content:center}
+  html.mob .camada .csug .chip{min-height:40px}
+  html.mob .camada .cask .in{padding-top:0;padding-bottom:0}
+  html.mob .camada .cask input{min-height:44px}
+  html.mob .camada .cfull{min-height:40px;display:flex;align-items:center;justify-content:center;padding-top:0;padding-bottom:env(safe-area-inset-bottom)}
+
+  /* ── T3 mobile · .subbar sticky (igual a life-score-v2.mobile) + cabeçalho ── */
+  .subbar{position:sticky;top:56px;z-index:50;display:flex;align-items:center;gap:12px;height:48px;margin:0 -20px;padding:0 20px;
+    background:rgba(21,19,19,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  .subbar .voltar{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding-right:6px;font:500 13px var(--int);color:var(--t2)}
+  .subbar .curto{font:500 14px var(--gro);letter-spacing:-.02em;color:var(--t1);margin-left:auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .objeto{padding:18px 0 18px;border-bottom:1px solid var(--line)}
+  .objeto .eyebrow a{display:inline-flex;align-items:center;min-height:40px}
+  .objeto h1{font:500 28px/1.1 var(--gro);letter-spacing:-.035em}
+  .mesnav{display:flex;align-items:center;gap:6px;margin-top:14px}
+  .mesnav .seta{width:40px;height:40px;border-radius:999px;border:1px solid var(--line);background:none;color:var(--t2);cursor:pointer;display:inline-grid;place-items:center;font-size:16px;flex:none}
+  .mesnav .mes{font:500 15px var(--gro);letter-spacing:-.015em;flex:1;text-align:center}
+  .mesnav .btn-sm.ghost{min-height:40px;padding:10px 16px;margin-left:4px}
+
+  /* ── números do mês: saldo até hoje grande + 2×2 ── */
+  .mesnums{border-bottom:1px solid var(--line)}
+  .mesnums .principal{padding:20px 0 16px;border-bottom:1px solid var(--line)}
+  .mesnums .principal .v{font:700 34px/1 var(--gro);letter-spacing:-.045em;margin-top:10px}
+  .mesnums .d{font:400 11px/1.45 var(--int);color:var(--t3);margin-top:6px}
+  .mesnums .q{display:grid;grid-template-columns:1fr 1fr}
+  .mesnums .q > div{padding:14px 12px 14px 0;border-bottom:1px solid var(--line)}
+  .mesnums .q > div:nth-child(even){padding-left:14px;padding-right:0;border-left:1px solid var(--line)}
+  .mesnums .q > div:nth-child(n+3){border-bottom:none}
+  .mesnums .q .v{font:700 19px/1 var(--gro);letter-spacing:-.03em;margin-top:8px;white-space:nowrap}
+  .mesnums .v.in{color:var(--ele)}
+
+  /* ── grade compacta: 7 dias + semana; a célula inteira é o alvo (52px de altura) ── */
+  .gsec{padding:20px 0 4px}
+  .dow,.sem{display:grid;grid-template-columns:repeat(7,minmax(0,1fr)) 50px}
+  .dow span{font:700 9px var(--gro);letter-spacing:.12em;text-transform:uppercase;color:var(--t3);text-align:center;padding-bottom:8px}
+  .dow .wkh{text-align:right}
+  .sem{border-top:1px solid var(--line)}
+  .sem:last-child{border-bottom:1px solid var(--line)}
+  html.mob .grade .dia{padding:5px 0 4px} /* o shared tem html.mob .dia (Meu dia) com padding de 30px */
+  .dia{position:relative;min-height:52px;border:0;background:none;color:var(--t1);font:inherit;cursor:pointer;
+    display:flex;flex-direction:column;align-items:center;gap:3px;border-radius:10px}
+  .dia .n{font:600 12.5px/22px var(--gro);min-width:22px;height:22px;text-align:center;border-radius:999px}
+  .dia.hoje .n{background:var(--roxo);color:#fff}
+  .dia[aria-pressed=true]{background:rgba(104,64,255,.12);box-shadow:inset 0 0 0 1px var(--roxo)}
+  .dia:focus-visible{outline:2px solid rgba(104,64,255,.7);outline-offset:-2px}
+  .dia.fora{opacity:.3;cursor:default}
+  .dia .pts{display:flex;align-items:center;gap:2px;min-height:6px}
+  .dia .s{font:700 9px var(--gro);letter-spacing:-.02em;color:var(--t2);white-space:nowrap}
+  .dia .s.in{color:var(--ele)}
+  .dia.fut .s{color:var(--t3);font-weight:600}
+  .dia.fut .s.in{color:rgba(161,255,98,.6)}
+  .wk{display:flex;flex-direction:column;justify-content:center;align-items:flex-end;gap:2px;border-left:1px solid var(--line-h);padding-left:4px}
+  .wk b{font:700 10.5px var(--gro);letter-spacing:-.02em;color:var(--t2);white-space:nowrap}
+  .wk b.in{color:var(--ele)}
+  .wk small{font:700 7.5px var(--gro);letter-spacing:.12em;text-transform:uppercase;color:var(--t3)}
+  .wk.prev b{color:var(--t3)}
+  .wk.prev b.in{color:rgba(161,255,98,.6)}
+  .legenda{display:flex;flex-wrap:wrap;gap:6px 14px;padding:12px 0 0;font:400 11px var(--int);color:var(--t3)}
+  .legenda span{display:inline-flex;align-items:center;gap:6px}
+  .legenda .dica{flex-basis:100%}
+  .forames{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:30px 0;font:400 13px/1.6 var(--int);color:var(--t2)}
+  .forames b{font:500 16px var(--gro);color:var(--t1);display:block;margin-bottom:6px}
+  .forames .btn-sm{margin-top:14px;min-height:40px;padding:10px 16px}
+
+  /* pontos por tipo: forma = natureza, cor = direção. candidata a shared (mesma peça do desktop) */
+  .pt{display:inline-block;flex:none;width:7px;height:7px;border-radius:50%;background:var(--t2)}
+  .pt.entrada{background:var(--ele)}
+  .pt.recorrente{background:none;border:1.5px solid var(--t2)}
+  .pt.recorrente.in{border-color:var(--ele)}
+  .pt.planejado{background:none;border:1.5px solid var(--t2);border-radius:1.5px}
+  .pt.planejado.in{border-color:var(--ele)}
+  .pt.provento{width:6px;height:6px;border-radius:1px;background:var(--ele);transform:rotate(45deg)}
+  .pt.transferencia{width:10px;height:2px;border-radius:1px;background:var(--t3)}
+  .pt.mais{width:auto;height:auto;background:none;border-radius:0;font:700 8px var(--gro);color:var(--t3)}
+  .dia .pt{width:5px;height:5px}
+  .dia .pt.provento{width:4.5px;height:4.5px}
+  .dia .pt.transferencia{width:7px;height:2px}
+  .dia .pt.recorrente,.dia .pt.planejado{border-width:1.2px}
+
+  /* ── lista do dia (embaixo da grade) ── */
+  .dpanel{padding:26px 0 8px;border-top:1px solid var(--line);margin-top:20px;scroll-margin-top:112px}
+  .dpanel .dhead{display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
+  .dpanel h2{font:500 21px/1.2 var(--gro);letter-spacing:-.03em;margin-top:6px}
+  .dpanel .pill-q.proj{border-color:rgba(104,64,255,.45);color:var(--t2)}
+  .dpanel .pill-q.hj{border-color:var(--roxo);color:var(--t1)}
+  .dnums{display:grid;grid-template-columns:repeat(3,1fr);margin-top:14px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .dnums > div{padding:12px 8px 12px 0;min-width:0}
+  .dnums > div + div{padding-left:10px;border-left:1px solid var(--line)}
+  .dnums .eyebrow{font-size:8.5px;letter-spacing:.14em}
+  .dnums b{display:block;font:700 13.5px var(--gro);letter-spacing:-.02em;margin-top:7px;white-space:nowrap}
+  .dnums b.in{color:var(--ele)}
+  .dproj{font:400 12px/1.6 var(--int);color:var(--t3);border-left:2px solid rgba(104,64,255,.5);padding-left:12px;margin-top:14px}
+  .ditens{list-style:none;margin-top:6px}
+  .ditens li{border-bottom:1px solid var(--line)}
+  .it{width:100%;min-height:52px;display:grid;grid-template-columns:14px minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 0;background:none;border:0;color:inherit;text-align:left;font:inherit;cursor:pointer;
+    transition:background 1.8s var(--ease),box-shadow 1.8s var(--ease)}
+  .it:focus-visible{outline:2px solid rgba(104,64,255,.6);outline-offset:2px;border-radius:6px}
+  .it .pt{justify-self:center}
+  .it .ds{font:500 13.5px/1.35 var(--int);color:var(--t1);min-width:0}
+  .it .ds small{display:block;font:400 11.5px/1.4 var(--int);color:var(--t3);margin-top:2px}
+  .it .v{font:700 12.5px var(--gro);letter-spacing:-.02em;color:var(--t2);white-space:nowrap}
+  .it .v.in{color:var(--ele)}
+  .it.prev .ds,.it.prev .v{opacity:.72}
+  .it.nova{background:rgba(161,255,98,.12);box-shadow:inset 3px 0 0 var(--ele)}
+  .it.resto .v{white-space:normal;text-align:right;max-width:120px}
+  .dvazio{font:400 13px/1.6 var(--int);color:var(--t3);padding:16px 0;border-bottom:1px solid var(--line)}
+  .dacum{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:14px 0 0;font:400 12.5px var(--int);color:var(--t3)}
+  .dacum b{font:700 14px var(--gro);letter-spacing:-.02em;color:var(--t1);white-space:nowrap}
+  .dacum b.w{color:var(--coral)}
+  .dacts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:18px}
+  .dacts .btn-sm{min-height:46px;justify-content:center;font-size:13px;padding:10px 12px}
+  .dacts .btn-sm[disabled]{opacity:.4;cursor:not-allowed}
+  .dacts-nota{font:400 11.5px/1.5 var(--int);color:var(--t3);margin-top:8px;min-height:1em}
+
+  /* ── Mais em Finanças ── */
+  .mais{display:flex;flex-wrap:wrap;align-items:center;column-gap:16px;padding:18px 0 28px;border-top:1px solid var(--line);margin-top:22px;font:400 12.5px var(--int);color:var(--t3)}
+  .mais span{flex-basis:100%;padding-bottom:2px}
+  .mais a{color:var(--t2);min-height:40px;display:inline-flex;align-items:center}
+
+  /* ── sheet de captura/edição (mesma peça de _t2-lista.mobile; usa as classes internas do .painel) ── */
+  .sheet-form{position:fixed;left:0;right:0;bottom:0;z-index:80;max-height:clamp(420px,86dvh,760px);background:var(--s1);border-top:1px solid var(--line-h);border-radius:22px 22px 0 0;
+    display:flex;flex-direction:column;transform:translateY(105%);visibility:hidden;transition:transform .55s var(--ease),visibility 0s .55s;box-shadow:0 -24px 60px -30px rgba(0,0,0,.6)}
+  .sheet-form.open{transform:none;visibility:visible;transition-delay:0s}
+  .sheet-form .handle{width:44px;height:4px;border-radius:2px;background:var(--line-h);margin:10px auto 0;flex:none}
+  .sheet-form .phead{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 20px 14px;border-bottom:1px solid var(--line)}
+  .sheet-form .phead h2{font:500 18px/1.25 var(--gro);letter-spacing:-.02em;margin-top:6px}
+  .sheet-form .x{background:none;border:1px solid var(--line);border-radius:999px;width:40px;height:40px;display:inline-flex;align-items:center;justify-content:center;color:var(--t2);cursor:pointer;flex:none}
+  .sheet-form .pbody{flex:1;overflow-y:auto;padding:16px 20px 6px;display:flex;flex-direction:column;gap:14px}
+  .sheet-form .f .eyebrow{display:block;margin-bottom:8px}
+  .sheet-form .ck-note{width:100%;display:block;padding:13px 16px;font-size:16px}
+  .sheet-form input[type=date]{color-scheme:dark;min-height:48px}
+  .sheet-form .sel{margin-top:0}
+  .sheet-form .sel select{padding:13px 40px 13px 16px;font-size:16px}
+  .sheet-form .tipo{display:flex;gap:8px}
+  .sheet-form .tipo .chip{min-height:44px;flex:1;justify-content:center;align-items:center;font-size:13px;padding:8px 6px}
+  .sheet-form .f2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .sheet-form .pfoot{padding:12px 20px calc(16px + env(safe-area-inset-bottom));border-top:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
+  .sheet-form .acts{display:flex;gap:10px}
+  .sheet-form .acts .btn-sm{min-height:48px;justify-content:center;font-size:14px}
+  .sheet-form .acts .roxo{flex:1}
+  .sheet-form .btn-sm.ghost.perigo{padding:12px 18px}
+  .sheet-form .aviso{border-left:2px solid var(--roxo);padding:4px 0 4px 12px;font:400 12.5px/1.6 var(--int);color:var(--t2)}
+  .sheet-form .aviso a{color:var(--t1);text-decoration:underline;text-underline-offset:3px;display:inline-block;min-height:40px;line-height:40px}
+  .sheet-form .erro{font:500 12.5px var(--int);color:var(--coral);min-height:1em}
+  .sheet-form .prov{display:flex;flex-direction:column;gap:12px;font:400 13px/1.6 var(--int);color:var(--t2)}
+  .sheet-form .prov b{font:700 22px var(--gro);letter-spacing:-.03em;color:var(--ele);display:block}
+  .sheet-form .prov a{color:var(--t1);display:inline-flex;align-items:center;min-height:40px}
+  .sheet-form .confirma{border-left:3px solid var(--coral);padding:8px 14px;font:400 13px/1.6 var(--int);color:var(--t2);display:block}
+  .sheet-form .confirma button{background:none;border:none;font:600 13.5px var(--int);cursor:pointer;padding:0 18px 0 0;color:var(--t2);min-height:40px}
+  .sheet-form .confirma button.sim{color:var(--coral)}
+  @media (prefers-reduced-motion:reduce){.sheet-form{transition:none}}
+
+  /* ── anotação do protótipo (fora do fluxo, inert) ── */
+  .proto-estados{border-top:3px double var(--line-h);margin-top:24px;padding-top:30px;padding-bottom:calc(90px + env(safe-area-inset-bottom))}
+  .proto-estados > .wrap > .eyebrow{color:var(--coral)}
+  .pe{margin-top:26px}
+  .pe h4{font:700 10px var(--gro);letter-spacing:.18em;text-transform:uppercase;color:var(--t3);margin-bottom:12px}
+  .pe .vazio{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:18px 0;font:400 13px/1.6 var(--int);color:var(--t3)}
+  .pe .vazio b{display:block;font:500 15px var(--gro);color:var(--t1);margin-bottom:4px}
+  .pe .skel{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
+  .pe .skel span{height:40px;background:var(--bg);position:relative}
+  .pe .skel span::after{content:"";position:absolute;left:50%;top:8px;width:12px;height:8px;margin-left:-6px;border-radius:4px;background:var(--s2)}
+  .pe .erro{border-left:3px solid var(--coral);padding:10px 14px;font:400 13px var(--int);color:var(--coral)}
+  .pe-nota{font:400 12px/1.6 var(--int);color:var(--t3);margin-top:12px}
+  .pe-nota b{color:var(--t2);font-weight:600}
+  .decis{margin-top:34px}
+  .decis ol{margin:12px 0 0 18px;font:400 12.5px/1.65 var(--int);color:var(--t2)}
+  .decis li{padding:5px 0}
+  .decis li b{color:var(--t1);font-weight:600}
+  .le{margin-top:34px}
+  .le ul{list-style:none;margin-top:12px;border-top:1px solid var(--line)}
+  .le li{padding:11px 0;border-bottom:1px solid var(--line);font:400 12.5px/1.5 var(--int);color:var(--t2)}
+  .le li code{display:block;font:600 12px var(--gro);letter-spacing:-.01em;color:var(--t1);margin-bottom:3px}
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- chrome mobile: marca + "+" (o gatilho de Sy vive na bottom bar) -->
+<header class="bar">
+  <a class="brand" href="#">
+    <svg width="19" height="19" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="2" x2="32" y2="11" stroke="#a1ff62" stroke-width="7" stroke-linecap="round"/><polygon points="32,8 40,34 24,34" fill="#6840ff"/><polygon points="32,58 24,34 40,34" fill="#f4f4f4" opacity=".35"/></svg>
+    <span class="wm">Sync<em>Life</em></span></a>
+  <div class="acts">
+    <button class="btn-sm roxo" type="button" aria-label="Registrar" data-add="tx">+</button>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- 1. subbar sticky + cabeçalho -->
+  <div class="subbar">
+    <a class="voltar" href="financas-a.mobile.html">← Finanças</a>
+    <span class="curto">Calendário · outubro</span>
+  </div>
+  <header class="objeto boot b1">
+    <p class="eyebrow"><a href="financas-a.mobile.html"><b>01</b>&nbsp;· Finanças</a></p>
+    <h1>Calendário</h1>
+    <div class="mesnav" role="group" aria-label="Mês">
+      <button class="seta" type="button" id="mesAnt" aria-label="Mês anterior">‹</button>
+      <span class="mes" id="mesNome" aria-live="polite">outubro de 2026</span>
+      <button class="seta" type="button" id="mesProx" aria-label="Próximo mês">›</button>
+      <button class="btn-sm ghost" type="button" id="hoje">Hoje</button>
+    </div>
+  </header>
+
+  <!-- 2. números do mês -->
+  <section class="mesnums boot b2" aria-label="Números do mês">
+    <div class="principal"><p class="eyebrow">Saldo até hoje</p><div class="v num" id="nSaldo">R$&nbsp;1.840</div><p class="d">entradas menos saídas de 1 a 3 de outubro</p></div>
+    <div class="q">
+      <div><p class="eyebrow">Entradas</p><div class="v num in" id="nEnt">R$&nbsp;5.000</div></div>
+      <div><p class="eyebrow">Saídas</p><div class="v num" id="nSai">R$&nbsp;3.160</div></div>
+      <div><p class="eyebrow">Projeção do mês</p><div class="v num" id="nProj">R$&nbsp;2.120</div><p class="d">o mesmo de Finanças</p></div>
+      <div><p class="eyebrow">Pendentes</p><div class="v num" id="nPend">11</div><p class="d num" id="nPendSub">R$&nbsp;3.265,70 a sair · R$&nbsp;4.192,30 a entrar</p></div>
+    </div>
+  </section>
+
+  <!-- 3. grade compacta -->
+  <section class="gsec boot b3" aria-label="Calendário de outubro">
+    <div class="dow" aria-hidden="true"><span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span><span class="wkh">Sem.</span></div>
+    <div class="grade" id="grade"><!--grade:ini--><div class="sem"><span class="dia fora" aria-hidden="true"><span class="n num">28</span></span><span class="dia fora" aria-hidden="true"><span class="n num">29</span></span><span class="dia fora" aria-hidden="true"><span class="n num">30</span></span><button class="dia" type="button" data-d="1" aria-pressed="false" tabindex="-1" aria-label="quarta, 1 de outubro, 2 itens, saldo do dia + R$&nbsp;1.962,70"><span class="n num">1</span><span class="pts"><i class="pt entrada in"></i><i class="pt saida"></i></span><span class="s num in">+2k</span></button><button class="dia" type="button" data-d="2" aria-pressed="false" tabindex="-1" aria-label="quinta, 2 de outubro, 3 itens, saldo do dia + R$&nbsp;109,70"><span class="n num">2</span><span class="pts"><i class="pt entrada in"></i><i class="pt saida"></i></span><span class="s num in">+110</span></button><button class="dia hoje" type="button" data-d="3" aria-pressed="true" tabindex="0" aria-label="sexta, 3 de outubro, hoje, 2 itens, saldo do dia – R$&nbsp;232,40"><span class="n num">3</span><span class="pts"><i class="pt saida"></i></span><span class="s num">–232</span></button><button class="dia fut" type="button" data-d="4" aria-pressed="false" tabindex="-1" aria-label="sábado, 4 de outubro, nada marcado"><span class="n num">4</span><span class="pts"></span></button><div class="wk"><b class="num in">+1,8k</b></div></div><div class="sem"><button class="dia fut" type="button" data-d="5" aria-pressed="false" tabindex="-1" aria-label="domingo, 5 de outubro, nada marcado"><span class="n num">5</span><span class="pts"></span></button><button class="dia fut" type="button" data-d="6" aria-pressed="false" tabindex="-1" aria-label="segunda, 6 de outubro, 1 item, saldo do dia – R$&nbsp;1.200,00 previsto"><span class="n num">6</span><span class="pts"><i class="pt recorrente"></i></span><span class="s num">–1,2k</span></button><button class="dia fut" type="button" data-d="7" aria-pressed="false" tabindex="-1" aria-label="terça, 7 de outubro, nada marcado"><span class="n num">7</span><span class="pts"></span></button><button class="dia fut" type="button" data-d="8" aria-pressed="false" tabindex="-1" aria-label="quarta, 8 de outubro, 2 itens, saldo do dia – R$&nbsp;669,90 previsto"><span class="n num">8</span><span class="pts"><i class="pt recorrente"></i></span><span class="s num">–670</span></button><button class="dia fut" type="button" data-d="9" aria-pressed="false" tabindex="-1" aria-label="quinta, 9 de outubro, nada marcado"><span class="n num">9</span><span class="pts"></span></button><button class="dia fut" type="button" data-d="10" aria-pressed="false" tabindex="-1" aria-label="sexta, 10 de outubro, nada marcado"><span class="n num">10</span><span class="pts"></span></button><button class="dia fut" type="button" data-d="11" aria-pressed="false" tabindex="-1" aria-label="sábado, 11 de outubro, nada marcado"><span class="n num">11</span><span class="pts"></span></button><div class="wk prev"><small>prev.</small><b class="num">–1,9k</b></div></div><div class="sem"><button class="dia fut" type="button" data-d="12" aria-pressed="false" tabindex="-1" aria-label="domingo, 12 de outubro, 1 item, saldo do dia – R$&nbsp;55,90 previsto"><span class="n num">12</span><span class="pts"><i class="pt recorrente"></i></span><span class="s num">–56</span></button><button class="dia fut" type="button" data-d="13" aria-pressed="false" tabindex="-1" aria-label="segunda, 13 de outubro, nada marcado"><span class="n num">13</span><span class="pts"></span></button><button class="dia fut" type="button" data-d="14" aria-pressed="false" tabindex="-1" aria-label="terça, 14 de outubro, 1 item, saldo do dia – R$&nbsp;180,00 previsto"><span class="n num">14</span><span class="pts"><i class="pt recorrente"></i></span><span class="s num">–180</span></button><button class="dia fut" type="button" data-d="15" aria-pressed="false" tabindex="-1" aria-label="quarta, 15 de outubro, 2 itens, saldo do dia – R$&nbsp;77,60 previsto"><span class="n num">15</span><span class="pts"><i class="pt recorrente"></i><i class="pt provento in"></i></span><span class="s num">–78</span></button><button class="dia fut" type="button" data-d="16" aria-pressed="false" tabindex="-1" aria-label="quinta, 16 de outubro, nada marcado"><span class="n num">16</span><span class="pts"></span></button><button class="dia fut" type="button" data-d="17" aria-pressed="false" tabindex="-1" aria-label="sexta, 17 de outubro, nada marcado"><span class="n num">17</span><span class="pts"></span></button><button class="dia fut" type="button" data-d="18" aria-pressed="false" tabindex="-1" aria-label="sábado, 18 de outubro, nada marcado"><span class="n num">18</span><span class="pts"></span></button><div class="wk prev"><small>prev.</small><b class="num">–314</b></div></div><div class="sem"><button class="dia fut" type="button" data-d="19" aria-pressed="false" tabindex="-1" aria-label="domingo, 19 de outubro, nada marcado"><span class="n num">19</span><span class="pts"></span></button><button class="dia fut" type="button" data-d="20" aria-pressed="false" tabindex="-1" aria-label="segunda, 20 de outubro, 1 item, saldo do dia – R$&nbsp;240,00 previsto"><span class="n num">20</span><span class="pts"><i class="pt recorrente"></i></span><span class="s num">–240</span></button><button class="dia fut" type="button" data-d="21" aria-pressed="false" tabindex="-1" aria-label="terça, 21 de outubro, nada marcado"><span class="n num">21</span><span class="pts"></span></button><button class="dia fut" type="button" data-d="22" aria-pressed="false" tabindex="-1" aria-label="quarta, 22 de outubro, nada marcado"><span class="n num">22</span><span class="pts"></span></button><button class="dia fut" type="button" data-d="23" aria-pressed="false" tabindex="-1" aria-label="quinta, 23 de outubro, nada marcado"><span class="n num">23</span><span class="pts"></span></button><button class="dia fut" type="button" data-d="24" aria-pressed="false" tabindex="-1" aria-label="sexta, 24 de outubro, 1 item, saldo do dia – R$&nbsp;620,00 previsto"><span class="n num">24</span><span class="pts"><i class="pt planejado"></i></span><span class="s num">–620</span></button><button class="dia fut" type="button" data-d="25" aria-pressed="false" tabindex="-1" aria-label="sábado, 25 de outubro, nada marcado"><span class="n num">25</span><span class="pts"></span></button><div class="wk prev"><small>prev.</small><b class="num">–860</b></div></div><div class="sem"><button class="dia fut" type="button" data-d="26" aria-pressed="false" tabindex="-1" aria-label="domingo, 26 de outubro, nada marcado"><span class="n num">26</span><span class="pts"></span></button><button class="dia fut" type="button" data-d="27" aria-pressed="false" tabindex="-1" aria-label="segunda, 27 de outubro, nada marcado"><span class="n num">27</span><span class="pts"></span></button><button class="dia fut" type="button" data-d="28" aria-pressed="false" tabindex="-1" aria-label="terça, 28 de outubro, 1 item, saldo do dia – R$&nbsp;180,00 previsto"><span class="n num">28</span><span class="pts"><i class="pt recorrente"></i></span><span class="s num">–180</span></button><button class="dia fut" type="button" data-d="29" aria-pressed="false" tabindex="-1" aria-label="quarta, 29 de outubro, nada marcado"><span class="n num">29</span><span class="pts"></span></button><button class="dia fut" type="button" data-d="30" aria-pressed="false" tabindex="-1" aria-label="quinta, 30 de outubro, 1 item, saldo do dia + R$&nbsp;4.150,00 previsto"><span class="n num">30</span><span class="pts"><i class="pt recorrente in"></i></span><span class="s num in">+4,2k</span></button><button class="dia fut" type="button" data-d="31" aria-pressed="false" tabindex="-1" aria-label="sexta, 31 de outubro, nada marcado"><span class="n num">31</span><span class="pts"></span></button><span class="dia fora" aria-hidden="true"><span class="n num">1</span></span><div class="wk prev"><small>prev.</small><b class="num in">+4k</b></div></div><!--grade:fim--></div>
+    <div class="forames" id="foraMes" hidden>
+      <b id="foraTit">setembro de 2026</b>
+      No protótipo só outubro tem dados. Os outros meses abrem do mesmo jeito.
+      <div><button class="btn-sm ghost" type="button" data-volta-hoje>Voltar para hoje</button></div>
+    </div>
+    <div class="legenda" aria-label="Legenda">
+      <span><i class="pt entrada"></i>Entrada</span>
+      <span><i class="pt saida"></i>Saída</span>
+      <span><i class="pt transferencia"></i>Transf.</span>
+      <span><i class="pt recorrente"></i>Recorrente</span>
+      <span><i class="pt planejado"></i>Planejado</span>
+      <span><i class="pt provento"></i>Provento</span>
+      <span class="dica">Sem. = saldo da semana · prev. = previsto</span>
+    </div>
+  </section>
+
+  <!-- 4. o dia selecionado -->
+  <section class="dpanel" id="dpanel" aria-label="Dia selecionado" aria-live="polite"><!--dia:ini--><div class="dhead"><div><p class="eyebrow">Sexta</p><h2>3 de outubro</h2></div><span class="pill-q hj">Hoje</span></div><div class="dnums"><div><span class="eyebrow">Entradas</span><b class="num">R$&nbsp;0,00</b></div><div><span class="eyebrow">Saídas</span><b class="num">R$&nbsp;232,40</b></div><div><span class="eyebrow">Saldo do dia</span><b class="num">– R$&nbsp;232,40</b></div></div><ul class="ditens"><li><button class="it" type="button" data-id="i0" aria-label="Mercado Central, Saída · Mercado, – R$&nbsp;182,40, editar"><i class="pt saida"></i><span class="ds">Mercado Central<small>Saída · Mercado</small></span><span class="v num">– R$&nbsp;182,40</span></button></li><li><a class="it resto" href="financas-transacoes.html"><i class="pt saida"></i><span class="ds">Outros lançamentos do dia<small>Ver em Transações →</small></span><span class="v num">– R$&nbsp;50,00</span></a></li></ul><p class="dacum"><span>Saldo do mês até aqui</span><b class="num">+ R$&nbsp;1.840,00</b></p><div class="dacts"><button class="btn-sm roxo" type="button" data-add="tx" data-dia="3">+ Transação neste dia</button><button class="btn-sm ghost" type="button" data-add="plan" data-dia="3">+ Evento planejado</button></div><p class="dacts-nota" id="dactsNota"></p><button class="falar" type="button" data-coach-open="" data-coach-seed="Sobre 3 de outubro: ">Falar com Sy sobre este dia →</button><!--dia:fim--></section>
+
+  <!-- 5. mais em finanças -->
+  <nav class="mais" aria-label="Mais em Finanças">
+    <span>Mais em Finanças:</span>
+    <a href="financas-transacoes.mobile.html">Transações</a>
+    <a href="financas-orcamentos.mobile.html">Orçamentos</a>
+    <a href="financas-recorrentes.mobile.html">Recorrentes</a>
+    <a href="financas-planejamento.mobile.html">Planejamento</a>
+    <a href="financas-relatorios.mobile.html">Relatórios</a>
+    <a href="financas-importar.mobile.html">Importar extrato</a>
+  </nav>
+</main>
+
+<!-- rodapé -->
+<footer class="colofao">
+  <span>Fechamento projetado de outubro: <b class="num">R$&nbsp;2.120</b></span>
+  <div class="r">
+    <span>34 transações <b class="num">em outubro</b></span>
+    <span>Última sincronização às <b class="num">14:05</b></span>
+  </div>
+</footer>
+
+<!-- bottom bar: 5 itens, sem FAB; Sy no centro; Registrar abre a captura no dia selecionado -->
+<nav class="bbar" aria-label="Navegação principal">
+  <a href="meu-dia-d.mobile.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="3"/><line x1="4" y1="10" x2="20" y2="10"/><circle cx="12" cy="15" r="1.4" fill="currentColor" stroke="none"/></svg>
+    <span>Meu dia</span></a>
+  <a class="on" href="financas-a.mobile.html" aria-current="page"><span class="g num">01</span><span>Finanças</span></a>
+  <button class="sypill" type="button" data-coach-open><span class="sy40" aria-hidden="true"><canvas></canvas></span><span>Fale com Sy</span></button>
+  <button type="button" data-areas-open aria-haspopup="dialog" aria-controls="sheetAreas" aria-expanded="false">
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="8" cy="8" r="2.3"/><circle cx="16" cy="8" r="2.3"/><circle cx="8" cy="16" r="2.3"/><circle cx="16" cy="16" r="2.3"/></svg>
+    <span>Áreas</span></button>
+  <button type="button" data-add="tx" id="bbRegistrar">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    <span>Registrar</span></button>
+</nav>
+
+<!-- camada de Sy: sheet (antes do #sheetAreas e do sheet de captura no DOM: app.js pega a primeira .camada) -->
+<div class="scrim"></div>
+<aside class="camada sheet" aria-label="Sy">
+  <div class="handle"></div>
+  <header class="chead">
+    <p class="eyebrow"><b>Sy</b> · lendo: o seu calendário</p>
+    <button class="x" type="button" aria-label="Fechar">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </header>
+  <div class="cbody">
+    <div class="cempty">
+      <p class="hello">Já li o seu outubro, dia a dia. O que você quer saber?</p>
+      <div class="csug">
+        <button class="chip" type="button">Em que dia o mês aperta?</button>
+        <button class="chip" type="button">O que ainda vai sair em outubro?</button>
+        <button class="chip" type="button">Quando entra o provento de MXRF11?</button>
+      </div>
+    </div>
+    <div class="cthread" hidden>
+      <div class="divider">Hoje · 14:02</div>
+      <div class="bub u">Em que dia o mês aperta?</div>
+      <div class="bub a">No dia <strong class="num">8</strong>. Com o aluguel no dia 6 e o aporte e a internet no dia 8, o saldo do mês vai a <span class="w">– R$&nbsp;29,90</span> e desce até <span class="w">– R$&nbsp;1.383,40</span> no dia 28, depois da revisão do carro. O salário do dia 30 devolve o mês ao positivo. Com o gasto variável que ainda falta, o fechamento projetado é <strong class="num">R$&nbsp;2.120</strong>.
+        <span class="meta">Fontes: 34 transações · 8 recorrentes · evento Revisão do carro · projeção do mês</span>
+      </div>
+    </div>
+  </div>
+  <form class="cask"><div class="in">
+    <input type="text" placeholder="Pergunte sobre o seu calendário">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+  </div></form>
+  <a class="cfull" href="conversa.mobile.html">Conversa completa →</a>
+</aside>
+
+<!-- sheet de Áreas -->
+<aside class="camada sheet areas" id="sheetAreas" role="dialog" aria-label="Áreas">
+  <div class="handle"></div>
+  <header class="chead">
+    <p class="eyebrow">Áreas</p>
+    <button class="x" type="button" aria-label="Fechar" data-areas-close>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </header>
+  <div class="cbody">
+    <a class="arow" href="financas-a.mobile.html"><span class="n num">01</span><span>Finanças</span><span class="sc num">83</span></a>
+    <a class="arow" href="#"><span class="n num">02</span><span>Futuro</span><span class="sc num">79</span></a>
+    <a class="arow" href="#"><span class="n num">03</span><span>Tempo</span><span class="sc num">71</span></a>
+    <a class="arow" href="#"><span class="n num">04</span><span>Corpo</span><span class="sc num">69</span></a>
+    <a class="arow" href="#"><span class="n num">05</span><span>Mente</span><span class="sc num">58</span></a>
+    <a class="arow" href="#"><span class="n num">06</span><span>Patrimônio</span><span class="sc num">76</span></a>
+    <a class="arow" href="#"><span class="n num">07</span><span>Carreira</span><span class="sc num">69</span></a>
+    <a class="arow" href="#"><span class="n num">08</span><span>Experiências</span><span class="sc num">78</span></a>
+    <div class="asep" aria-hidden="true"></div>
+    <a class="arow extra" href="#"><span class="n num" aria-hidden="true"></span><span>Conquistas<small>24/61 badges</small></span><span class="sc num">12 dias</span></a>
+    <a class="arow extra" href="#"><span class="n num" aria-hidden="true"></span><span>Configurações</span><span class="sc"></span></a>
+  </div>
+</aside>
+
+<!-- sheet de captura / edição (não é a camada de Sy) -->
+<aside class="sheet-form" id="painel" role="dialog" aria-modal="true" aria-labelledby="p-titulo">
+  <div class="handle"></div>
+  <header class="phead">
+    <div>
+      <p class="eyebrow" id="p-eb"><b>01</b> · Transação</p>
+      <h2 id="p-titulo">Nova transação</h2>
+    </div>
+    <button class="x" type="button" aria-label="Fechar">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </header>
+  <form id="pform" class="pbody" autocomplete="off" novalidate>
+    <p class="aviso" id="p-aviso" hidden></p>
+    <div class="prov" id="p-prov" hidden></div>
+    <div class="f" data-campo="tipo">
+      <span class="eyebrow">Tipo</span>
+      <div class="tipo" role="group" aria-label="Tipo">
+        <button class="chip" type="button" data-tipo="out" aria-pressed="true">Despesa</button>
+        <button class="chip" type="button" data-tipo="in" aria-pressed="false">Receita</button>
+        <button class="chip" type="button" data-tipo="tr" aria-pressed="false">Transferência</button>
+      </div>
+    </div>
+    <div class="f" data-campo="desc">
+      <label class="eyebrow" for="p-desc" id="p-desc-l">Descrição</label>
+      <input class="ck-note" id="p-desc" name="desc" type="text" placeholder="Ex.: Mercado Central">
+    </div>
+    <div class="f2" data-campo="valor">
+      <div class="f">
+        <label class="eyebrow" for="p-valor">Valor</label>
+        <input class="ck-note num" id="p-valor" name="valor" type="text" inputmode="decimal" placeholder="0,00">
+      </div>
+      <div class="f">
+        <label class="eyebrow" for="p-data">Data</label>
+        <input class="ck-note num" id="p-data" name="data" type="date" min="2026-10-01" max="2026-10-31" value="2026-10-03">
+      </div>
+    </div>
+    <div class="f" data-campo="cat">
+      <label class="eyebrow" for="p-cat">Categoria</label>
+      <div class="sel">
+        <select id="p-cat" name="cat">
+          <option>Mercado</option><option>Moradia</option><option>Lazer</option><option>Transporte</option><option>Saúde</option>
+          <option>Assinaturas</option><option>Impostos</option><option>Investimento</option><option>Trabalho</option>
+          <option>Renda</option><option>Renda extra</option>
+        </select>
+      </div>
+    </div>
+    <div class="f2" data-campo="contas" hidden>
+      <div class="f">
+        <label class="eyebrow" for="p-orig">De</label>
+        <div class="sel"><select id="p-orig" name="orig"></select></div>
+      </div>
+      <div class="f">
+        <label class="eyebrow" for="p-dest">Para</label>
+        <div class="sel"><select id="p-dest" name="dest"></select></div>
+      </div>
+    </div>
+    <div class="f" data-campo="obs">
+      <label class="eyebrow" for="p-obs" id="p-obs-l">Observações</label>
+      <input class="ck-note" id="p-obs" name="obs" type="text" placeholder="Opcional">
+    </div>
+    <p class="erro" id="p-erro" role="alert"></p>
+  </form>
+  <div class="pfoot">
+    <div class="confirma" id="p-confirma" hidden role="status">
+      <span id="p-conf-txt">Excluir <b>esta transação</b>? Não dá para desfazer.</span>
+      <div><button class="sim" type="button" id="p-conf-sim">Excluir</button><button type="button" id="p-conf-nao">Cancelar</button></div>
+    </div>
+    <div class="acts">
+      <button class="btn-sm ghost perigo" type="button" id="p-excluir">Excluir</button>
+      <button class="btn-sm roxo" type="submit" form="pform" id="p-salvar">Registrar</button>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══ anotação do protótipo: estados + decisões + o que Sy lê aqui (fora do fluxo) ═══ -->
+<section class="proto-estados" inert>
+  <div class="wrap">
+    <p class="eyebrow">Estados · anotação do protótipo</p>
+    <div class="pe">
+      <h4>Carregando · grade em esqueleto</h4>
+      <div class="skel" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+      <p class="pe-nota">Números do mês como traço (<b>–</b>) até chegar o dado; a lista do dia fica vazia, sem botões.</p>
+    </div>
+    <div class="pe">
+      <h4>Mês sem nada marcado</h4>
+      <div class="vazio"><b>Nada marcado em novembro ainda.</b>Recorrentes e eventos planejados aparecem aqui sozinhos quando o mês chega perto. O Registrar da barra continua abrindo a captura.</div>
+    </div>
+    <div class="pe">
+      <h4>Erro ao carregar</h4>
+      <p class="erro">Não deu para carregar o calendário. Tentar de novo</p>
+    </div>
+    <div class="pe">
+      <h4>Dia futuro · projeção</h4>
+      <p class="dproj">É projeção: soma o que está marcado (recorrentes, eventos planejados e proventos anunciados). Nada aqui foi lançado.</p>
+      <p class="pe-nota">Pílula <b>Projeção</b>; valores a 72%; "Saldo previsto do mês até aqui".</p>
+    </div>
+    <div class="pe">
+      <h4>Dia vazio · limite FREE · provento</h4>
+      <p class="pe-nota" style="margin-top:0">Dia vazio: "Nada marcado em 9 de outubro." com as duas ações. Em dia passado, "+ Evento planejado" fica desligado. Limite FREE: não há nesta tela (igual ao v3). Provento de 06 Patrimônio: losango, sheet só de leitura com <b>Abrir em 06 Patrimônio →</b>.</p>
+    </div>
+
+    <div class="decis">
+      <p class="eyebrow">Decisões desta tela (para aprovação)</p>
+      <ol>
+        <li><b>Saldo é do mês, não da conta</b>: entradas menos saídas de outubro. Com o que está marcado, fica negativo entre os dias 8 e 29 (coral).</li>
+        <li><b>Projeção do mês = R$&nbsp;2.120</b> (Planejamento e hub). A grade soma só o marcado e chega a R$&nbsp;2.766,60 no dia 31; a diferença é o gasto variável médio.</li>
+        <li><b>"Outros lançamentos do dia"</b>: o que já aconteceu além da lista curta do mock, numa linha com link para Transações.</li>
+        <li><b>Pontos por forma, cor só de direção</b> (sem cor de módulo).</li>
+        <li><b>Mobile adiciona</b>: Registrar da bottom bar e o + do bar abrem a captura no dia selecionado; tocar num item edita; excluir com licença inline no sheet.</li>
+        <li><b>Grade</b>: célula inteira é o alvo (52px de altura, cerca de 43px de largura); o saldo da semana fica numa 8ª coluna estreita.</li>
+      </ol>
+    </div>
+
+    <div class="le">
+      <p class="eyebrow">O que Sy lê aqui</p>
+      <ul>
+        <li><code>transactions</code>o mês na grade: data, valor, tipo, is_future, recurring_transaction_id, categoria, conta</li>
+        <li><code>recurring_transactions</code>as 8 recorrentes que caem em outubro e o dia de cada uma</li>
+        <li><code>planning_events</code>eventos planejados do mês: nome, valor, planned_date, is_confirmed</li>
+        <li><code>portfolio_dividends</code>06 Patrimônio: proventos anunciados com payment_date no mês, só leitura aqui</li>
+        <li><code>user_accounts</code>contas de origem e destino das transferências</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<script src="../shared/mock-data.js"></script>
+<script src="../shared/app.js"></script>
+<script>
+SLApp.boot()
+
+;(function () {
+  var M = window.SL_MOCK, F = M.fin, C = F.calendario
+  var HOJE = 3, NDIAS = 31, DOW1 = 3 // 1 de outubro de 2026 é quarta
+  var DOW = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado']
+  var MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro']
+  var PROJ_BASE = F.planejamento.projecao.realista[0] // 2.120, igual ao hub
+  var NB = ' '
+  var $ = function (s) { return document.querySelector(s) }
+  function r2 (x) { return Math.round(x * 100) / 100 }
+  function brl (n) { return 'R$' + NB + Math.abs(n).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }
+  function brl0 (n) { return (n < 0 ? '– ' : '') + 'R$' + NB + Math.round(Math.abs(n)).toLocaleString('pt-BR') }
+  function sig (n) { return (n < 0 ? '– ' : n > 0 ? '+ ' : '') + brl(n) }
+  // mobile: saldo curto compacto (k a partir de mil) para caber na célula de ~43px
+  function curto (n) { var a = Math.abs(n); if (Math.round(a) === 0) return '0'; var t = a >= 1000 ? (a / 1000).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + 'k' : Math.round(a).toLocaleString('pt-BR'); return (n < 0 ? '–' : '+') + t }
+  function dow (d) { return (DOW1 + d - 1) % 7 }
+  function cap (s) { return s.charAt(0).toUpperCase() + s.slice(1) }
+  function esc (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c] }) }
+  function iso (d) { return '2026-10-' + (d < 10 ? '0' : '') + d }
+
+  // ── modelo: o que já aconteceu (transacoes) + o que está marcado (extras) ──
+  var CATS = {}
+  F.recorrentes.itens.forEach(function (r) { CATS[r.nome] = r.cat })
+  F.planejamento.eventos.forEach(function (e) { CATS[e.nome] = e.cat })
+  var itens = [], seq = 0
+  M.transacoes.forEach(function (t) {
+    var m = /^(\d+) out$/.exec(t.d); if (!m) return
+    itens.push({ id: 'i' + (seq++), d: +m[1], tipo: t.valor > 0 ? 'entrada' : 'saida', desc: t.desc, cat: t.cat, valor: t.valor, obs: '' })
+  })
+  C.extras.forEach(function (e) {
+    itens.push({ id: 'i' + (seq++), d: e.d, tipo: e.tipo, desc: e.desc, cat: e.tipo === 'provento' ? 'Proventos' : (CATS[e.desc] || ''), valor: e.valor, fonte: e.fonte || null, obs: '' })
+  })
+  // o que aconteceu no dia além da lista curta: feitos − itens listados (linha agregada, sem inventar itens)
+  var resto = {}
+  C.feitos.forEach(function (f) {
+    var e = 0, s = 0
+    itens.forEach(function (i) { if (i.d === f.d) { if (i.valor > 0) e += i.valor; else s -= i.valor } })
+    resto[f.d] = { e: r2(f.entradas - e), s: r2(f.saidas - s) }
+  })
+  var ORD = { recorrente: 0, entrada: 1, saida: 2, transferencia: 3, planejado: 4, provento: 5 }
+  function doDia (d) { return itens.filter(function (i) { return i.d === d }).sort(function (a, b) { return ORD[a.tipo] - ORD[b.tipo] }) }
+  function tot (d) {
+    var r = resto[d] || { e: 0, s: 0 }, e = r.e, s = r.s
+    doDia(d).forEach(function (i) { if (i.tipo === 'transferencia') return; if (i.valor > 0) e += i.valor; else s -= i.valor })
+    return { e: r2(e), s: r2(s), saldo: r2(e - s) }
+  }
+  function acum (d) { var t = 0; for (var k = 1; k <= d; k++) t += tot(k).saldo; return r2(t) }
+  var BASE31 = acum(NDIAS)
+
+  // ── grade ──
+  var sel = HOJE, mesOff = 0, novo = null
+  function pontos (d) {
+    var cls = [], r = resto[d]
+    doDia(d).forEach(function (i) {
+      var c = i.tipo + (i.valor > 0 && i.tipo !== 'transferencia' ? ' in' : '')
+      if (cls.indexOf(c) < 0) cls.push(c)
+    })
+    if (r && r.e > 0 && cls.indexOf('entrada in') < 0) cls.push('entrada in')
+    if (r && r.s > 0 && cls.indexOf('saida') < 0) cls.push('saida')
+    cls.sort(function (a, b) { return ORD[a.split(' ')[0]] - ORD[b.split(' ')[0]] })
+    var h = cls.slice(0, 4).map(function (c) { return '<i class="pt ' + c + '"></i>' }).join('')
+    if (cls.length > 4) h += '<i class="pt mais">+' + (cls.length - 4) + '</i>'
+    return h
+  }
+  function rotuloDia (d, t, n) {
+    return DOW[dow(d)] + ', ' + d + ' de outubro' + (d === HOJE ? ', hoje' : '') + (n ? ', ' + n + (n > 1 ? ' itens' : ' item') + ', saldo do dia ' + sig(t.saldo) + (d > HOJE ? ' previsto' : '') : ', nada marcado')
+  }
+  function celula (d) {
+    var t = tot(d), n = doDia(d).length + (resto[d] && (resto[d].e || resto[d].s) ? 1 : 0)
+    var cls = 'dia' + (d === HOJE ? ' hoje' : '') + (d > HOJE ? ' fut' : '')
+    var s = n ? '<span class="s num' + (t.saldo > 0 ? ' in' : '') + '">' + curto(t.saldo) + '</span>' : ''
+    return '<button class="' + cls + '" type="button" data-d="' + d + '" aria-pressed="' + (d === sel) + '" tabindex="' + (d === sel ? 0 : -1) + '" aria-label="' + esc(rotuloDia(d, t, n)) + '">' +
+      '<span class="n num">' + d + '</span><span class="pts">' + pontos(d) + '</span>' + s + '</button>'
+  }
+  function vazia (n) { return '<span class="dia fora" aria-hidden="true"><span class="n num">' + n + '</span></span>' }
+  function grade () {
+    var h = '', cel = [], k
+    for (k = 0; k < DOW1; k++) cel.push({ fora: 28 + k })
+    for (k = 1; k <= NDIAS; k++) cel.push({ d: k })
+    var nx = 1; while (cel.length % 7) cel.push({ fora: nx++ })
+    for (var w = 0; w < cel.length / 7; w++) {
+      var linha = cel.slice(w * 7, w * 7 + 7), soma = 0, prev = false, tem = false
+      h += '<div class="sem">'
+      linha.forEach(function (c) {
+        if (c.fora) { h += vazia(c.fora); return }
+        var t = tot(c.d), n = doDia(c.d).length
+        soma += t.saldo; if (n || resto[c.d]) tem = true
+        if (c.d > HOJE && n) prev = true
+        h += celula(c.d)
+      })
+      soma = r2(soma)
+      h += '<div class="wk' + (prev ? ' prev' : '') + '">' + (prev ? '<small>prev.</small>' : '') +
+        (tem ? '<b class="num' + (soma > 0 ? ' in' : '') + '">' + curto(soma) + '</b>' : '<small>nada</small>') + '</div></div>'
+    }
+    $('#grade').innerHTML = h
+  }
+
+  // ── painel do dia ──
+  function sub (i) {
+    if (i.tipo === 'recorrente') return 'Recorrente · ' + i.cat + (i.editada ? ' · editada só neste dia' : '')
+    if (i.tipo === 'planejado') return 'Planejado · ' + i.cat + ' · em Planejamento'
+    if (i.tipo === 'provento') return 'Provento previsto · vem de ' + i.fonte
+    if (i.tipo === 'transferencia') return 'Transferência · ' + i.orig + ' → ' + i.dest
+    return (i.valor > 0 ? 'Entrada' : 'Saída') + (i.cat ? ' · ' + i.cat : '') + (i.d > HOJE ? ' · previsto' : '')
+  }
+  function linhaItem (i) {
+    var ptc = i.tipo + (i.valor > 0 && i.tipo !== 'transferencia' ? ' in' : '')
+    var v = i.tipo === 'transferencia' ? brl(i.valor) : sig(i.valor)
+    return '<li><button class="it' + (i.d > HOJE ? ' prev' : '') + (novo === i.id ? ' nova' : '') + '" type="button" data-id="' + i.id + '" aria-label="' + esc(i.desc + ', ' + sub(i) + ', ' + v + ', editar') + '">' +
+      '<i class="pt ' + ptc + '"></i><span class="ds">' + esc(i.desc) + '<small>' + esc(sub(i)) + '</small></span>' +
+      '<span class="v num' + (i.valor > 0 && i.tipo !== 'transferencia' ? ' in' : '') + '">' + v + '</span></button></li>'
+  }
+  function dia () {
+    var d = sel, t = tot(d), lista = doDia(d), r = resto[d], fut = d > HOJE, a = acum(d)
+    var pill = d === HOJE ? '<span class="pill-q hj">Hoje</span>' : fut ? '<span class="pill-q proj">Projeção</span>' : '<span class="pill-q">Passado</span>'
+    var h = '<div class="dhead"><div><p class="eyebrow">' + cap(DOW[dow(d)]) + '</p><h2>' + d + ' de outubro</h2></div>' + pill + '</div>' +
+      '<div class="dnums">' +
+        '<div><span class="eyebrow">Entradas</span><b class="num' + (t.e ? ' in' : '') + '">' + brl(t.e) + '</b></div>' +
+        '<div><span class="eyebrow">Saídas</span><b class="num">' + brl(t.s) + '</b></div>' +
+        '<div><span class="eyebrow">Saldo do dia</span><b class="num' + (t.saldo > 0 ? ' in' : '') + '">' + sig(t.saldo) + '</b></div>' +
+      '</div>'
+    if (fut) h += '<p class="dproj">É projeção: soma o que está marcado (recorrentes, eventos planejados e proventos anunciados). Nada aqui foi lançado.</p>'
+    if (lista.length || (r && (r.e || r.s))) {
+      h += '<ul class="ditens">' + lista.map(linhaItem).join('')
+      if (r && (r.e || r.s)) {
+        var partes = []; if (r.e) partes.push('+ ' + brl(r.e)); if (r.s) partes.push('– ' + brl(r.s))
+        h += '<li><a class="it resto" href="financas-transacoes.html"><i class="pt ' + (r.e ? 'entrada in' : 'saida') + '"></i><span class="ds">Outros lançamentos do dia<small>Ver em Transações →</small></span><span class="v num">' + partes.join(' · ') + '</span></a></li>'
+      }
+      h += '</ul>'
+    } else {
+      h += '<p class="dvazio">Nada marcado em ' + d + ' de outubro.</p>'
+    }
+    h += '<p class="dacum"><span>' + (fut ? 'Saldo previsto do mês até aqui' : 'Saldo do mês até aqui') + '</span><b class="num' + (a < 0 ? ' w' : '') + '">' + sig(a) + '</b></p>'
+    var planOk = d >= HOJE
+    h += '<div class="dacts"><button class="btn-sm roxo" type="button" data-add="tx" data-dia="' + d + '">+ Transação neste dia</button>' +
+      '<button class="btn-sm ghost" type="button" data-add="plan" data-dia="' + d + '"' + (planOk ? '' : ' disabled aria-describedby="dactsNota"') + '>+ Evento planejado</button></div>' +
+      '<p class="dacts-nota" id="dactsNota">' + (planOk ? '' : 'Eventos planejados só de hoje em diante.') + '</p>' +
+      '<button class="falar" type="button" data-coach-open data-coach-seed="Sobre ' + d + ' de outubro: ">Falar com Sy sobre este dia →</button>'
+    $('#dpanel').innerHTML = h
+  }
+
+  // ── números do mês ──
+  function nums () {
+    var e = 0, s = 0, pend = 0, ps = 0, pe = 0
+    for (var d = 1; d <= HOJE; d++) { var t = tot(d); e += t.e; s += t.s }
+    itens.forEach(function (i) { if (i.d > HOJE) { pend++; if (i.tipo === 'transferencia') return; if (i.valor < 0) ps -= i.valor; else pe += i.valor } })
+    $('#nSaldo').textContent = brl0(acum(HOJE))
+    $('#nEnt').textContent = brl0(e)
+    $('#nSai').textContent = brl0(s)
+    $('#nProj').textContent = brl0(PROJ_BASE + (acum(NDIAS) - BASE31))
+    $('#nPend').textContent = pend
+    $('#nPendSub').textContent = brl(r2(ps)) + ' a sair · ' + brl(r2(pe)) + ' a entrar'
+  }
+  function tudo () { grade(); dia(); nums() }
+
+  // ── seleção de dia (clique e setas) ──
+  function selecionar (d, foco) {
+    sel = Math.max(1, Math.min(NDIAS, d)); novo = null; grade(); dia()
+    if (foco) { var b = document.querySelector('.dia[data-d="' + sel + '"]'); if (b) b.focus() }
+  }
+  $('#grade').addEventListener('click', function (e) { var b = e.target.closest('button.dia'); if (b) selecionar(+b.dataset.d) })
+  $('#grade').addEventListener('keydown', function (e) {
+    var k = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7 }[e.key]
+    if (!k || !e.target.classList.contains('dia')) return
+    e.preventDefault(); selecionar(sel + k, true)
+  })
+
+  // ── mês ‹ › e Hoje (só outubro tem dados no protótipo) ──
+  function mostrarMes () {
+    var m = 9 + mesOff, ano = 2026 + Math.floor(m / 12); m = ((m % 12) + 12) % 12
+    var nome = MESES[m] + ' de ' + ano
+    $('#mesNome').textContent = nome
+    var fora = mesOff !== 0
+    $('#grade').hidden = fora; $('#dpanel').hidden = fora; $('#foraMes').hidden = !fora
+    $('#foraTit').textContent = nome
+  }
+  $('#mesAnt').addEventListener('click', function () { mesOff--; mostrarMes() })
+  $('#mesProx').addEventListener('click', function () { mesOff++; mostrarMes() })
+  function voltaHoje () { mesOff = 0; mostrarMes(); selecionar(HOJE, true) }
+  $('#hoje').addEventListener('click', voltaHoje)
+  document.querySelector('[data-volta-hoje]').addEventListener('click', voltaHoje)
+
+  // ── painel de captura / edição ──
+  var painel = $('#painel'), scrim = document.querySelector('.scrim'), camada = document.querySelector('.camada')
+  var form = $('#pform'), confirma = $('#p-confirma'), erro = $('#p-erro')
+  var modo = 'tx', tipo = 'out', atual = null, volta = null
+  var contas = F.contas.map(function (c) { return c.nome })
+  $('#p-orig').innerHTML = contas.map(function (n) { return '<option>' + n + '</option>' }).join('')
+  $('#p-dest').innerHTML = contas.map(function (n) { return '<option>' + n + '</option>' }).join('')
+  function campo (n, on) { painel.querySelector('[data-campo="' + n + '"]').hidden = !on }
+  function setTipo (t) {
+    tipo = t
+    painel.querySelectorAll('.tipo .chip').forEach(function (c) { var on = c.dataset.tipo === t; c.classList.toggle('on', on); c.setAttribute('aria-pressed', on) })
+    campo('cat', modo !== 'prov' && t !== 'tr'); campo('contas', modo === 'tx' && t === 'tr')
+  }
+  function valorCampo (v) { return Math.abs(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }
+  function parseValor (s) { var n = parseFloat(String(s).replace(/\./g, '').replace(',', '.')); return isNaN(n) ? 0 : Math.abs(n) }
+  function aviso (html) { var a = $('#p-aviso'); a.innerHTML = html || ''; a.hidden = !html }
+  function abrir (m, item, d, gatilho) {
+    modo = m; atual = item; volta = gatilho || document.activeElement
+    confirma.hidden = true; erro.textContent = ''; form.reset()
+    var ehProv = m === 'prov'
+    ;['tipo', 'desc', 'valor', 'obs'].forEach(function (n) { campo(n, !ehProv) })
+    $('#p-prov').hidden = !ehProv
+    painel.querySelector('[data-tipo="tr"]').hidden = m !== 'tx'
+    $('#p-desc-l').textContent = m === 'plan' ? 'Nome' : 'Descrição'
+    $('#p-obs-l').textContent = m === 'plan' ? 'Notas' : 'Observações'
+    painel.querySelector('[data-tipo="out"]').textContent = m === 'plan' ? 'Saída' : 'Despesa'
+    painel.querySelector('[data-tipo="in"]').textContent = m === 'plan' ? 'Entrada' : 'Receita'
+    form.data.min = m === 'plan' ? iso(HOJE) : '2026-10-01'
+    $('#p-eb').innerHTML = '<b>01</b> · ' + (m === 'plan' ? 'Evento planejado' : ehProv ? 'Provento' : 'Transação')
+    $('#p-excluir').hidden = !item || ehProv
+    $('#p-salvar').hidden = ehProv
+    $('#p-salvar').textContent = item ? 'Salvar' : 'Registrar'
+    if (ehProv) {
+      campo('cat', false); campo('contas', false)
+      $('#p-titulo').textContent = item.desc
+      $('#p-prov').innerHTML = '<div><span class="eyebrow">' + item.d + ' de outubro · previsto</span><b class="num">+ ' + brl(item.valor) + '</b></div>' +
+        '<p>Vem de <strong>06 Patrimônio</strong>: provento anunciado de MXRF11, pago na conta em ' + item.d + ' de outubro. Aqui ele só entra na projeção; muda quando o pagamento for registrado.</p>' +
+        '<p><a href="#" title="06 Patrimônio, Fase 4">Abrir em 06 Patrimônio →</a></p>'
+      aviso('')
+    } else if (item) {
+      $('#p-titulo').textContent = m === 'plan' ? 'Editar evento planejado' : 'Editar transação'
+      form.desc.value = item.desc; form.valor.value = valorCampo(item.valor); form.data.value = iso(item.d); form.obs.value = item.obs || ''
+      if (item.cat) form.cat.value = item.cat
+      setTipo(item.tipo === 'transferencia' ? 'tr' : item.valor > 0 ? 'in' : 'out')
+      if (item.tipo === 'transferencia') { form.orig.value = item.orig; form.dest.value = item.dest }
+      aviso(item.tipo === 'recorrente' ? 'Editar muda só este lançamento. A recorrente continua igual em <a href="financas-recorrentes.html">Recorrentes</a>.'
+        : m === 'plan' ? 'Evento de <a href="financas-planejamento.html">Planejamento</a>. Confirmar ou excluir vale lá também.'
+        : item.d > HOJE ? 'Data futura: fica como previsto até o dia chegar.' : '')
+      $('#p-conf-txt').innerHTML = 'Excluir <b>' + esc(item.desc) + '</b>' + (item.tipo === 'recorrente' ? ' só neste dia? A recorrente continua.' : '? Não dá para desfazer.')
+    } else {
+      $('#p-titulo').textContent = (m === 'plan' ? 'Novo evento planejado' : 'Nova transação') + ' · ' + d + ' de outubro'
+      form.data.value = iso(d); setTipo('out')
+      form.cat.value = 'Mercado'; form.orig.value = contas[0]; form.dest.value = contas[1]
+      aviso(d > HOJE && m === 'tx' ? 'Data futura: fica como previsto até o dia chegar.' : '')
+    }
+    painel.classList.add('open'); scrim.classList.add('open')
+    if (!ehProv) form.desc.focus({ preventScroll: true }); else painel.querySelector('.x').focus()
+  }
+  function fechar () {
+    if (!painel.classList.contains('open')) return
+    painel.classList.remove('open')
+    if (!camada || !camada.classList.contains('open')) scrim.classList.remove('open')
+    if (volta && document.contains(volta)) volta.focus({ preventScroll: true })
+    atual = null
+  }
+  document.addEventListener('click', function (e) {
+    var add = e.target.closest('[data-add]')
+    if (add && !add.disabled) { abrir(add.dataset.add, null, +(add.dataset.dia || sel), add); return }
+    var it = e.target.closest('button.it')
+    if (it) {
+      var i = itens.filter(function (x) { return x.id === it.dataset.id })[0]; if (!i) return
+      abrir(i.tipo === 'provento' ? 'prov' : i.tipo === 'planejado' ? 'plan' : 'tx', i, i.d, it)
+    }
+  })
+  painel.querySelector('.x').addEventListener('click', fechar)
+  scrim.addEventListener('click', fechar)
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') fechar() })
+  painel.querySelectorAll('.tipo .chip').forEach(function (c) { c.addEventListener('click', function () { setTipo(c.dataset.tipo) }) })
+  form.cat.addEventListener('change', function () { if (/^Renda/.test(this.value) && tipo === 'out') setTipo('in') })
+  form.addEventListener('submit', function (e) {
+    e.preventDefault()
+    var desc = form.desc.value.trim(), val = parseValor(form.valor.value), dt = form.data.value
+    var d = /^2026-10-(\d\d)$/.test(dt) ? +dt.slice(8) : 0
+    if (tipo === 'tr' && !desc) desc = form.orig.value + ' → ' + form.dest.value
+    if (!desc) { erro.textContent = modo === 'plan' ? 'Faltou o nome.' : 'Faltou a descrição.'; form.desc.focus(); return }
+    if (!val) { erro.textContent = 'Faltou o valor.'; form.valor.focus(); return }
+    if (!d) { erro.textContent = 'Escolha um dia de outubro.'; form.data.focus(); return }
+    if (modo === 'plan' && d < HOJE) { erro.textContent = 'Eventos planejados começam hoje ou depois.'; form.data.focus(); return }
+    if (tipo === 'tr' && form.orig.value === form.dest.value) { erro.textContent = 'Origem e destino precisam ser contas diferentes.'; form.dest.focus(); return }
+    var i = atual || { id: 'i' + (seq++) }
+    i.desc = desc; i.d = d; i.obs = form.obs.value.trim()
+    if (tipo === 'tr') { i.tipo = 'transferencia'; i.valor = val; i.orig = form.orig.value; i.dest = form.dest.value; i.cat = '' }
+    else {
+      i.valor = (tipo === 'in' ? 1 : -1) * val; i.cat = form.cat.value
+      if (modo === 'plan') i.tipo = 'planejado'
+      else if (atual && atual.tipo === 'recorrente') { i.editada = true }
+      else i.tipo = tipo === 'in' ? 'entrada' : 'saida'
+    }
+    if (!atual) itens.push(i)
+    novo = i.id; sel = d
+    fechar(); tudo()
+    var b = document.querySelector('.it[data-id="' + i.id + '"]'); if (b) b.focus({ preventScroll: true })
+    setTimeout(function () { var n = document.querySelector('.it.nova'); if (n) n.classList.remove('nova'); novo = null }, 1900)
+  })
+  $('#p-excluir').addEventListener('click', function () { confirma.hidden = false; $('#p-conf-sim').focus() })
+  $('#p-conf-nao').addEventListener('click', function () { confirma.hidden = true; $('#p-excluir').focus() })
+  $('#p-conf-sim').addEventListener('click', function () {
+    if (!atual) return
+    var id = atual.id; itens = itens.filter(function (x) { return x.id !== id })
+    volta = null; fechar(); tudo()
+    var b = document.querySelector('.dia[data-d="' + sel + '"]'); if (b) b.focus({ preventScroll: true })
+  })
+
+  tudo()
+})()
+</script>
+<script type="module">import { ligarSy40 } from '../shared/sy40.js'; ligarSy40()</script>
+</body>
+</html>

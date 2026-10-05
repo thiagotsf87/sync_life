@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife · Finanças · Relatórios · v5</title>
+<!-- Fase 2 · Relatórios (brief §4.6). Template T1 reduzido, só evidência:
+     voltar → cabeçalho curto (período em pílulas + Sy em 1 linha) → 4 números hairline → evidência em 2 colunas
+     (receitas × despesas | categorias) → (poupança × meta | top 5) → mês a mês recolhido → exportar → Mais em Finanças.
+     Trocar o período re-renderiza na hora (sem botão Gerar). Sem JS: nasce completo no período padrão (E-02).
+     Gerado a partir de um template + rel.js (o HTML de cada bloco [data-r] é a saída do mesmo render, pré-calculada). -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Cline x1='32' y1='6' x2='32' y2='13' stroke='%23a1ff62' stroke-width='6' stroke-linecap='round'/%3E%3Cpolygon points='32,10 39,34 25,34' fill='%236840ff'/%3E%3Cpolygon points='32,57 25,34 39,34' fill='%23575353'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/base.css">
+<link rel="stylesheet" href="../shared/app.css">
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.185.1/build/three.module.js"}}</script>
+<style>
+  .wrap{--wrap-max:1180px;padding-left:clamp(20px,4vw,56px);padding-right:clamp(20px,4vw,56px)}
+
+  /* ── navegação dentro de Finanças (brief §3.9) ── */
+  .voltar-top{display:inline-flex;margin-top:26px;font:500 12.5px var(--int);color:var(--t3);transition:color .3s var(--ease)}
+  .voltar-top:hover{color:var(--t1)}
+  .titulo{padding-top:18px}
+  .titulo .eyebrow a{transition:color .3s var(--ease)}
+  .titulo .eyebrow a:hover{color:var(--t1)}
+  .th-row{display:flex;justify-content:space-between;align-items:flex-end;gap:24px}
+  .per-sub{font:400 13.5px/1.5 var(--int);color:var(--t2);margin-top:8px}
+
+  /* candidata a shared: pílulas de período (mesma física do .chip; PRO como marca discreta, sem cadeado) */
+  .periodos{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+  .per{display:inline-flex;align-items:baseline;gap:7px;border:1px solid var(--line);border-radius:999px;background:transparent;
+    padding:8px 15px;font:500 12.5px var(--int);color:var(--t2);cursor:pointer;transition:border-color .3s var(--ease),color .3s var(--ease)}
+  .per:hover{border-color:var(--line-h);color:var(--t1)}
+  .per[aria-pressed="true"]{border-color:var(--roxo);color:var(--t1)}
+  .per .pro{font:700 9px var(--gro);letter-spacing:.16em;color:var(--t3)}
+  .custom{display:flex;align-items:center;gap:10px;margin-top:12px;font:400 12.5px var(--int);color:var(--t3)}
+  .custom .sel{margin-top:0;min-width:150px}
+  .custom .sel select{padding:9px 36px 9px 14px;font-size:13px}
+  .sy{margin-top:24px}
+
+  /* troca de período: um respiro, nada pisca (só com .anim) */
+  .anim [data-rel].troca .nums .v,.anim [data-rel].troca .plot,.anim [data-rel].troca [data-r="c2"],.anim [data-rel].troca [data-r="c4"]{animation:troca .45s var(--ease)}
+  @keyframes troca{from{opacity:.35}to{opacity:1}}
+
+  /* ── blocos de evidência ── */
+  .blk-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px}
+  .leg{display:flex;gap:16px;font:500 11.5px var(--int);color:var(--t3)}
+  .leg i{display:inline-block;width:14px;height:2px;vertical-align:middle;margin-right:6px;background:var(--ele)}
+  .leg i.dsp{background:repeating-linear-gradient(90deg,var(--t2) 0 4px,transparent 4px 7px)}
+  .leg i.la{background:var(--t2);height:4px;border-radius:2px}
+  .leg i.lb{background:var(--line-h);height:2px}
+  .leg i.mt{background:repeating-linear-gradient(90deg,var(--t1) 0 4px,transparent 4px 7px);opacity:.6}
+  .leg i.ok{height:8px;width:8px;border-radius:2px}
+  /* candidata a shared: linha opcional de Sy sobre um gráfico (sem o corpo de 40px: o corpo fica só no topo) */
+  .syl{font:400 13px/1.55 var(--int);color:var(--t2);margin-top:10px;max-width:60ch}
+  .syl::before{content:"Sy";font:700 10.5px var(--gro);letter-spacing:.08em;color:var(--roxo);margin-right:9px}
+  .syl:empty{display:none}
+  .syl .num{color:var(--t1);font-weight:600}
+
+  /* candidata a shared: gráfico de colunas por mês (SVG à mão, estilo do fluxo do hub) */
+  .cht{margin-top:18px;outline:none;cursor:crosshair}
+  .cht:focus-visible .plot{outline:1px solid rgba(104,64,255,.55);outline-offset:6px;border-radius:4px}
+  .plot{position:relative}
+  .plot svg{display:block;width:100%;height:var(--h)}
+  .yl{position:absolute;right:0;transform:translateY(-130%);font:500 10.5px var(--gro);color:var(--t3);pointer-events:none}
+  .zona{position:absolute;top:-2px;transform:translateY(-100%);padding:0 0 4px 8px;font:700 9.5px var(--gro);letter-spacing:.16em;text-transform:uppercase;color:var(--t3);white-space:nowrap;pointer-events:none}
+  .zona:first-of-type{padding-left:0}
+  .guia{position:absolute;top:0;bottom:0;width:1px;background:var(--line-h);opacity:0;pointer-events:none;transition:opacity .2s var(--ease)}
+  .xl{position:relative;height:16px;margin-top:8px}
+  .xl span{position:absolute;transform:translateX(-50%);font:700 10px var(--gro);letter-spacing:.14em;text-transform:uppercase;color:var(--t3)}
+  .xl span.ant{opacity:.5}
+  .vl{position:absolute;transform:translate(-50%,-130%);font:600 11.5px var(--gro);color:var(--t2);pointer-events:none;background:var(--bg);padding:0 4px;line-height:1.3}
+  .vl.ok{color:var(--ele)}
+  .vl.ant{opacity:.45}
+  .meta-l{position:absolute;right:0;transform:translateY(-120%);font:600 10.5px var(--gro);color:var(--t2);pointer-events:none}
+  .c1 .cht{margin-top:30px}
+
+  /* candidata a shared: tooltip de gráfico (objeto escuro, E-11) */
+  .tip{position:fixed;z-index:85;min-width:190px;max-width:260px;background:#0f0d0d;border:1px solid var(--line-h);border-radius:12px;padding:11px 13px;
+    box-shadow:0 18px 40px -18px rgba(0,0,0,.8);pointer-events:none;font:400 12px/1.4 var(--int);color:var(--t2)}
+  .tip b{display:block;font:600 13px var(--gro);letter-spacing:-.01em;color:var(--t1);margin-bottom:6px}
+  .tip b small{font:400 11.5px var(--int);color:var(--t3)}
+  .tip span{display:flex;align-items:center;gap:0;padding:2px 0}
+  .tip em{font-style:normal;font-weight:600;color:var(--t1);margin-left:auto;padding-left:16px}
+  .tip hr{border:none;border-top:1px solid var(--line);margin:6px 0}
+  .tip .k{display:inline-block;width:10px;height:2px;margin-right:7px;vertical-align:middle;background:var(--ele)}
+  .tip .k.dsp{background:var(--t2)}
+  .tip span .k + *{margin-left:0}
+
+  /* categorias atual × anterior (linhas hairline com duas trilhas) */
+  .crow{display:grid;grid-template-columns:1fr 64px 92px 64px;gap:6px 16px;align-items:baseline;padding:13px 0 14px;border-bottom:1px solid var(--line);
+    outline:none;transition:padding-left .35s var(--ease)}
+  .crow:hover,.crow.hl,.crow:focus-visible{padding-left:6px}
+  .crow .nm{font:500 14px var(--int);color:var(--t1)}
+  .crow .tr{width:60px;height:16px;align-self:center}
+  .crow .v{font:700 13px var(--gro);color:var(--t1);text-align:right;white-space:nowrap}
+  .crow .dl{font:600 12px var(--gro);color:var(--t3);text-align:right;white-space:nowrap}
+  .crow.up .dl{color:var(--coral)}
+  .crow.down .dl{color:var(--ele)}
+  .crow .bars{grid-column:1/-1;display:flex;flex-direction:column;gap:3px}
+  .crow .bars i{display:block;height:4px;width:var(--w);background:var(--t2);border-radius:2px}
+  .crow .bars i.b{height:2px;background:var(--line-h)}
+  .outras{font:400 12px var(--int);color:var(--t3);padding:14px 0 0}
+  .outras .num{color:var(--t2)}
+
+  /* top 5 despesas */
+  .top{list-style:none;margin-top:8px}
+  .trow{display:grid;grid-template-columns:28px 1fr auto;gap:4px 14px;align-items:baseline;padding:13px 0 14px;border-bottom:1px solid var(--line);outline:none;transition:padding-left .35s var(--ease)}
+  .trow:hover,.trow.hl,.trow:focus-visible{padding-left:6px}
+  .trow .ix{font:700 12px var(--gro);color:var(--t3)}
+  .trow.hl .ix,.trow:hover .ix{color:var(--roxo)}
+  .trow .ds{display:block;font:500 14px var(--int);color:var(--t1)}
+  .trow .mt{display:block;font:400 11.5px var(--int);color:var(--t3);margin-top:2px}
+  .trow .v{font:700 13.5px var(--gro);color:var(--t2);white-space:nowrap}
+  .trow .tbar{grid-column:2/-1;height:3px;background:var(--s2);border-radius:2px;overflow:hidden;margin-top:6px}
+  .trow .tbar i{display:block;height:100%;width:var(--w);background:var(--t3);border-radius:2px}
+  .vazio-top{font:400 13px var(--int);color:var(--t3);padding:16px 0}
+
+  /* mês a mês (recolhido) */
+  .mm{padding:30px 0 34px;border-bottom:1px solid var(--line)}
+  .mm summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:baseline;gap:16px}
+  .mm summary::-webkit-details-marker{display:none}
+  .mm summary .eyebrow::after{content:" +";color:var(--roxo)}
+  .mm[open] summary .eyebrow::after{content:" –"}
+  .mm summary small{font:400 12px var(--int);color:var(--t3)}
+  .mm table{width:100%;border-collapse:collapse;margin-top:16px}
+  .mm th{font:700 9.5px var(--gro);letter-spacing:.16em;text-transform:uppercase;color:var(--t3);text-align:right;padding:10px 0 10px 14px;border-bottom:1px solid var(--line-h);white-space:nowrap}
+  .mm th:first-child,.mm td:first-child{text-align:left;padding-left:0}
+  .mm td{font:400 13px var(--int);color:var(--t2);text-align:right;padding:11px 0 11px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
+  .mm td:first-child{color:var(--t1);font-weight:500}
+  .mm td small{font-size:11px;color:var(--t3);font-weight:400}
+  .mm td.num{font-family:var(--gro);font-weight:600;font-size:12.5px}
+  .mm tfoot td{color:var(--t1);border-bottom:none;font-weight:600}
+
+  /* exportar + mais em Finanças */
+  .exp{display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding:26px 0;border-bottom:1px solid var(--line)}
+  .exp .fmt{font:400 12px var(--int);color:var(--t3)}
+  .exp [data-csv-ok]{font:500 12.5px var(--int);color:var(--ele)}
+  .mais{font:400 13px/1.9 var(--int);color:var(--t3);padding:22px 0 60px}
+  .mais a{color:var(--t2);margin-right:14px;transition:color .3s var(--ease)}
+  .mais a:hover{color:var(--t1)}
+
+  /* anotação do protótipo */
+  .proto-estados{border-top:3px double var(--line-h);margin-top:24px;padding-top:34px;padding-bottom:80px}
+  .proto-estados > .wrap > .eyebrow{color:var(--coral)}
+  .pe-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(24px,3vw,48px);margin-top:26px;align-items:start}
+  .pe h4{font:700 10px var(--gro);letter-spacing:.18em;text-transform:uppercase;color:var(--t3);margin-bottom:14px}
+  .pe p{font:400 12.5px/1.6 var(--int);color:var(--t2)}
+  .pe p + p{margin-top:8px}
+  .pe .vazio{font:500 15px var(--gro);letter-spacing:-.01em;color:var(--t1);margin-bottom:10px}
+  .pe .vazio small{display:block;font:400 12.5px var(--int);color:var(--t3);margin-top:6px}
+  .pe .skel{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .pe .skel span{display:block;height:28px;border-radius:6px;background:var(--s2)}
+  .pe .skel.l span{height:90px;grid-column:1/-1}
+  .anim .pe .skel span{animation:pulso 1.4s var(--ease) infinite alternate}
+  @keyframes pulso{from{opacity:.55}to{opacity:1}}
+  .pe .erro{display:flex;justify-content:space-between;align-items:baseline;gap:12px;border-left:3px solid var(--coral);padding:10px 14px;font:400 13px var(--int);color:var(--coral)}
+  .pe .erro button{background:none;border:none;color:var(--t1);font:600 12.5px var(--int);cursor:pointer;padding:0;white-space:nowrap}
+  .pe .per[disabled]{opacity:.4;cursor:default}
+  .pe .acts-pro{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+  .notas{margin-top:44px;max-width:860px}
+  .notas h3,.fontes-sy h3{font:500 22px/1.2 var(--gro);letter-spacing:-.025em;margin-top:8px}
+  .notas ul{list-style:none;margin-top:14px}
+  .notas li{padding:11px 0;border-bottom:1px solid var(--line);font:400 13px/1.6 var(--int);color:var(--t2)}
+  .notas li b{color:var(--t1);font-weight:600}
+  .fontes-sy{margin-top:44px;max-width:760px}
+  .fontes-sy p{font:400 13.5px/1.6 var(--int);color:var(--t2);margin-top:10px}
+  .fontes-sy ul{list-style:none;margin-top:18px}
+  .fontes-sy li{display:grid;grid-template-columns:220px 1fr;gap:18px;padding:13px 0;border-bottom:1px solid var(--line);font:400 13px/1.55 var(--int);color:var(--t2)}
+  .fontes-sy li code{font:600 12.5px var(--gro);color:var(--t1);letter-spacing:-.01em}
+  .fontes-sy li code small{font:400 11.5px var(--int);color:var(--t3)}
+  @media (max-width:960px){
+    .th-row{flex-direction:column;align-items:flex-start}
+    .pe-grid{grid-template-columns:1fr}
+    .fontes-sy li{grid-template-columns:1fr}
+    .mm{overflow-x:auto}
+  }
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- chrome -->
+<header class="bar">
+  <a class="brand" href="meu-dia-d.html">
+    <svg width="19" height="19" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="2" x2="32" y2="11" stroke="#a1ff62" stroke-width="7" stroke-linecap="round"/><polygon points="32,8 40,34 24,34" fill="#6840ff"/><polygon points="32,58 24,34 40,34" fill="#f4f4f4" opacity=".35"/></svg>
+    <span class="wm">Sync<em>Life</em></span></a>
+  <span class="date">Sexta · 3 de outubro de 2026</span>
+  <div class="acts">
+    <button class="btn-sm ghost coach-pill" type="button" data-coach-open>
+      <svg width="15" height="15" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="5" x2="32" y2="12" stroke="#a1ff62" stroke-width="4.5" stroke-linecap="round"/><line x1="59" y1="32" x2="52" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="32" y1="59" x2="32" y2="52" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="5" y1="32" x2="12" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><polygon points="32,8 38,32 26,32" fill="#6840ff"/><polygon points="32,55 26,32 38,32" fill="#f4f4f4" opacity=".3"/><circle cx="32" cy="32" r="3.5" fill="#151313"/></svg>
+      Fale com Sy</button>
+    <a class="btn-sm roxo" href="financas-transacoes.html">+ Registrar</a>
+  </div>
+</header>
+<nav class="modbar" aria-label="Áreas">
+  <div class="in">
+    <a href="meu-dia-d.html">Meu dia</a>
+    <a class="on" href="financas-a.html"><span class="n">01</span>Finanças</a>
+    <a href="#"><span class="n">02</span>Futuro</a>
+    <a href="#"><span class="n">03</span>Tempo</a>
+    <a href="#"><span class="n">04</span>Corpo</a>
+    <a href="#"><span class="n">05</span>Mente</a>
+    <a href="#"><span class="n">06</span>Patrimônio</a>
+    <a href="#"><span class="n">07</span>Carreira</a>
+    <a href="#"><span class="n">08</span>Experiências</a>
+    <a href="#">Conquistas</a>
+    <a href="#">Configurações</a>
+  </div>
+</nav>
+
+<main data-rel>
+  <div class="wrap">
+    <a class="voltar-top" href="financas-a.html">← Finanças · outubro</a>
+
+    <!-- 1. cabeçalho curto: período em pílulas + Sy em 1 linha -->
+    <header class="titulo boot b1">
+      <p class="eyebrow"><a href="financas-a.html"><b>01</b> · Finanças</a></p>
+      <div class="th-row">
+        <div>
+          <h1>Relatórios</h1>
+          <p class="per-sub" data-r="sub" aria-live="polite">Julho a setembro · 3 meses · 97 transações · comparado com abril a junho<!--/r--></p>
+        </div>
+        <button class="btn-sm ghost" type="button" data-csv>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><polyline points="7 10 12 15 17 10"/><line x1="5" y1="20" x2="19" y2="20"/></svg>
+          Exportar CSV</button>
+      </div>
+      <div class="periodos" role="group" aria-label="Período">
+        <button class="per" type="button" data-k="mes" aria-pressed="false">Mês atual</button>
+        <button class="per" type="button" data-k="tri" aria-pressed="true">Último trimestre</button>
+        <button class="per" type="button" data-k="sem" aria-pressed="false">Último semestre<span class="pro">PRO</span></button>
+        <button class="per" type="button" data-k="12m" aria-pressed="false">Últimos 12 meses<span class="pro">PRO</span></button>
+        <button class="per" type="button" data-k="ano" aria-pressed="false">Ano atual</button>
+        <button class="per" type="button" data-k="custom" aria-pressed="false">Personalizado<span class="pro">PRO</span></button>
+      </div>
+      <div class="custom" id="custom" hidden>
+        <span>De</span>
+        <div class="sel"><select id="per-de" aria-label="Mês inicial"><option value="abr">abril</option><option value="mai">maio</option><option value="jun">junho</option><option value="jul">julho</option><option value="ago" selected>agosto</option><option value="set">setembro</option><option value="out">outubro</option></select></div>
+        <span>até</span>
+        <div class="sel"><select id="per-ate" aria-label="Mês final"><option value="abr">abril</option><option value="mai">maio</option><option value="jun">junho</option><option value="jul">julho</option><option value="ago">agosto</option><option value="set" selected>setembro</option><option value="out">outubro</option></select></div>
+      </div>
+      <div class="sy">
+        <span class="sy40" aria-hidden="true"><canvas></canvas></span>
+        <div>
+          <p class="fala" data-r="fala">Você gastou <b class="num">3,6%</b> menos que em abril a junho, e a poupança média ficou em <b class="num">30%</b>, na meta.<!--/r--></p>
+          <p class="fontes" data-r="fontes">Atualizado às 7h12 · fontes: 97 transações, 5 categorias, meta de poupança de 30%<!--/r--></p>
+          <button class="falar" type="button" data-coach-open data-coach-seed="Sobre este relatório: ">Falar com Sy sobre este período →</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- 2. quatro números (hairline) com delta contra o período anterior -->
+    <section class="nums boot b2" aria-label="Números do período" data-r="nums"><div><p class="eyebrow">Receitas</p><div class="v num" data-cnt="14280" data-prefix="R$&nbsp;">R$&nbsp;14.280</div><div class="d num ele">+0,8% vs abril a junho</div></div><div><p class="eyebrow">Despesas</p><div class="v num" data-cnt="9757" data-prefix="R$&nbsp;">R$&nbsp;9.757</div><div class="d num ele">-3,6% vs abril a junho</div></div><div><p class="eyebrow">Saldo</p><div class="v num" data-cnt="4523" data-prefix="R$&nbsp;">R$&nbsp;4.523</div><div class="d num ele">+11,7% vs abril a junho</div></div><div><p class="eyebrow">Poupança média</p><div class="v num" data-cnt="30" data-suffix="%">30%</div><div class="d num ele">Meta: 30% · +3 pontos</div></div><!--/r--></section>
+
+    <!-- 3. evidência: receitas × despesas | categorias -->
+    <section class="duo boot b3" aria-label="Receitas, despesas e categorias">
+      <div class="c1">
+        <div class="blk-head">
+          <p class="eyebrow">Receitas × despesas</p>
+          <div class="leg" aria-hidden="true"><span><i></i>Receitas</span><span><i class="dsp"></i>Despesas</span></div>
+        </div>
+        <p class="syl" data-r="sy1">Agosto foi o melhor mês: sobraram <span class="num">R$&nbsp;1.650</span>.<!--/r--></p>
+        <div class="cht" data-chart="c1" tabindex="0" role="img" aria-label="Receitas e despesas por mês, julho a setembro: julho R$ 4.750 e R$ 3.520; agosto R$ 4.900 e R$ 3.250; setembro R$ 4.630 e R$ 2.987" data-r="c1"><div class="plot" style="--h:200px"><svg viewBox="0 0 600 200" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a1ff62" stop-opacity=".2"/><stop offset="1" stop-color="#a1ff62" stop-opacity="0"/></linearGradient></defs><line x1="0" y1="194.0" x2="600" y2="194.0" stroke="rgba(255,255,255,.08)" vector-effect="non-scaling-stroke"/><line x1="0" y1="104.0" x2="600" y2="104.0" stroke="rgba(255,255,255,.08)" vector-effect="non-scaling-stroke"/><line x1="0" y1="14.0" x2="600" y2="14.0" stroke="rgba(255,255,255,.08)" vector-effect="non-scaling-stroke"/><path d="M30.0 65.0 L138.0 60.8 L246.0 56.0 L354.0 59.0 L462.0 50.0 L570.0 66.2 L570.0 200 L30.0 200 Z" fill="url(#g1)"/><path d="M30.0 141.2 L138.0 146.6 L246.0 137.0 L354.0 132.8 L462.0 149.0 L570.0 164.8" fill="none" stroke="#b8b8b8" stroke-width="1.6" stroke-dasharray="5 5" stroke-linejoin="round" vector-effect="non-scaling-stroke"/><path d="M30.0 65.0 L138.0 60.8 L246.0 56.0 L354.0 59.0 L462.0 50.0 L570.0 66.2" fill="none" stroke="#a1ff62" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M30.0 141.2h0" stroke="#b8b8b8" stroke-width="6" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M30.0 65.0h0" stroke="#a1ff62" stroke-width="7" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M138.0 146.6h0" stroke="#b8b8b8" stroke-width="6" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M138.0 60.8h0" stroke="#a1ff62" stroke-width="7" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M246.0 137.0h0" stroke="#b8b8b8" stroke-width="6" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M246.0 56.0h0" stroke="#a1ff62" stroke-width="7" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M354.0 132.8h0" stroke="#b8b8b8" stroke-width="6" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M354.0 59.0h0" stroke="#a1ff62" stroke-width="7" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M462.0 149.0h0" stroke="#b8b8b8" stroke-width="6" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M462.0 50.0h0" stroke="#a1ff62" stroke-width="7" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M570.0 164.8h0" stroke="#b8b8b8" stroke-width="6" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M570.0 66.2h0" stroke="#a1ff62" stroke-width="9" stroke-linecap="round" vector-effect="non-scaling-stroke"/><rect x="0" y="0" width="300.0" height="200" fill="#151313" fill-opacity=".62"/><line x1="300.0" y1="0" x2="300.0" y2="200" stroke="rgba(255,255,255,.18)" stroke-dasharray="2 4" vector-effect="non-scaling-stroke"/></svg><span class="yl num" style="top:97.00%">R$&nbsp;2,5k</span><span class="yl num" style="top:7.00%">R$&nbsp;5,5k</span><span class="zona" style="left:0">abril a junho</span><span class="zona" style="left:50.00%">julho a setembro</span><i class="guia" aria-hidden="true"></i></div><div class="xl" aria-hidden="true"><span class="ant" style="left:5.00%">abr</span><span class="ant" style="left:23.00%">mai</span><span class="ant" style="left:41.00%">jun</span><span class="" style="left:59.00%">jul</span><span class="" style="left:77.00%">ago</span><span class="" style="left:95.00%">set</span></div><!--/r--></div>
+      </div>
+      <div>
+        <div class="blk-head">
+          <p class="eyebrow">Categorias</p>
+          <div class="leg" aria-hidden="true" data-r="leg2"><span><i class="la"></i>julho a setembro</span><span><i class="lb"></i>abril a junho</span><!--/r--></div>
+        </div>
+        <p class="syl" data-r="sy2">Mercado subiu <span class="num">8,2%</span>; foi a única categoria acima de abril a junho.<!--/r--></p>
+        <div data-r="c2"><div class="crow" data-c="Moradia" tabindex="0"><span class="nm">Moradia</span><svg class="tr" viewBox="0 0 60 16" preserveAspectRatio="none" aria-hidden="true"><path d="M0.0 14.0 L30.0 14.0 L60.0 14.0" fill="none" stroke="#b8b8b8" stroke-width="1.4" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg><span class="v num">R$&nbsp;3.720</span><span class="dl num">igual</span><div class="bars"><i class="a" style="--w:100.0%"></i><i class="b" style="--w:100.0%"></i></div></div><div class="crow up" data-c="Mercado" tabindex="0"><span class="nm">Mercado</span><svg class="tr" viewBox="0 0 60 16" preserveAspectRatio="none" aria-hidden="true"><path d="M0.0 8.8 L30.0 14.0 L60.0 2.0" fill="none" stroke="#b8b8b8" stroke-width="1.4" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg><span class="v num">R$&nbsp;1.936</span><span class="dl num">+8,2%</span><div class="bars"><i class="a" style="--w:52.0%"></i><i class="b" style="--w:48.1%"></i></div></div><div class="crow down" data-c="Lazer" tabindex="0"><span class="nm">Lazer</span><svg class="tr" viewBox="0 0 60 16" preserveAspectRatio="none" aria-hidden="true"><path d="M0.0 2.0 L30.0 10.3 L60.0 14.0" fill="none" stroke="#b8b8b8" stroke-width="1.4" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg><span class="v num">R$&nbsp;1.140</span><span class="dl num">-0,9%</span><div class="bars"><i class="a" style="--w:30.6%"></i><i class="b" style="--w:30.9%"></i></div></div><div class="crow down" data-c="Transporte" tabindex="0"><span class="nm">Transporte</span><svg class="tr" viewBox="0 0 60 16" preserveAspectRatio="none" aria-hidden="true"><path d="M0.0 2.0 L30.0 8.0 L60.0 14.0" fill="none" stroke="#b8b8b8" stroke-width="1.4" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg><span class="v num">R$&nbsp;930</span><span class="dl num">-2,1%</span><div class="bars"><i class="a" style="--w:25.0%"></i><i class="b" style="--w:25.5%"></i></div></div><div class="crow down" data-c="Saúde" tabindex="0"><span class="nm">Saúde</span><svg class="tr" viewBox="0 0 60 16" preserveAspectRatio="none" aria-hidden="true"><path d="M0.0 2.0 L30.0 4.0 L60.0 14.0" fill="none" stroke="#b8b8b8" stroke-width="1.4" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg><span class="v num">R$&nbsp;530</span><span class="dl num">-15,9%</span><div class="bars"><i class="a" style="--w:14.2%"></i><i class="b" style="--w:16.9%"></i></div></div><p class="outras">Outras categorias somam <span class="num">R$&nbsp;1.501</span> (antes, <span class="num">R$&nbsp;1.880</span>).</p><!--/r--></div>
+      </div>
+    </section>
+
+    <!-- 4. poupança × meta | top 5 despesas -->
+    <section class="duo2 rv" aria-label="Poupança e maiores despesas">
+      <div>
+        <div class="blk-head">
+          <p class="eyebrow">Poupança por mês</p>
+          <div class="leg" aria-hidden="true" data-r="leg3"><span><i class="mt"></i>meta de 30%</span><span><i class="ok"></i>na meta</span><!--/r--></div>
+        </div>
+        <p class="syl" data-r="sy3">Você ficou na meta em <span class="num">2 de 3</span> meses; julho foi o mais baixo, <span class="num">25%</span>.<!--/r--></p>
+        <div class="cht" data-chart="c3" tabindex="0" role="img" aria-label="Poupança por mês contra a meta de 30%: julho 25%, agosto 33%, setembro 33%" data-r="c3"><div class="plot" style="--h:150px"><svg viewBox="0 0 600 150" preserveAspectRatio="none" aria-hidden="true"><line x1="0" y1="148" x2="600" y2="148" stroke="rgba(255,255,255,.12)" vector-effect="non-scaling-stroke"/><rect x="27.0" y="66.8" width="34.0" height="81.3" rx="2" fill="#817f7f" fill-opacity=".32"/><rect x="129.4" y="53.8" width="34.0" height="94.3" rx="2" fill="#817f7f" fill-opacity=".32"/><rect x="231.8" y="60.3" width="34.0" height="87.8" rx="2" fill="#817f7f" fill-opacity=".32"/><rect x="334.2" y="66.8" width="34.0" height="81.3" rx="2" fill="#817f7f"/><rect x="436.6" y="40.8" width="34.0" height="107.3" rx="2" fill="#a1ff62"/><rect x="539.0" y="40.8" width="34.0" height="107.3" rx="2" fill="#a1ff62"/><line x1="0" y1="50.5" x2="600" y2="50.5" stroke="#f4f4f4" stroke-opacity=".55" stroke-dasharray="4 4" vector-effect="non-scaling-stroke"/></svg><span class="vl num ant" style="left:7.33%;top:44.50%">25%</span><span class="vl num ant" style="left:24.40%;top:35.83%">29%</span><span class="vl num ant" style="left:41.47%;top:40.17%">27%</span><span class="vl num" style="left:58.53%;top:44.50%">25%</span><span class="vl num ok" style="left:75.60%;top:27.17%">33%</span><span class="vl num ok" style="left:92.67%;top:27.17%">33%</span><i class="guia" aria-hidden="true"></i></div><div class="xl" aria-hidden="true"><span class="ant" style="left:7.33%">abr</span><span class="ant" style="left:24.40%">mai</span><span class="ant" style="left:41.47%">jun</span><span class="" style="left:58.53%">jul</span><span class="" style="left:75.60%">ago</span><span class="" style="left:92.67%">set</span></div><!--/r--></div>
+      </div>
+      <div>
+        <p class="eyebrow">Maiores despesas</p>
+        <p class="syl" data-r="sy4">Moradia ocupa <span class="num">3 das 5</span> maiores saídas: o aluguel, que é fixo.<!--/r--></p>
+        <div data-r="c4"><ol class="top"><li class="trow" data-i="0" tabindex="0"><span class="ix num">1</span><div class="tx2"><span class="ds">Aluguel</span><span class="mt"><span class="num">1 jul</span> · Moradia</span></div><span class="v num">R$&nbsp;1.200,00</span><div class="tbar"><i style="--w:100.0%"></i></div></li><li class="trow" data-i="1" tabindex="0"><span class="ix num">2</span><div class="tx2"><span class="ds">Aluguel</span><span class="mt"><span class="num">1 ago</span> · Moradia</span></div><span class="v num">R$&nbsp;1.200,00</span><div class="tbar"><i style="--w:100.0%"></i></div></li><li class="trow" data-i="2" tabindex="0"><span class="ix num">3</span><div class="tx2"><span class="ds">Aluguel</span><span class="mt"><span class="num">1 set</span> · Moradia</span></div><span class="v num">R$&nbsp;1.200,00</span><div class="tbar"><i style="--w:100.0%"></i></div></li><li class="trow" data-i="3" tabindex="0"><span class="ix num">4</span><div class="tx2"><span class="ds">Mercado do mês</span><span class="mt"><span class="num">10 set</span> · Mercado</span></div><span class="v num">R$&nbsp;610,00</span><div class="tbar"><i style="--w:50.8%"></i></div></li><li class="trow" data-i="4" tabindex="0"><span class="ix num">5</span><div class="tx2"><span class="ds">Show no Allianz</span><span class="mt"><span class="num">14 jul</span> · Lazer</span></div><span class="v num">R$&nbsp;380,00</span><div class="tbar"><i style="--w:31.7%"></i></div></li></ol><!--/r--></div>
+      </div>
+    </section>
+
+    <!-- 5. mês a mês, recolhido -->
+    <details class="mm rv">
+      <summary><span class="eyebrow" data-r="tabsum">Mês a mês · 3 meses<!--/r--></span><small>Receitas, despesas por categoria, saldo e poupança</small></summary>
+      <div data-r="tab"><table><thead><tr><th>Mês</th><th>Receitas</th><th>Despesas</th><th>Moradia</th><th>Mercado</th><th>Lazer</th><th>Transporte</th><th>Saúde</th><th>Saldo</th><th>Poupança</th></tr></thead><tbody><tr><td>Julho</td><td class="num">R$&nbsp;4.750,00</td><td class="num">R$&nbsp;3.520,00</td><td class="num">R$&nbsp;1.240,00</td><td class="num">R$&nbsp;640,00</td><td class="num">R$&nbsp;470,00</td><td class="num">R$&nbsp;330,00</td><td class="num">R$&nbsp;200,00</td><td class="num">R$&nbsp;1.230,00</td><td class="num">25%</td></tr><tr><td>Agosto</td><td class="num">R$&nbsp;4.900,00</td><td class="num">R$&nbsp;3.250,00</td><td class="num">R$&nbsp;1.240,00</td><td class="num">R$&nbsp;590,00</td><td class="num">R$&nbsp;360,00</td><td class="num">R$&nbsp;310,00</td><td class="num">R$&nbsp;190,00</td><td class="num">R$&nbsp;1.650,00</td><td class="num">33%</td></tr><tr><td>Setembro</td><td class="num">R$&nbsp;4.630,00</td><td class="num">R$&nbsp;2.987,00</td><td class="num">R$&nbsp;1.240,00</td><td class="num">R$&nbsp;706,00</td><td class="num">R$&nbsp;310,00</td><td class="num">R$&nbsp;290,00</td><td class="num">R$&nbsp;140,00</td><td class="num">R$&nbsp;1.643,00</td><td class="num">33%</td></tr></tbody><tfoot><tr><td>Total</td><td class="num">R$&nbsp;14.280,00</td><td class="num">R$&nbsp;9.757,00</td><td class="num">R$&nbsp;3.720,00</td><td class="num">R$&nbsp;1.936,00</td><td class="num">R$&nbsp;1.140,00</td><td class="num">R$&nbsp;930,00</td><td class="num">R$&nbsp;530,00</td><td class="num">R$&nbsp;4.523,00</td><td class="num">30%</td></tr></tfoot></table><!--/r--></div>
+    </details>
+
+    <!-- 6. exportar -->
+    <div class="exp rv">
+      <button class="btn-sm ghost" type="button" data-csv>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><polyline points="7 10 12 15 17 10"/><line x1="5" y1="20" x2="19" y2="20"/></svg>
+        Exportar CSV do período</button>
+      <span class="fmt">Separado por ponto e vírgula, decimal com vírgula, abre direto no Excel e no Google Planilhas.</span>
+      <span data-csv-ok role="status"></span>
+    </div>
+
+    <p class="mais">Mais em Finanças:
+      <a href="financas-transacoes.html">Transações</a><a href="financas-orcamentos.html">Orçamentos</a><a href="financas-recorrentes.html">Recorrentes</a><a href="financas-planejamento.html">Planejamento</a><a href="financas-calendario.html">Calendário</a><a href="financas-importar.html">Importar extrato</a></p>
+  </div>
+</main>
+
+<!-- ═══ anotação do protótipo ═══ -->
+<section class="proto-estados" inert>
+  <div class="wrap">
+    <p class="eyebrow">Estados · anotação do protótipo</p>
+    <div class="pe-grid">
+      <div class="pe">
+        <h4>Vazio · nenhuma transação no período</h4>
+        <p class="vazio">Nada registrado de julho a setembro<small>Escolha outro período ou registre uma transação. Os números e os gráficos aparecem a partir dela.</small></p>
+        <a class="btn-sm ghost" href="#">Registrar transação</a>
+      </div>
+      <div class="pe">
+        <h4>Carregando · troca de período</h4>
+        <div class="skel" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+        <div class="skel l" aria-hidden="true" style="margin-top:12px"><span></span></div>
+        <p style="margin-top:12px">Sem botão Gerar: a pílula troca e os blocos recarregam no lugar. Na primeira carga, esqueleto; nas trocas seguintes, o conteúdo anterior fica a 35% até chegar o novo (nada pisca).</p>
+      </div>
+      <div class="pe">
+        <h4>Erro · linha coral</h4>
+        <div class="erro" role="alert"><span>Não consegui carregar este período.</span><button type="button">Tentar de novo</button></div>
+        <p style="margin-top:12px">A pílula continua marcada; os números do período anterior não ficam na tela.</p>
+      </div>
+      <div class="pe">
+        <h4>Limite do plano FREE</h4>
+        <div class="periodos" style="margin-top:0">
+          <button class="per" type="button" aria-pressed="true">Último trimestre</button>
+          <button class="per" type="button" disabled>Último semestre<span class="pro">PRO</span></button>
+          <button class="per" type="button" disabled>Últimos 12 meses<span class="pro">PRO</span></button>
+          <button class="per" type="button" disabled>Personalizado<span class="pro">PRO</span></button>
+        </div>
+        <p style="margin-top:12px">No FREE: Mês atual, Último trimestre e Ano atual; exportação só em CSV. As pílulas PRO ficam a 40% com a marca PRO (G-07, sem cadeado) e, tocadas, mostram uma linha: "Semestre, 12 meses e Personalizado fazem parte do PRO." Sem banner no topo.</p>
+      </div>
+      <div class="pe">
+        <h4>PRO · exportar em três formatos</h4>
+        <div class="acts-pro">
+          <button class="btn-sm ghost" type="button">Exportar CSV</button>
+          <button class="btn-sm ghost" type="button">PDF</button>
+          <button class="btn-sm ghost" type="button">Excel</button>
+        </div>
+        <p>O mock é PRO, mas a tela mostra só o CSV porque PDF e Excel ainda não existem no v3 (o botão PDF era decorativo). Entram aqui quando forem implementados; até lá, um formato só.</p>
+      </div>
+      <div class="pe">
+        <h4>Sem período anterior · mês parcial</h4>
+        <p><b>Último semestre, 12 meses e Ano atual</b> mostram "sem período anterior" no lugar do delta: o histórico do mock começa em abril de 2026. É o mesmo estado de quem começou a usar há pouco.</p>
+        <p><b>Mês atual</b> traz outubro até o dia 3 contra setembro inteiro, e diz isso no subtítulo e no tooltip ("até dia 3").</p>
+      </div>
+    </div>
+
+    <div class="notas">
+      <p class="eyebrow">Decisões deste protótipo</p>
+      <h3>Como os períodos usam o mock</h3>
+      <ul>
+        <li><b>Último trimestre</b> (padrão): julho a setembro contra abril a junho. Números iguais a <code>kpis</code> e <code>categorias</code> do mock (recalculados de <code>mensal</code>, conferem).</li>
+        <li><b>Mês atual</b>: outubro parcial contra setembro. <b>Último semestre</b>: abril a setembro. <b>Últimos 12 meses</b> e <b>Ano atual</b>: abril a outubro, os únicos meses do mock; por isso os dois mostram o mesmo número. <b>Personalizado</b>: dois selects de mês (abril a outubro); compara com o mesmo número de meses imediatamente antes quando existe.</li>
+        <li><b>Maiores despesas</b> saem das despesas detalhadas do mock: <code>topDespesas</code> (julho a setembro) e as saídas de outubro em <code>transacoes</code>. Em abril a junho não há detalhe, e a lista diz "Nenhuma despesa detalhada neste período". Em produção vem de todas as transações do período.</li>
+        <li><b>Contagem de transações</b> só aparece no trimestre (97, <code>transacoesNoPeriodo</code>); nos outros períodos as fontes de Sy dizem "transações de N meses".</li>
+        <li><b>CSV</b> no formato do mock (<code>;</code>, BOM UTF-8, decimal com vírgula, colunas Data;Descrição;Categoria;Tipo;Valor;Método;Notas). No protótipo as linhas são os totais mensais por categoria (o mock não tem as 97 transações); em produção, uma linha por transação, como no v3.</li>
+        <li><b>Paridade v3</b>: 6 períodos (3 PRO), comparação com o período anterior, 4 números, comparação de categorias, receitas × despesas, poupança × meta, top 5, tabela (aqui mês a mês, recolhida), CSV. A <b>tendência por categoria</b> do v3 (gráfico de linhas) virou a minilinha em cada categoria. A <b>análise de IA</b> do v3 virou a linha de Sy no topo e as linhas sobre os gráficos; a conversa continua na camada. Saiu o botão "Gerar relatório" (correção 6 do brief).</li>
+      </ul>
+    </div>
+
+    <div class="fontes-sy">
+      <p class="eyebrow"><b>01</b> · Finanças</p>
+      <h3>O que Sy lê aqui</h3>
+      <p>Pacote de contexto que esta tela entrega a Sy (o recorte de <code>buildModuleContext</code> para Finanças, limitado ao período escolhido e ao período anterior). É daqui que saem as fontes da linha do topo, das linhas sobre os gráficos e das respostas na camada.</p>
+      <ul>
+        <li><code>transactions <small>(período + anterior)</small></code><span>Colunas <code>date</code>, <code>type</code>, <code>amount</code>, <code>category_id</code>, <code>payment_method</code>, <code>description</code>. Base das receitas, despesas, saldo, top 5 e do CSV.</span></li>
+        <li><code>categories</code><span>Colunas <code>name</code>, <code>type</code>. Agrupa as despesas e dá os nomes da comparação e das minilinhas.</span></li>
+        <li><code>profiles</code><span>Colunas <code>savings_goal_pct</code> (a meta de 30%) e <code>monthly_income</code>. A meta é a linha tracejada da poupança e o critério de "na meta".</span></li>
+        <li><code>budgets <small>(só leitura de apoio)</small></code><span>Quando a pergunta na camada é "por que Mercado subiu?", Sy cruza com o teto do envelope. A tela não mostra orçamentos.</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- camada de Sy -->
+<div class="scrim"></div>
+<aside class="camada" aria-label="Sy">
+  <header class="chead">
+    <p class="eyebrow"><b>Sy</b> · lendo: seus relatórios</p>
+    <button class="x" type="button" aria-label="Fechar">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </header>
+  <div class="cbody">
+    <div class="cempty">
+      <p class="hello">Já li o período. O que você quer saber?</p>
+      <div class="csug">
+        <button class="chip" type="button">Por que o mercado subiu?</button>
+        <button class="chip" type="button">Compare outubro com setembro</button>
+        <button class="chip" type="button">Onde cortar R$&nbsp;200 por mês?</button>
+      </div>
+    </div>
+    <div class="cthread" hidden>
+      <div class="divider">Hoje · 14:02</div>
+      <div class="bub u">Por que o mercado subiu no trimestre?</div>
+      <div class="bub a">Setembro puxou: <strong class="num">R$&nbsp;706</strong> no mercado, contra <strong class="num">R$&nbsp;640</strong> em julho e <strong class="num">R$&nbsp;590</strong> em agosto. A compra do mês em 10 de setembro (<strong class="num">R$&nbsp;610</strong>) foi a maior da categoria. No trimestre, Mercado somou <strong class="num">R$&nbsp;1.936</strong>, <span class="w">8,2% acima</span> de abril a junho.
+        <span class="meta">Fontes: 97 transações · categorias de julho a setembro · abril a junho</span>
+      </div>
+      <div class="bub u">E o resto caiu?</div>
+      <div class="bub a">Caiu ou ficou igual: Saúde <strong class="num">-15,9%</strong>, Transporte <strong class="num">-2,1%</strong>, Lazer <strong class="num">-0,9%</strong>, Moradia igual. Por isso as despesas do trimestre fecharam <strong class="num">3,6%</strong> abaixo, mesmo com o mercado mais caro.
+        <span class="meta">Fontes: categorias de julho a setembro · abril a junho</span>
+      </div>
+    </div>
+  </div>
+  <form class="cask"><div class="in">
+    <input type="text" placeholder="Pergunte sobre este período">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+  </div></form>
+  <a class="cfull" href="conversa.html">Conversa completa →</a>
+</aside>
+
+<script src="../shared/mock-data.js"></script>
+<script src="../shared/app.js"></script>
+<script>SLApp.boot()</script>
+<script>
+/* candidata a shared: relatórios (cálculo por período + gráficos SVG à mão + tooltip + CSV).
+   Funções puras de render (string) usadas também para pré-renderizar o HTML estático (E-02: sem JS,
+   a página nasce completa no período padrão). Só lê SL_MOCK.fin.relatorios e SL_MOCK.transacoes. */
+(function (W) {
+  var M = W.SL_MOCK, R = M.fin.relatorios;
+  var ORD = ['abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out'];
+  var NOME = { abr: 'abril', mai: 'maio', jun: 'junho', jul: 'julho', ago: 'agosto', set: 'setembro', out: 'outubro' };
+  var NUMM = { abr: 4, mai: 5, jun: 6, jul: 7, ago: 8, set: 9, out: 10 };
+  var META = R.kpis.poupancaMedia.meta;
+  var PER = [
+    { k: 'mes', l: R.periodos[0] }, { k: 'tri', l: R.periodos[1] }, { k: 'sem', l: R.periodos[2] },
+    { k: '12m', l: R.periodos[3] }, { k: 'ano', l: R.periodos[4] }, { k: 'custom', l: R.periodos[5] }
+  ];
+  PER.forEach(function (p) { p.pro = R.periodosPro.indexOf(p.l) >= 0; });
+
+  function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+  function n0(v) { return Math.round(v).toLocaleString('pt-BR'); }
+  function brl0(v) { return (v < 0 ? '– ' : '') + 'R$&nbsp;' + n0(Math.abs(v)); }
+  function brl2(v) { return (v < 0 ? '– ' : '') + 'R$&nbsp;' + Math.abs(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+  function brlk(v) { return 'R$&nbsp;' + (v / 1000).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + 'k'; }
+  function p1(v) { return (v > 0 ? '+' : v < 0 ? '-' : '') + Math.abs(v).toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + '%'; }
+  function pts(v) { return (v > 0 ? '+' : v < 0 ? '-' : '') + Math.abs(v) + (Math.abs(v) === 1 ? ' ponto' : ' pontos'); }
+  function faixa(a) { return !a.length ? '' : a.length === 1 ? NOME[a[0]] : NOME[a[0]] + ' a ' + NOME[a[a.length - 1]]; }
+  function faixaC(a) { return !a.length ? '' : a.length === 1 ? a[0] : a[0] + ' a ' + a[a.length - 1]; }
+  function plain(s) { return s.replace(/&nbsp;/g, ' ').replace(/<[^>]+>/g, ''); }
+
+  // ── período → meses do mock (o histórico do mock começa em abril de 2026) ──
+  function periodo(st) {
+    var k = st.k, sel, prev, nota = '';
+    if (k === 'mes') { sel = ['out']; prev = ['set']; }
+    else if (k === 'tri') { sel = ['jul', 'ago', 'set']; prev = ['abr', 'mai', 'jun']; }
+    else if (k === 'sem') { sel = ORD.slice(0, 6); prev = []; nota = 'seu histórico começa em abril'; }
+    else if (k === '12m') { sel = ORD.slice(); prev = []; nota = 'seu histórico começa em abril'; }
+    else if (k === 'ano') { sel = ORD.slice(); prev = []; nota = 'registros de 2026 desde abril'; }
+    else {
+      var i = ORD.indexOf(st.de), j = ORD.indexOf(st.ate), t;
+      if (i > j) { t = i; i = j; j = t; }
+      sel = ORD.slice(i, j + 1);
+      prev = i - sel.length >= 0 ? ORD.slice(i - sel.length, i) : [];
+      if (!prev.length) nota = 'sem período anterior completo para comparar';
+    }
+    if (sel.indexOf('out') >= 0) nota = (nota ? nota + ' · ' : '') + 'outubro até dia 3';
+    return { k: k, sel: sel, prev: prev, nota: nota, lab: faixa(sel), comp: faixa(prev) };
+  }
+  function soma(ms) {
+    var o = { rec: 0, desp: 0, cats: {}, pp: 0 };
+    ms.forEach(function (m) {
+      var d = R.mensal[m]; o.rec += d.rec; o.desp += d.desp; o.pp += d.poupancaPct;
+      for (var c in d.cats) o.cats[c] = (o.cats[c] || 0) + d.cats[c];
+    });
+    o.saldo = o.rec - o.desp; o.poup = ms.length ? Math.round(o.pp / ms.length) : 0;
+    o.catSum = 0; for (var c in o.cats) o.catSum += o.cats[c];
+    return o;
+  }
+  function melhor(ms) { var c = ms.filter(function (m) { return !R.mensal[m].parcial; }); if (!c.length) c = ms; var b = c[0]; c.forEach(function (m) { if (R.mensal[m].saldo > R.mensal[b].saldo) b = m; }); return b; }
+  var CATS = R.categorias.map(function (c) { return c.cat; });
+
+  // despesas detalhadas no mock: top do trimestre + lançamentos de outubro
+  var DET = R.topDespesas.map(function (t) { return { d: t.d, m: t.d.split(' ')[1], desc: t.desc, cat: t.cat, valor: t.valor }; })
+    .concat(M.transacoes.filter(function (t) { return t.valor < 0 && / out$/.test(t.d); })
+      .map(function (t) { return { d: t.d, m: 'out', desc: t.desc, cat: t.cat, valor: -t.valor }; }));
+  function top(P) {
+    return DET.filter(function (t) { return P.sel.indexOf(t.m) >= 0; })
+      .sort(function (a, b) { return b.valor - a.valor; }).slice(0, 5);
+  }
+
+  // ── geometria dos dois gráficos de coluna (meses: anterior + selecionado) ──
+  function geo(st, mob, qual) {
+    var P = periodo(st), ms = P.prev.concat(P.sel), n = ms.length;
+    var Wd = mob ? 340 : 600, H = qual === 'c1' ? (mob ? 150 : 200) : (mob ? 120 : 150);
+    var pad = qual === 'c1' ? (mob ? 18 : 30) : (mob ? 26 : 44);
+    var xs = ms.map(function (m, i) { return n === 1 ? Wd / 2 : pad + i * (Wd - 2 * pad) / (n - 1); });
+    return { P: P, ms: ms, n: n, W: Wd, H: H, xs: xs, k: P.prev.length };
+  }
+  function pc(v, tot) { return (v / tot * 100).toFixed(2) + '%'; }
+  function dot(x, y, w, cor) { return '<path d="M' + x.toFixed(1) + ' ' + y.toFixed(1) + 'h0" stroke="' + cor + '" stroke-width="' + w + '" stroke-linecap="round" vector-effect="non-scaling-stroke"/>'; }
+
+  function chart1(st, mob) {
+    var g = geo(st, mob, 'c1'), ms = g.ms, W2 = g.W, H = g.H;
+    var recs = ms.map(function (m) { return R.mensal[m].rec; }), desps = ms.map(function (m) { return R.mensal[m].desp; });
+    var lo = Math.floor((Math.min.apply(0, desps) - 300) / 500) * 500, hi = Math.ceil((Math.max.apply(0, recs) + 200) / 500) * 500;
+    var pt = 14, pb = 6;
+    function y(v) { return pt + (hi - v) / (hi - lo) * (H - pt - pb); }
+    function path(a) { return a.map(function (v, i) { return (i ? 'L' : 'M') + g.xs[i].toFixed(1) + ' ' + y(v).toFixed(1); }).join(' '); }
+    var s = '<svg viewBox="0 0 ' + W2 + ' ' + H + '" preserveAspectRatio="none" aria-hidden="true">' +
+      '<defs><linearGradient id="g1' + (mob ? 'm' : '') + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a1ff62" stop-opacity=".2"/><stop offset="1" stop-color="#a1ff62" stop-opacity="0"/></linearGradient></defs>';
+    [lo, (lo + hi) / 2, hi].forEach(function (v) { s += '<line x1="0" y1="' + y(v).toFixed(1) + '" x2="' + W2 + '" y2="' + y(v).toFixed(1) + '" stroke="rgba(255,255,255,.08)" vector-effect="non-scaling-stroke"/>'; });
+    if (g.n > 1) s += '<path d="' + path(recs) + ' L' + g.xs[g.n - 1].toFixed(1) + ' ' + H + ' L' + g.xs[0].toFixed(1) + ' ' + H + ' Z" fill="url(#g1' + (mob ? 'm' : '') + ')"/>';
+    s += '<path d="' + path(desps) + '" fill="none" stroke="#b8b8b8" stroke-width="1.6" stroke-dasharray="5 5" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>';
+    s += '<path d="' + path(recs) + '" fill="none" stroke="#a1ff62" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>';
+    ms.forEach(function (m, i) {
+      s += dot(g.xs[i], y(desps[i]), 6, '#b8b8b8');
+      s += dot(g.xs[i], y(recs[i]), i === g.n - 1 ? 9 : 7, '#a1ff62');
+    });
+    var bx = 0;
+    if (g.k) { bx = (g.xs[g.k - 1] + g.xs[g.k]) / 2; s += '<rect x="0" y="0" width="' + bx.toFixed(1) + '" height="' + H + '" fill="#151313" fill-opacity=".62"/><line x1="' + bx.toFixed(1) + '" y1="0" x2="' + bx.toFixed(1) + '" y2="' + H + '" stroke="rgba(255,255,255,.18)" stroke-dasharray="2 4" vector-effect="non-scaling-stroke"/>'; }
+    s += '</svg>';
+    var o = '<div class="plot" style="--h:' + H + 'px">' + s;
+    [lo, hi].forEach(function (v) { o += '<span class="yl num" style="top:' + pc(y(v), H) + '">' + brlk(v) + '</span>'; });
+    if (g.k && !mob) o += '<span class="zona" style="left:0">' + g.P.comp + '</span><span class="zona" style="left:' + pc(bx, W2) + '">' + g.P.lab + '</span>';
+    o += '<i class="guia" aria-hidden="true"></i></div><div class="xl" aria-hidden="true">';
+    ms.forEach(function (m, i) { o += '<span class="' + (i < g.k ? 'ant' : '') + '" style="left:' + pc(g.xs[i], W2) + '">' + m + '</span>'; });
+    return o + '</div>';
+  }
+  function aria1(st) {
+    var P = periodo(st);
+    return 'Receitas e despesas por mês, ' + P.lab + ': ' + P.sel.map(function (m) { var d = R.mensal[m]; return NOME[m] + ' ' + plain(brl0(d.rec)) + ' e ' + plain(brl0(d.desp)); }).join('; ');
+  }
+  function tip1(st, i, mob) {
+    var g = geo(st, mob, 'c1'), m = g.ms[i], d = R.mensal[m];
+    var tag = i < g.k ? ' · anterior' : d.parcial ? ' · até dia 3' : '';
+    return '<b>' + cap(NOME[m]) + '<small>' + tag + '</small></b>' +
+      '<span><i class="k ele"></i>Receitas<em class="num">' + brl0(d.rec) + '</em></span>' +
+      '<span><i class="k dsp"></i>Despesas<em class="num">' + brl0(d.desp) + '</em></span>' +
+      '<hr><span>Saldo<em class="num">' + brl0(d.saldo) + '</em></span><span>Poupança<em class="num">' + d.poupancaPct + '%</em></span>';
+  }
+
+  function chart3(st, mob) {
+    var g = geo(st, mob, 'c3'), ms = g.ms, W2 = g.W, H = g.H;
+    var vs = ms.map(function (m) { return R.mensal[m].poupancaPct; });
+    var hi = Math.max(40, Math.ceil((Math.max.apply(0, vs) + 5) / 10) * 10), pt = 18, pb = 2;
+    function y(v) { return pt + (hi - v) / hi * (H - pt - pb); }
+    var bw = Math.min(mob ? 22 : 34, (W2 - 2 * g.xs[0]) / Math.max(1, g.n - 1) * .5 || 34);
+    var s = '<svg viewBox="0 0 ' + W2 + ' ' + H + '" preserveAspectRatio="none" aria-hidden="true">';
+    s += '<line x1="0" y1="' + (H - pb) + '" x2="' + W2 + '" y2="' + (H - pb) + '" stroke="rgba(255,255,255,.12)" vector-effect="non-scaling-stroke"/>';
+    vs.forEach(function (v, i) {
+      var cor = v >= META ? '#a1ff62' : '#817f7f', op = i < g.k ? ' fill-opacity=".32"' : '';
+      s += '<rect x="' + (g.xs[i] - bw / 2).toFixed(1) + '" y="' + y(v).toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + (H - pb - y(v)).toFixed(1) + '" rx="2" fill="' + cor + '"' + op + '/>';
+    });
+    s += '<line x1="0" y1="' + y(META).toFixed(1) + '" x2="' + W2 + '" y2="' + y(META).toFixed(1) + '" stroke="#f4f4f4" stroke-opacity=".55" stroke-dasharray="4 4" vector-effect="non-scaling-stroke"/></svg>';
+    var o = '<div class="plot" style="--h:' + H + 'px">' + s;
+    vs.forEach(function (v, i) { o += '<span class="vl num' + (i < g.k ? ' ant' : '') + (v >= META ? ' ok' : '') + '" style="left:' + pc(g.xs[i], W2) + ';top:' + pc(y(v), H) + '">' + v + '%</span>'; });
+    o += '<i class="guia" aria-hidden="true"></i></div><div class="xl" aria-hidden="true">';
+    ms.forEach(function (m, i) { o += '<span class="' + (i < g.k ? 'ant' : '') + '" style="left:' + pc(g.xs[i], W2) + '">' + m + '</span>'; });
+    return o + '</div>';
+  }
+  function aria3(st) {
+    var P = periodo(st);
+    return 'Poupança por mês contra a meta de ' + META + '%: ' + P.sel.map(function (m) { return NOME[m] + ' ' + R.mensal[m].poupancaPct + '%'; }).join(', ');
+  }
+  function tip3(st, i, mob) {
+    var g = geo(st, mob, 'c3'), m = g.ms[i], d = R.mensal[m], dif = d.poupancaPct - META;
+    var tag = i < g.k ? ' · anterior' : d.parcial ? ' · até dia 3' : '';
+    return '<b>' + cap(NOME[m]) + '<small>' + tag + '</small></b><span>Poupança<em class="num">' + d.poupancaPct + '%</em></span>' +
+      '<span>Meta<em class="num">' + META + '%</em></span><hr><span>' + (dif >= 0 ? (dif ? pts(dif).replace('+', '') + ' acima' : 'Na meta') : pts(-dif).replace('+', '') + ' abaixo') + '<em class="num">' + brl0(d.saldo) + ' guardados</em></span>';
+  }
+
+  function cats(st, mob) {
+    var P = periodo(st), a = soma(P.sel), b = P.prev.length ? soma(P.prev) : null;
+    var mx = 0; CATS.forEach(function (c) { mx = Math.max(mx, a.cats[c], b ? b.cats[c] : 0); });
+    var o = '';
+    CATS.forEach(function (c) {
+      var v = a.cats[c], dl = b ? (v - b.cats[c]) / b.cats[c] * 100 : null;
+      var cls = dl === null ? '' : Math.abs(dl) < .05 ? '' : dl > 0 ? ' up' : ' down';
+      var spark = '';
+      if (!mob && P.sel.length > 1) {
+        var vals = P.sel.map(function (m) { return R.mensal[m].cats[c]; }), lo = Math.min.apply(0, vals), hi = Math.max.apply(0, vals), rg = hi - lo || 1;
+        spark = '<svg class="tr" viewBox="0 0 60 16" preserveAspectRatio="none" aria-hidden="true"><path d="' + vals.map(function (x, i) { return (i ? 'L' : 'M') + (i * 60 / (vals.length - 1)).toFixed(1) + ' ' + (14 - (x - lo) / rg * 12).toFixed(1); }).join(' ') + '" fill="none" stroke="#b8b8b8" stroke-width="1.4" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg>';
+      } else if (!mob) spark = '<span class="tr"></span>';
+      o += '<div class="crow' + cls + '" data-c="' + c + '" tabindex="0"><span class="nm">' + c + '</span>' + spark +
+        '<span class="v num">' + brl0(v) + '</span><span class="dl num">' + (dl === null ? Math.round(v / a.desp * 100) + '% do total' : Math.abs(dl) < .05 ? 'igual' : p1(dl)) + '</span>' +
+        '<div class="bars"><i class="a" style="--w:' + (v / mx * 100).toFixed(1) + '%"></i>' + (b ? '<i class="b" style="--w:' + (b.cats[c] / mx * 100).toFixed(1) + '%"></i>' : '') + '</div></div>';
+    });
+    var out = a.desp - a.catSum;
+    o += '<p class="outras">Outras categorias somam <span class="num">' + brl0(out) + '</span>' + (b ? ' (antes, <span class="num">' + brl0(b.desp - b.catSum) + '</span>)' : '') + '.</p>';
+    return o;
+  }
+  function tipCat(st, c) {
+    var P = periodo(st), a = soma(P.sel), b = P.prev.length ? soma(P.prev) : null, h = '<b>' + c + '</b>';
+    h += '<span>' + cap(P.lab) + '<em class="num">' + brl0(a.cats[c]) + '</em></span>';
+    if (b) h += '<span>' + cap(P.comp) + '<em class="num">' + brl0(b.cats[c]) + '</em></span>';
+    h += '<hr>';
+    P.sel.slice(-4).forEach(function (m) { h += '<span>' + cap(NOME[m]) + '<em class="num">' + brl0(R.mensal[m].cats[c]) + '</em></span>'; });
+    return h + '<span>Parte das despesas<em class="num">' + Math.round(a.cats[c] / a.desp * 100) + '%</em></span>';
+  }
+
+  function topList(st, mob) {
+    var P = periodo(st), t = top(P);
+    if (!t.length) return '<p class="vazio-top">Nenhuma despesa detalhada neste período.</p>';
+    var mx = t[0].valor, o = '<ol class="top">';
+    t.forEach(function (x, i) {
+      o += '<li class="trow" data-i="' + i + '" tabindex="0"><span class="ix num">' + (i + 1) + '</span><div class="tx2"><span class="ds">' + x.desc + '</span><span class="mt"><span class="num">' + x.d + '</span> · ' + x.cat + '</span></div>' +
+        '<span class="v num">' + brl2(x.valor) + '</span><div class="tbar"><i style="--w:' + (x.valor / mx * 100).toFixed(1) + '%"></i></div></li>';
+    });
+    return o + '</ol>';
+  }
+  function tipTop(st, i) {
+    var P = periodo(st), x = top(P)[i], a = soma(P.sel);
+    var h = '<b>' + x.desc + '<small> · ' + x.d + '</small></b><span>Valor<em class="num">' + brl2(x.valor) + '</em></span>';
+    h += '<span>Parte das despesas<em class="num">' + (x.valor / a.desp * 100).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + '%</em></span>';
+    if (a.cats[x.cat] !== undefined) h += '<hr><span>' + x.cat + ' no período<em class="num">' + brl0(a.cats[x.cat]) + '</em></span>';
+    return h;
+  }
+
+  // ── linhas de Sy (uma por gráfico) e o topo ──
+  function syTopo(st) {
+    var P = periodo(st), a = soma(P.sel), b = P.prev.length ? soma(P.prev) : null, s;
+    var meta = a.poup >= META ? (a.poup === META ? ', na meta' : ', acima da meta de ' + META + '%') : ', abaixo da meta de <b class="num w">' + META + '%</b>';
+    if (P.k === 'mes') s = 'Outubro está no dia 3: <b class="num">' + brl0(a.rec) + '</b> entraram e <b class="num">' + brl0(a.desp) + '</b> saíram. A poupança do mês está em <b class="num">' + a.poup + '%</b>' + meta + '.';
+    else if (b) {
+      var dd = (a.desp - b.desp) / b.desp * 100;
+      s = 'Você gastou <b class="num' + (dd > 0 ? ' w' : '') + '">' + p1(dd).replace(/^[+-]/, '') + '</b> ' + (dd > 0 ? 'mais' : 'menos') + ' que em ' + P.comp + ', e a poupança média ficou em <b class="num">' + a.poup + '%</b>' + meta + '.';
+    } else {
+      var bm = melhor(P.sel);
+      s = 'De ' + P.lab + ', a poupança média ficou em <b class="num">' + a.poup + '%</b>' + meta + '. O melhor mês foi ' + NOME[bm] + ', com <b class="num">' + brl0(R.mensal[bm].saldo) + '</b> de saldo.';
+    }
+    return s;
+  }
+  function fontes(st) {
+    var P = periodo(st);
+    return 'Atualizado às 7h12 · fontes: ' + (P.k === 'tri' ? R.transacoesNoPeriodo + ' transações' : 'transações de ' + P.sel.length + (P.sel.length === 1 ? ' mês' : ' meses')) + ', ' + CATS.length + ' categorias, meta de poupança de ' + META + '%';
+  }
+  function sy1(st) {
+    var P = periodo(st), bm = melhor(P.sel), d = R.mensal[bm];
+    if (P.sel.length === 1 && P.prev.length) {
+      var sp = R.mensal[P.prev[0]].saldo;
+      return cap(NOME[bm]) + ' tem <span class="num">' + brl0(d.saldo) + '</span> de saldo até agora, ' + (d.saldo >= sp ? 'acima de' : 'abaixo de') + ' ' + NOME[P.prev[0]] + ' inteiro (<span class="num">' + brl0(sp) + '</span>).';
+    }
+    if (P.sel.length === 1) return cap(NOME[bm]) + ' fechou com <span class="num">' + brl0(d.saldo) + '</span> de saldo.';
+    return cap(NOME[bm]) + ' foi o melhor mês: sobraram <span class="num">' + brl0(d.saldo) + '</span>.';
+  }
+  function sy2(st) {
+    var P = periodo(st), a = soma(P.sel);
+    if (!P.prev.length) {
+      var mc = CATS[0]; CATS.forEach(function (c) { if (a.cats[c] > a.cats[mc]) mc = c; });
+      return mc + ' leva <span class="num">' + Math.round(a.cats[mc] / a.desp * 100) + '%</span> das despesas do período.';
+    }
+    var b = soma(P.prev), ups = CATS.filter(function (c) { return a.cats[c] > b.cats[c]; });
+    if (!ups.length) return 'Nenhuma categoria subiu em relação a ' + P.comp + '.';
+    var mu = ups[0]; ups.forEach(function (c) { if ((a.cats[c] - b.cats[c]) / b.cats[c] > (a.cats[mu] - b.cats[mu]) / b.cats[mu]) mu = c; });
+    var dl = (a.cats[mu] - b.cats[mu]) / b.cats[mu] * 100;
+    return mu + ' subiu <span class="num">' + p1(dl).replace('+', '') + '</span>' + (ups.length === 1 ? '; foi a única categoria acima de ' + P.comp + '.' : '; ' + ups.length + ' categorias ficaram acima de ' + P.comp + '.');
+  }
+  function sy3(st) {
+    var P = periodo(st), ok = P.sel.filter(function (m) { return R.mensal[m].poupancaPct >= META; });
+    if (P.sel.length === 1) { var v = R.mensal[P.sel[0]].poupancaPct; return cap(NOME[P.sel[0]]) + ' está em <span class="num">' + v + '%</span>, ' + (v >= META ? 'acima' : 'abaixo') + ' da meta de ' + META + '%.'; }
+    var pior = P.sel[0]; P.sel.forEach(function (m) { if (R.mensal[m].poupancaPct < R.mensal[pior].poupancaPct) pior = m; });
+    return 'Você ficou na meta em <span class="num">' + ok.length + ' de ' + P.sel.length + '</span> meses' + (ok.length < P.sel.length ? '; ' + NOME[pior] + ' foi o mais baixo, <span class="num">' + R.mensal[pior].poupancaPct + '%</span>.' : '.');
+  }
+  function sy4(st) {
+    var t = top(periodo(st)); if (!t.length) return '';
+    var cnt = {}; t.forEach(function (x) { cnt[x.cat] = (cnt[x.cat] || 0) + 1; });
+    var mc = t[0].cat; for (var c in cnt) if (cnt[c] > cnt[mc]) mc = c;
+    if (cnt[mc] >= 2) return mc + ' ocupa <span class="num">' + cnt[mc] + ' das ' + t.length + '</span> maiores saídas' + (mc === 'Moradia' ? ': o aluguel, que é fixo.' : '.');
+    return 'A maior saída foi ' + t[0].desc.toLowerCase() + ', <span class="num">' + brl2(t[0].valor) + '</span>.';
+  }
+
+  function nums(st, mob) {
+    var P = periodo(st), a = soma(P.sel), b = P.prev.length ? soma(P.prev) : null;
+    var vs = b ? ' vs ' + (mob ? faixaC(P.prev) : P.comp) : '';
+    function cel(l, v, cnt, pre, suf, d, bom) {
+      return '<div><p class="eyebrow">' + l + '</p><div class="v num" data-cnt="' + cnt + '"' + (pre ? ' data-prefix="' + pre + '"' : '') + (suf ? ' data-suffix="' + suf + '"' : '') + '>' + v + '</div><div class="d num' + (bom ? ' ele' : '') + '">' + d + '</div></div>';
+    }
+    var sem = 'sem período anterior';
+    return cel('Receitas', brl0(a.rec), a.rec, 'R$&nbsp;', '', b ? p1((a.rec - b.rec) / b.rec * 100) + vs : sem, b && a.rec >= b.rec) +
+      cel('Despesas', brl0(a.desp), a.desp, 'R$&nbsp;', '', b ? p1((a.desp - b.desp) / b.desp * 100) + vs : Math.round(a.desp / a.rec * 100) + '% da receita', b && a.desp <= b.desp) +
+      cel('Saldo', brl0(a.saldo), a.saldo, 'R$&nbsp;', '', b ? p1((a.saldo - b.saldo) / b.saldo * 100) + vs : sem, b && a.saldo >= b.saldo) +
+      cel(mob ? 'Poupança' : 'Poupança média', a.poup + '%', a.poup, '', '%', 'Meta: ' + META + '%' + (b ? ' · ' + pts(a.poup - b.poup) : ''), a.poup >= META);
+  }
+  function sub(st, mob) {
+    var P = periodo(st), n = P.sel.length;
+    var s = cap(P.lab) + ' · ' + n + (n === 1 ? ' mês' : ' meses') + (P.k === 'tri' && !mob ? ' · ' + R.transacoesNoPeriodo + ' transações' : '');
+    s += P.prev.length ? ' · comparado com ' + P.comp : '';
+    return s + (P.nota ? ' · ' + P.nota : '');
+  }
+  function tabela(st, mob) {
+    var P = periodo(st), a = soma(P.sel), o;
+    if (mob) {
+      o = '';
+      P.sel.forEach(function (m) { var d = R.mensal[m]; o += '<div class="mrow2"><span class="nm">' + cap(NOME[m]) + (d.parcial ? ' <small>até dia 3</small>' : '') + '</span><span class="v num">' + brl2(d.saldo) + '</span><span class="sb num">' + brl2(d.rec) + ' entraram · ' + brl2(d.desp) + ' saíram · ' + d.poupancaPct + '%</span></div>'; });
+      return o + '<div class="mrow2 tot"><span class="nm">Total</span><span class="v num">' + brl2(a.saldo) + '</span><span class="sb num">' + brl2(a.rec) + ' entraram · ' + brl2(a.desp) + ' saíram · média ' + a.poup + '%</span></div>';
+    }
+    o = '<table><thead><tr><th>Mês</th><th>Receitas</th><th>Despesas</th>' + CATS.map(function (c) { return '<th>' + c + '</th>'; }).join('') + '<th>Saldo</th><th>Poupança</th></tr></thead><tbody>';
+    P.sel.forEach(function (m) {
+      var d = R.mensal[m];
+      o += '<tr><td>' + cap(NOME[m]) + (d.parcial ? ' <small>até dia 3</small>' : '') + '</td><td class="num">' + brl2(d.rec) + '</td><td class="num">' + brl2(d.desp) + '</td>' + CATS.map(function (c) { return '<td class="num">' + brl2(d.cats[c]) + '</td>'; }).join('') + '<td class="num">' + brl2(d.saldo) + '</td><td class="num">' + d.poupancaPct + '%</td></tr>';
+    });
+    return o + '</tbody><tfoot><tr><td>Total</td><td class="num">' + brl2(a.rec) + '</td><td class="num">' + brl2(a.desp) + '</td>' + CATS.map(function (c) { return '<td class="num">' + brl2(a.cats[c]) + '</td>'; }).join('') + '<td class="num">' + brl2(a.saldo) + '</td><td class="num">' + a.poup + '%</td></tr></tfoot></table>';
+  }
+  function resumoTab(st) { var n = periodo(st).sel.length; return 'Mês a mês · ' + n + (n === 1 ? ' mês' : ' meses'); }
+
+  function render(st, mob) {
+    return {
+      sub: sub(st, mob), fala: syTopo(st), fontes: fontes(st), nums: nums(st, mob),
+      c1: chart1(st, mob), sy1: sy1(st), c2: cats(st, mob), sy2: sy2(st), c3: chart3(st, mob), sy3: sy3(st),
+      c4: topList(st, mob), leg3: '<span><i class="mt"></i>meta de ' + META + '%</span><span><i class="ok"></i>na meta</span>', sy4: sy4(st), tab: tabela(st, mob), tabsum: resumoTab(st),
+      leg2: periodo(st).prev.length ? '<span><i class="la"></i>' + (mob ? faixaC(periodo(st).sel) : periodo(st).lab) + '</span><span><i class="lb"></i>' + (mob ? faixaC(periodo(st).prev) : periodo(st).comp) + '</span>' : '<span><i class="la"></i>' + (mob ? faixaC(periodo(st).sel) : periodo(st).lab) + '</span>'
+    };
+  }
+
+  // ── CSV (formato do mock: ; · BOM UTF-8 · decimal com vírgula). No protótipo sai dos totais mensais por categoria. ──
+  function csv(st) {
+    var P = periodo(st), L = ['Data;Descrição;Categoria;Tipo;Valor;Método;Notas'];
+    function v(x) { return x.toFixed(2).replace('.', ','); }
+    P.sel.forEach(function (m) {
+      var d = R.mensal[m], dt = '01/' + String(NUMM[m]).padStart(2, '0') + '/2026', resto = d.desp;
+      L.push([dt, '"Receitas de ' + NOME[m] + '"', '"Receitas"', 'Receita', v(d.rec), '', '"total do mês"'].join(';'));
+      for (var c in d.cats) { resto -= d.cats[c]; L.push([dt, '"' + c + ' em ' + NOME[m] + '"', '"' + c + '"', 'Despesa', v(d.cats[c]), '', '"total do mês"'].join(';')); }
+      L.push([dt, '"Outras categorias em ' + NOME[m] + '"', '"Outras"', 'Despesa', v(resto), '', '"total do mês"'].join(';'));
+    });
+    var nome = 'synclife-relatorio-2026-' + String(NUMM[P.sel[0]]).padStart(2, '0') + '-a-2026-' + String(NUMM[P.sel[P.sel.length - 1]]).padStart(2, '0') + '.csv';
+    return { nome: nome, linhas: L.length - 1, txt: '﻿' + L.join('\r\n') };
+  }
+
+  W.SLRel = { render: render, periodo: periodo, csv: csv, PER: PER, ORD: ORD, NOME: NOME, aria1: aria1, aria3: aria3 };
+  if (!W.document) return;
+
+  // ── wiring (o HTML já nasce no período padrão; só re-renderiza quando o período muda) ──
+  var D = W.document, MOB = D.documentElement.classList.contains('mob');
+  var st = { k: 'tri', de: 'ago', ate: 'set' };
+  var tip = D.createElement('div'); tip.className = 'tip'; tip.setAttribute('role', 'tooltip'); tip.hidden = true; D.body.appendChild(tip);
+  function put(id, h) { D.querySelectorAll('[data-r="' + id + '"]').forEach(function (el) { el.innerHTML = h; }); }
+  function aplicar() {
+    var o = render(st, MOB); for (var id in o) put(id, o[id]);
+    var c1 = D.querySelector('[data-chart="c1"]'), c3 = D.querySelector('[data-chart="c3"]');
+    if (c1) c1.setAttribute('aria-label', aria1(st)); if (c3) c3.setAttribute('aria-label', aria3(st));
+    D.querySelectorAll('.per').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-k') === st.k ? 'true' : 'false'); });
+    var cu = D.getElementById('custom'); if (cu) cu.hidden = st.k !== 'custom';
+    esconder();
+    var main = D.querySelector('[data-rel]');
+    if (main && D.documentElement.classList.contains('anim')) { main.classList.remove('troca'); void main.offsetWidth; main.classList.add('troca'); }
+  }
+  D.querySelectorAll('.per').forEach(function (b) {
+    b.addEventListener('click', function () {
+      st.k = b.getAttribute('data-k'); aplicar();
+      if (MOB) b.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
+    });
+  });
+  ['de', 'ate'].forEach(function (k) {
+    var s = D.getElementById('per-' + k);
+    if (s) s.addEventListener('change', function () { st[k] = s.value; aplicar(); });
+  });
+
+  // tooltip: uma peça só, posicionada perto do ponto (gráficos) ou da linha (listas)
+  var ativo = null, tMostra = 0;
+  function mostrar(html, x, y, el) {
+    tip.innerHTML = html; tip.hidden = false; tMostra = Date.now();
+    var w = tip.offsetWidth, h = tip.offsetHeight, vw = D.documentElement.clientWidth;
+    var l = Math.max(10, Math.min(vw - w - 10, x - w / 2)), t = y - h - 14;
+    if (t < 70) t = y + 18;
+    tip.style.left = l + 'px'; tip.style.top = t + 'px';
+    if (ativo && ativo !== el) ativo.classList.remove('hl');
+    ativo = el; if (el) el.classList.add('hl');
+  }
+  function esconder() {
+    tip.hidden = true; if (ativo) ativo.classList.remove('hl'); ativo = null;
+    D.querySelectorAll('.guia').forEach(function (g) { g.style.opacity = 0; });
+  }
+  function ligarChart(sel, qual, tipf) {
+    var box = D.querySelector(sel); if (!box) return;
+    var idx = -1;
+    function at(i) {
+      var g = geo(st, MOB, qual); idx = Math.max(0, Math.min(g.n - 1, i));
+      var plot = box.querySelector('.plot'), r = plot.getBoundingClientRect(), x = r.left + g.xs[idx] / g.W * r.width;
+      var gu = plot.querySelector('.guia'); gu.style.left = (g.xs[idx] / g.W * 100) + '%'; gu.style.opacity = 1;
+      mostrar(tipf(st, idx, MOB), x, r.top + 6, null);
+    }
+    function deX(ev) {
+      var g = geo(st, MOB, qual), r = box.querySelector('.plot').getBoundingClientRect(), px = (ev.clientX - r.left) / r.width * g.W, b = 0;
+      g.xs.forEach(function (x, i) { if (Math.abs(x - px) < Math.abs(g.xs[b] - px)) b = i; });
+      return b;
+    }
+    box.addEventListener('pointermove', function (ev) { if (ev.pointerType === 'mouse') at(deX(ev)); });
+    box.addEventListener('pointerdown', function (ev) { if (ev.pointerType !== 'mouse') at(deX(ev)); });
+    box.addEventListener('pointerleave', function (ev) { if (ev.pointerType === 'mouse') esconder(); });
+    box.addEventListener('focus', function () { at(geo(st, MOB, qual).n - 1); });
+    box.addEventListener('blur', esconder);
+    box.addEventListener('keydown', function (ev) {
+      if (ev.key === 'ArrowRight' || ev.key === 'ArrowLeft') { ev.preventDefault(); at(idx + (ev.key === 'ArrowRight' ? 1 : -1)); }
+      if (ev.key === 'Escape') esconder();
+    });
+  }
+  ligarChart('[data-chart="c1"]', 'c1', tip1);
+  ligarChart('[data-chart="c3"]', 'c3', tip3);
+  function ligarLista(sel, attr, tipf) {
+    var box = D.querySelector(sel); if (!box) return;
+    function em(row) { var r = row.getBoundingClientRect(); mostrar(tipf(st, row.getAttribute(attr)), r.left + Math.min(r.width * .5, 220), r.top, row); }
+    box.addEventListener('pointerover', function (ev) { var row = ev.target.closest('[' + attr + ']'); if (row && ev.pointerType === 'mouse') em(row); });
+    box.addEventListener('pointerdown', function (ev) { var row = ev.target.closest('[' + attr + ']'); if (row && ev.pointerType !== 'mouse') em(row); });
+    box.addEventListener('pointerleave', function (ev) { if (ev.pointerType === 'mouse') esconder(); });
+    box.addEventListener('focusin', function (ev) { var row = ev.target.closest('[' + attr + ']'); if (row) em(row); });
+    box.addEventListener('focusout', esconder);
+  }
+  ligarLista('[data-r="c2"]', 'data-c', tipCat);
+  ligarLista('[data-r="c4"]', 'data-i', function (s, i) { return tipTop(s, +i); });
+  D.addEventListener('pointerdown', function (ev) { if (!ev.target.closest('[data-chart],[data-r="c2"],[data-r="c4"]')) esconder(); });
+  W.addEventListener('scroll', function () { if (!tip.hidden && Date.now() - tMostra > 600) esconder(); }, { passive: true });
+  D.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') esconder(); });
+
+  // exportar CSV (blob do mock)
+  D.querySelectorAll('[data-csv]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var c = csv(st), url = URL.createObjectURL(new Blob([c.txt], { type: 'text/csv;charset=utf-8' }));
+      var a = D.createElement('a'); a.href = url; a.download = c.nome; D.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 1500);
+      D.querySelectorAll('[data-csv-ok]').forEach(function (o) { o.textContent = 'Salvo: ' + c.nome + ' · ' + c.linhas + ' linhas.'; });
+    });
+  });
+})(window);
+
+</script>
+<script type="module">import { ligarSy40 } from '../shared/sy40.js'; ligarSy40()</script>
+</body>
+</html>

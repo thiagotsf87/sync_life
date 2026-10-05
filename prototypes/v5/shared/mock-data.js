@@ -598,7 +598,8 @@ window.SL_MOCK.fin = {
   },
   "variavelMensal": 880,
   "rendaVariavelMensal": 600,
-  "variavelRestanteOutubro": 574,
+  "variavelRestanteOutubro": 646.6,
+  "outubroConta": "1.840 hoje + salário 4.150 + provento MXRF11 42,30 − recorrentes que faltam no mês 2.645,70 (faxina 2×180, contador 240) − Revisão do carro 620 − variável restante 646,60 = 2.120",
   "regra": "13 meses a partir de outubro; inclui a renda e o gasto variáveis médios de jul a set (R$ 600 e R$ 880 por mês; o v3 ignorava os dois); recorrentes normalizadas por mês (iguais a Recorrentes; o v3 contava semanal e quinzenal 1× por mês); cenários: receita ×1,3 / ×0,7 e despesa ×0,7 / ×1,3; eventos planejados sem multiplicador; crítico = queda maior que 30% vinda de saldo positivo"
  },
  "orcamentos": {

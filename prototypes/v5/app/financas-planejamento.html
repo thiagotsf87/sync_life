@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife · Planejamento · Finanças · v5</title>
+<!-- Fase 2 · Finanças · Planejamento. Template T3 (o mês como objeto): voltar + cabeçalho do objeto com as pílulas de cenário
+     → número principal (saldo em 6 meses) com Sy em 2 linhas ao lado → curva do saldo em 13 meses (SVG no estilo do fluxo do hub)
+     → laboratório "Quando trocar o notebook?" → eventos planejados (painel lateral de edição) → Mais em Finanças.
+     Números só de SL_MOCK.fin.planejamento; editar, criar ou excluir um evento refaz a projeção somando a diferença a partir do mês dele.
+     E-02: o HTML nasce com o cenário realista já desenhado (sem JS, tudo visível). -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Cline x1='32' y1='6' x2='32' y2='13' stroke='%23a1ff62' stroke-width='6' stroke-linecap='round'/%3E%3Cpolygon points='32,10 39,34 25,34' fill='%236840ff'/%3E%3Cpolygon points='32,57 25,34 39,34' fill='%23575353'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/base.css">
+<link rel="stylesheet" href="../shared/app.css">
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.185.1/build/three.module.js"}}</script>
+<style>
+  .wrap{--wrap-max:1180px;padding-left:clamp(20px,4vw,56px);padding-right:clamp(20px,4vw,56px)}
+
+  /* ── T3 · voltar + cabeçalho do objeto (pílulas de cenário à direita) ── */
+  .voltar{display:inline-flex;align-items:center;gap:8px;margin-top:28px;font:500 12.5px var(--int);color:var(--t3);transition:color .3s var(--ease)}
+  .voltar:hover{color:var(--t1)}
+  .objeto{display:flex;justify-content:space-between;align-items:flex-end;gap:32px;padding:22px 0 30px;border-bottom:1px solid var(--line)}
+  .objeto a.eyebrow{transition:color .3s var(--ease)}
+  .objeto a.eyebrow:hover{color:var(--t1)}
+  .objeto h1{font:500 32px/1.1 var(--gro);letter-spacing:-.035em;margin-top:12px}
+  .cenarios{display:flex;gap:8px;align-items:center;flex-shrink:0}
+  .cenarios .rot{font:400 12px var(--int);color:var(--t3);margin-right:4px}
+  .cenarios .chip{padding:8px 15px;font-size:12.5px}
+
+  /* ── T3 · número principal + Sy ao lado ── */
+  .principal{display:grid;grid-template-columns:1.2fr 1fr;gap:clamp(36px,5vw,80px);padding:36px 0;border-bottom:1px solid var(--line);align-items:start}
+  .principal .eb{display:flex;align-items:center;gap:12px}
+  .principal .pill-q.prev{color:var(--roxo);border-color:rgba(104,64,255,.5)}
+  .principal .big{font:700 44px/1 var(--gro);letter-spacing:-.045em;margin-top:12px}
+  .principal .big.w{color:var(--coral)}
+  .principal .de{font:400 14px/1.6 var(--int);color:var(--t2);margin-top:12px;max-width:52ch}
+  .principal .de b{color:var(--t1);font-weight:600}
+  .principal .de b.w{color:var(--coral)}
+  .principal .mini{display:flex;gap:28px;margin-top:18px;padding-top:16px;border-top:1px solid var(--line);max-width:420px}
+  .principal .mini strong{display:block;font:700 18px/1 var(--gro);letter-spacing:-.03em}
+  .principal .mini strong.w{color:var(--coral)}
+  .principal .mini span{display:block;font:400 11.5px var(--int);color:var(--t3);margin-top:6px}
+  .principal .sy{margin-top:0;max-width:none}
+  .principal .sy .fala{font-size:16px}
+
+  /* ── curva do saldo · 13 meses (SVG como o fluxo do hub; pontos e rótulos em HTML para não deformar) ── */
+  .curva{padding:36px 0 34px;border-bottom:1px solid var(--line)}
+  .curva-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px}
+  .curva-head .leg{display:flex;gap:18px;font:400 11.5px var(--int);color:var(--t3)}
+  .curva-head .leg i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:1px}
+  .curva-head .leg i.in{background:var(--ele)}
+  .curva-head .leg i.out{background:var(--coral)}
+  .curva-head .leg i.cr{background:transparent;border:1.5px solid var(--coral)}
+  .chart{position:relative;height:240px;margin-top:22px;outline:none;cursor:crosshair}
+  .chart:focus-visible{box-shadow:0 0 0 2px rgba(104,64,255,.6);border-radius:6px}
+  .chart svg{position:absolute;inset:0;width:100%;height:100%;display:block;overflow:visible}
+  .anim .chart path{transition:d .7s var(--ease)}
+  .anim .chart .zero,.anim .chart .clipr{transition:all .7s var(--ease)}
+  .chart .ov{position:absolute;inset:0;pointer-events:none}
+  .chart .pt{position:absolute;width:0;height:0}
+  .anim .chart .pt{transition:left .7s var(--ease),top .7s var(--ease)}
+  .chart .ev{position:absolute;left:-4px;width:8px;height:8px;border-radius:50%;background:var(--coral);box-shadow:0 0 0 3px var(--bg);top:calc(-4px + var(--o,0) * 12px)}
+  .chart .ev.in{background:var(--ele)}
+  .chart .ev.prev{background:var(--roxo)}
+  .chart .ring{position:absolute;left:-9px;top:-9px;width:18px;height:18px;border-radius:50%;border:1.5px solid var(--coral)}
+  .chart .rot{position:absolute;white-space:nowrap;font:700 9.5px var(--gro);letter-spacing:.14em;text-transform:uppercase;color:var(--t3);transform:translate(-50%,0)}
+  .chart .rot.cr{color:var(--coral);top:-26px}
+  .chart .rot.mn{top:14px}
+  .chart .rot.mn .num{letter-spacing:-.01em;text-transform:none;font-size:11px;color:var(--t2)}
+  .chart .hoje{position:absolute;top:0;bottom:0;border-left:1px dashed var(--line-h)}
+  .chart .hoje span{position:absolute;top:-2px;left:8px;font:700 9.5px var(--gro);letter-spacing:.14em;text-transform:uppercase;color:var(--t2);white-space:nowrap}
+  .chart .dot0{position:absolute;left:-4px;top:-4px;width:8px;height:8px;border-radius:50%;background:var(--t1)}
+  .chart .zr{position:absolute;right:0;font:700 9.5px var(--gro);letter-spacing:.14em;color:var(--t3);transform:translateY(-120%)}
+  .chart .guia{position:absolute;top:0;bottom:0;border-left:1px solid var(--line-h);opacity:0;transition:opacity .2s}
+  .chart .guia.on{opacity:1}
+  /* tooltip do gráfico (G-01 do v3; candidata a shared, Relatórios usa o mesmo) */
+  .tip{position:absolute;z-index:3;min-width:200px;max-width:260px;background:var(--s1);border:1px solid var(--line-h);border-radius:12px;padding:12px 14px;
+    box-shadow:0 18px 40px -18px rgba(0,0,0,.7);pointer-events:none;opacity:0;transform:translateY(-100%);transition:opacity .2s}
+  .tip.on{opacity:1}
+  .tip .t{font:700 10px var(--gro);letter-spacing:.16em;text-transform:uppercase;color:var(--t3)}
+  .tip .v{font:700 20px/1 var(--gro);letter-spacing:-.03em;margin-top:8px}
+  .tip .v.w{color:var(--coral)}
+  .tip ul{list-style:none;margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
+  .tip li{display:flex;justify-content:space-between;gap:12px;font:400 12px/1.7 var(--int);color:var(--t2)}
+  .tip li .num{color:var(--t1);white-space:nowrap}
+  .eixo{position:relative;height:18px;margin-top:10px}
+  .eixo span{position:absolute;transform:translateX(-50%);font:700 9.5px var(--gro);letter-spacing:.12em;text-transform:uppercase;color:var(--t3);white-space:nowrap}
+  .eixo span.ano{color:var(--t2)}
+  .eixo span.cr{color:var(--coral)}
+  .eixo span.cr::after{content:" · crítico"}
+  .curva .prosa{font:400 13px/1.6 var(--int);color:var(--t2);margin-top:16px;max-width:78ch}
+  .curva .prosa b{color:var(--t1);font-weight:600;font-family:var(--gro);letter-spacing:-.01em}
+  .curva .prosa b.w{color:var(--coral)}
+
+  /* ── laboratório: só o que difere do shared ── */
+  .imp label b{font:700 11px var(--gro);color:var(--roxo);margin-right:6px}
+
+  /* ── eventos planejados ── */
+  .eventos{padding:40px 0 34px;border-bottom:1px solid var(--line)}
+  .secao-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-bottom:6px}
+  .secao-head h2{font:500 22px/1.2 var(--gro);letter-spacing:-.03em;margin-top:8px}
+  .ano-div{padding:22px 0 8px;border-bottom:1px solid var(--line)}
+  .evrow{display:grid;grid-template-columns:64px 1fr 150px 130px 190px;gap:16px;align-items:center;padding:13px 0;border-bottom:1px solid var(--line);transition:padding-left .35s var(--ease)}
+  .evrow:hover{padding-left:6px}
+  .evrow .d{font:700 11px var(--gro);letter-spacing:.06em;text-transform:uppercase;color:var(--t3)}
+  .evrow strong{display:block;font:500 14px var(--int);color:var(--t1)}
+  .evrow small{display:block;font:400 11.5px/1.5 var(--int);color:var(--t3);margin-top:2px}
+  .evrow .v{font:700 13.5px var(--gro);color:var(--t2);text-align:right;white-space:nowrap}
+  .evrow.in .v{color:var(--ele)}
+  .evrow .ac{display:flex;gap:8px;justify-content:flex-end}
+  .evrow .ac .btn-sm{padding:6px 13px;font-size:12px}
+  .evrow.nova{background:rgba(161,255,98,.10);box-shadow:inset 3px 0 0 var(--ele)}
+  .anim .evrow{transition:padding-left .35s var(--ease),background 1.8s var(--ease),box-shadow 1.8s var(--ease)}
+  .etq{display:inline-block;font:700 9px var(--gro);letter-spacing:.14em;text-transform:uppercase;color:var(--t3);border:1px solid var(--line);border-radius:999px;padding:3px 8px;white-space:nowrap}
+  .etq.ok{color:var(--ele);border-color:rgba(161,255,98,.4)}
+  .etq.prev{color:var(--roxo);border-color:rgba(104,64,255,.5)}
+  .lista-foot{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;padding:16px 0 0;font:400 12.5px var(--int);color:var(--t3)}
+  .lista-foot b{color:var(--t1);font-weight:700}
+  .lista-foot b.ele{color:var(--ele)}
+  .lista-foot output{color:var(--ele);font-weight:600;min-height:1em}
+
+  /* ── Mais em Finanças ── */
+  .mais{display:flex;gap:6px 18px;flex-wrap:wrap;align-items:baseline;padding:24px 0 56px;font:400 13px var(--int);color:var(--t3)}
+  .mais a{color:var(--t2);transition:color .3s var(--ease)}
+  .mais a:hover{color:var(--t1)}
+
+  /* painel: só os extras desta tela (a peça .painel é do shared) */
+  .painel textarea.ck-note{resize:vertical;min-height:72px;font:400 13px/1.5 var(--int)}
+  .painel .aviso{font:400 12px/1.5 var(--int);color:var(--t3);margin-top:8px}
+  .vazio-l{font:400 13px var(--int);color:var(--t3);padding:22px 0 6px}
+  .painel .err{font:500 12.5px var(--int);color:var(--coral);min-height:1em}
+
+  /* ── anotação do protótipo (fora do fluxo, inert) ── */
+  .proto-estados{border-top:3px double var(--line-h);margin-top:24px;padding-top:34px;padding-bottom:80px}
+  .proto-estados > .wrap > .eyebrow{color:var(--coral)}
+  .pe-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(24px,3vw,48px);margin-top:26px;align-items:start}
+  .pe h4{font:700 10px var(--gro);letter-spacing:.18em;text-transform:uppercase;color:var(--t3);margin-bottom:14px}
+  .pe p,.pe li{font:400 12.5px/1.6 var(--int);color:var(--t2)}
+  .pe .vazio{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:20px 0;font:400 13px/1.6 var(--int);color:var(--t3)}
+  .pe .vazio .btn-sm{margin-top:12px}
+  .pe .skel span{display:block;height:10px;border-radius:5px;background:var(--s2);margin:10px 0}
+  .pe .erro{margin-top:14px;border-left:3px solid var(--coral);padding:10px 14px;font:400 13px var(--int);color:var(--coral)}
+  .pe .free{position:relative;height:70px;border-bottom:1px solid var(--line);background:linear-gradient(90deg,transparent 0 54%,rgba(21,19,19,.7) 54%)}
+  .pe .free span{position:absolute;right:0;top:20px;font:600 12px var(--int);color:var(--t1)}
+  .pe-nota{font:400 12px/1.6 var(--int);color:var(--t3);margin-top:12px}
+  .regra{margin-top:40px;border-left:2px solid var(--line-h);padding-left:16px;font:400 12.5px/1.7 var(--int);color:var(--t2);max-width:90ch}
+  .regra b{color:var(--t1)}
+  .regra .eyebrow{margin-bottom:8px}
+  .le{margin-top:40px}
+  .le ul{list-style:none;margin-top:12px;border-top:1px solid var(--line)}
+  .le li{display:grid;grid-template-columns:220px 1fr;gap:18px;padding:11px 0;border-bottom:1px solid var(--line);font:400 12.5px/1.5 var(--int);color:var(--t2)}
+  .le li code{font:600 12px var(--gro);letter-spacing:-.01em;color:var(--t1)}
+
+  @media (max-width:960px){
+    .objeto{flex-direction:column;align-items:flex-start}
+    .principal{grid-template-columns:1fr}
+    .evrow{grid-template-columns:56px 1fr 120px}
+    .evrow .st,.evrow .ac{grid-column:2/-1}
+    .pe-grid{grid-template-columns:1fr}
+    .le li{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- chrome -->
+<header class="bar">
+  <a class="brand" href="#">
+    <svg width="19" height="19" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="2" x2="32" y2="11" stroke="#a1ff62" stroke-width="7" stroke-linecap="round"/><polygon points="32,8 40,34 24,34" fill="#6840ff"/><polygon points="32,58 24,34 40,34" fill="#f4f4f4" opacity=".35"/></svg>
+    <span class="wm">Sync<em>Life</em></span></a>
+  <span class="date">Sexta · 3 de outubro de 2026</span>
+  <div class="acts">
+    <button class="btn-sm ghost coach-pill" type="button" data-coach-open>
+      <svg width="15" height="15" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="5" x2="32" y2="12" stroke="#a1ff62" stroke-width="4.5" stroke-linecap="round"/><line x1="59" y1="32" x2="52" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="32" y1="59" x2="32" y2="52" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="5" y1="32" x2="12" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><polygon points="32,8 38,32 26,32" fill="#6840ff"/><polygon points="32,55 26,32 38,32" fill="#f4f4f4" opacity=".3"/><circle cx="32" cy="32" r="3.5" fill="#151313"/></svg>
+      Fale com Sy</button>
+    <button class="btn-sm roxo" type="button" data-novo-evento>+ Registrar</button>
+  </div>
+</header>
+<nav class="modbar" aria-label="Áreas">
+  <div class="in">
+    <a href="meu-dia-d.html">Meu dia</a>
+    <a class="on" href="financas-a.html"><span class="n">01</span>Finanças</a>
+    <a href="#"><span class="n">02</span>Futuro</a>
+    <a href="#"><span class="n">03</span>Tempo</a>
+    <a href="#"><span class="n">04</span>Corpo</a>
+    <a href="#"><span class="n">05</span>Mente</a>
+    <a href="#"><span class="n">06</span>Patrimônio</a>
+    <a href="#"><span class="n">07</span>Carreira</a>
+    <a href="#"><span class="n">08</span>Experiências</a>
+    <a href="#">Conquistas</a>
+    <a href="#">Configurações</a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <!-- 1. voltar + cabeçalho do objeto -->
+  <a class="voltar boot b1" href="financas-a.html">← Finanças · outubro</a>
+  <header class="objeto boot b1">
+    <div>
+      <a class="eyebrow" href="financas-a.html"><b>01</b> · Finanças</a>
+      <h1>Planejamento · próximos 12 meses</h1>
+    </div>
+    <div class="cenarios" role="group" aria-label="Cenário da projeção">
+      <span class="rot">Cenário</span>
+      <button class="chip" type="button" data-scn="pessimista" aria-pressed="false">Pessimista</button>
+      <button class="chip on" type="button" data-scn="realista" aria-pressed="true">Realista</button>
+      <button class="chip" type="button" data-scn="otimista" aria-pressed="false">Otimista</button>
+    </div>
+  </header>
+
+  <!-- 2. número principal + Sy -->
+  <section class="principal boot b2" aria-label="Saldo projetado">
+    <div>
+      <div class="eb"><p class="eyebrow">Saldo em 6 meses · abril de 2027</p><span class="pill-q prev" id="pPrev" hidden>Prévia</span></div>
+      <div class="big num" id="p6">R$&nbsp;1.682</div>
+      <p class="de" id="pDe">Ponto mais baixo <b class="num">R$&nbsp;488</b> em março de 2027 · próximo mês crítico: <b>janeiro</b>, Gastos na Itália</p>
+      <div class="mini">
+        <div><strong class="num" id="pHoje">R$&nbsp;1.840</strong><span>saldo hoje</span></div>
+        <div><strong class="num" id="p12">R$&nbsp;9.804</strong><span>em 12 meses, outubro de 2027</span></div>
+      </div>
+    </div>
+    <div class="sy">
+      <span class="sy40" aria-hidden="true"><canvas></canvas></span>
+      <div>
+        <p class="fala" id="syFala">Janeiro é o mês que aperta: Gastos na Itália leva o saldo de <b class="num">R$&nbsp;8.237</b> para <b class="num">R$&nbsp;4.781</b>. O ponto mais baixo vem em março, <b class="num w">R$&nbsp;488</b>.</p>
+        <p class="fontes">Atualizado às 7h12 · fontes: 8 eventos planejados, 9 recorrentes ativas, gastos de julho a setembro</p>
+        <button class="falar" type="button" data-coach-open data-coach-seed="Sobre o planejamento dos próximos 12 meses: ">Falar com Sy sobre o planejamento →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. curva do saldo -->
+  <section class="curva boot b3" aria-label="Curva do saldo">
+    <div class="curva-head">
+      <p class="eyebrow" id="cTit">Curva do saldo · 13 meses · realista</p>
+      <div class="leg" aria-hidden="true"><span><i class="in"></i>entrada planejada</span><span><i class="out"></i>saída planejada</span><span><i class="cr"></i>mês crítico</span></div>
+    </div>
+    <div class="chart" id="chart" tabindex="0" role="img" aria-label="Saldo projetado de outubro de 2026 a outubro de 2027. Use as setas para ler mês a mês.">
+      <!--ssr:chart--><svg viewBox="0 0 1000 240" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="gp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a1ff62" stop-opacity=".22"></stop><stop offset="1" stop-color="#a1ff62" stop-opacity="0"></stop></linearGradient><linearGradient id="gn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f84131" stop-opacity="0"></stop><stop offset="1" stop-color="#f84131" stop-opacity=".2"></stop></linearGradient><clipPath id="cA"><rect id="cpA" class="clipr" x="0" y="0" width="1000" height="210.3"></rect></clipPath><clipPath id="cB"><rect id="cpB" class="clipr" x="0" y="210.3" width="1000" height="29.7"></rect></clipPath></defs><line x1="0" y1="12" x2="1000" y2="12" stroke="rgba(255,255,255,.06)" vector-effect="non-scaling-stroke"></line><line x1="0" y1="228" x2="1000" y2="228" stroke="rgba(255,255,255,.06)" vector-effect="non-scaling-stroke"></line><path class="area-p" clip-path="url(#cA)" fill="url(#gp)" d="M15.0 177.6 L88.8 172.6 L162.7 110.2 L236.5 63.8 L310.4 125.3 L384.2 117.2 L458.1 201.7 L531.9 180.4 L605.8 154.9 L679.6 129.4 L753.5 108.2 L827.3 82.7 L901.2 57.2 L975.0 35.9 L975.0 210.3 L15.0 210.3 Z"></path><path class="area-n" clip-path="url(#cB)" fill="url(#gn)" d="M15.0 177.6 L88.8 172.6 L162.7 110.2 L236.5 63.8 L310.4 125.3 L384.2 117.2 L458.1 201.7 L531.9 180.4 L605.8 154.9 L679.6 129.4 L753.5 108.2 L827.3 82.7 L901.2 57.2 L975.0 35.9 L975.0 210.3 L15.0 210.3 Z"></path><line class="zero" x1="0" x2="1000" stroke="rgba(255,255,255,.32)" stroke-dasharray="4 5" vector-effect="non-scaling-stroke" y1="210.3" y2="210.3"></line><path class="lin-p" clip-path="url(#cA)" fill="none" stroke="#a1ff62" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke" d="M15.0 177.6 L88.8 172.6 L162.7 110.2 L236.5 63.8 L310.4 125.3 L384.2 117.2 L458.1 201.7 L531.9 180.4 L605.8 154.9 L679.6 129.4 L753.5 108.2 L827.3 82.7 L901.2 57.2 L975.0 35.9"></path><path class="lin-n" clip-path="url(#cB)" fill="none" stroke="#f84131" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke" d="M15.0 177.6 L88.8 172.6 L162.7 110.2 L236.5 63.8 L310.4 125.3 L384.2 117.2 L458.1 201.7 L531.9 180.4 L605.8 154.9 L679.6 129.4 L753.5 108.2 L827.3 82.7 L901.2 57.2 L975.0 35.9"></path></svg><div class="ov"><div class="hoje" style="left:1.5%"><span>Hoje</span></div><span class="zr" style="top:87.6401384083045%">R<!--ssr:chart-->
+      <svg viewBox="0 0 1000 240" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="gp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a1ff62" stop-opacity=".22"></stop><stop offset="1" stop-color="#a1ff62" stop-opacity="0"></stop></linearGradient><linearGradient id="gn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f84131" stop-opacity="0"></stop><stop offset="1" stop-color="#f84131" stop-opacity=".2"></stop></linearGradient><clipPath id="cA"><rect id="cpA" class="clipr" x="0" y="0" width="1000" height="210.3"></rect></clipPath><clipPath id="cB"><rect id="cpB" class="clipr" x="0" y="210.3" width="1000" height="29.7"></rect></clipPath></defs><line x1="0" y1="12" x2="1000" y2="12" stroke="rgba(255,255,255,.06)" vector-effect="non-scaling-stroke"></line><line x1="0" y1="228" x2="1000" y2="228" stroke="rgba(255,255,255,.06)" vector-effect="non-scaling-stroke"></line><path class="area-p" clip-path="url(#cA)" fill="url(#gp)" d="M15.0 177.6 L88.8 172.6 L162.7 110.2 L236.5 63.8 L310.4 125.3 L384.2 117.2 L458.1 201.7 L531.9 180.4 L605.8 154.9 L679.6 129.4 L753.5 108.2 L827.3 82.7 L901.2 57.2 L975.0 35.9 L975.0 210.3 L15.0 210.3 Z"></path><path class="area-n" clip-path="url(#cB)" fill="url(#gn)" d="M15.0 177.6 L88.8 172.6 L162.7 110.2 L236.5 63.8 L310.4 125.3 L384.2 117.2 L458.1 201.7 L531.9 180.4 L605.8 154.9 L679.6 129.4 L753.5 108.2 L827.3 82.7 L901.2 57.2 L975.0 35.9 L975.0 210.3 L15.0 210.3 Z"></path><line class="zero" x1="0" x2="1000" stroke="rgba(255,255,255,.32)" stroke-dasharray="4 5" vector-effect="non-scaling-stroke" y1="210.3" y2="210.3"></line><path class="lin-p" clip-path="url(#cA)" fill="none" stroke="#a1ff62" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke" d="M15.0 177.6 L88.8 172.6 L162.7 110.2 L236.5 63.8 L310.4 125.3 L384.2 117.2 L458.1 201.7 L531.9 180.4 L605.8 154.9 L679.6 129.4 L753.5 108.2 L827.3 82.7 L901.2 57.2 L975.0 35.9"></path><path class="lin-n" clip-path="url(#cB)" fill="none" stroke="#f84131" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke" d="M15.0 177.6 L88.8 172.6 L162.7 110.2 L236.5 63.8 L310.4 125.3 L384.2 117.2 L458.1 201.7 L531.9 180.4 L605.8 154.9 L679.6 129.4 L753.5 108.2 L827.3 82.7 L901.2 57.2 L975.0 35.9"></path></svg><div class="ov"><div class="hoje" style="left:1.5%"><span>Hoje</span></div><span class="zr" style="top:87.6401384083045%">R<!--ssr:chart--><!--/ssr:chart-->nbsp;0</span><div class="pt" style="left:1.5%;top:74.00260044978464%"><i class="dot0"></i></div><div class="pt" style="left:8.884615384615385%;top:71.9273229343577%"><i class="ev " style="--o:0" title="Revisão do carro"></i></div><div class="pt" style="left:16.26923076923077%;top:45.927060348223094%"><i class="ev in" style="--o:0" title="13º salário, 1ª parcela"></i></div><div class="pt" style="left:23.653846153846153%;top:26.5899209276914%"><i class="ev " style="--o:0" title="Presentes de Natal"></i></div><div class="pt" style="left:23.653846153846153%;top:26.5899209276914%"><i class="ev in" style="--o:1" title="13º salário, 2ª parcela"></i></div><div class="pt" style="left:31.03846153846154%;top:52.204774832389575%"><i class="ev " style="--o:0" title="Gastos na Itália"></i></div><div class="pt" style="left:31.03846153846154%;top:52.204774832389575%"><i class="ev " style="--o:1" title="IPVA"></i></div><div class="pt" style="left:38.42307692307693%;top:48.847272280645285%"><i class="ev " style="--o:0" title="IPTU"></i></div><div class="pt" style="left:45.80769230769231%;top:84.02322616713184%"><i class="ev " style="--o:0" title="Troca do notebook"></i></div><div class="pt" style="left:31.03846153846154%;top:52.204774832389575%"><i class="ring"></i></div><div class="pt" style="left:45.80769230769231%;top:84.02322616713184%"><span class="rot mn">mais baixo <span class="num">R<!--ssr:chart--><!--/ssr:chart-->nbsp;488</span></span></div><div class="guia" id="guia"></div></div>
+    <!--/ssr:chart-->nbsp;0</span><div class="pt" style="left:1.5%;top:74.00260044978464%"><i class="dot0"></i></div><div class="pt" style="left:8.884615384615385%;top:71.9273229343577%"><i class="ev " style="--o:0" title="Revisão do carro"></i></div><div class="pt" style="left:16.26923076923077%;top:45.927060348223094%"><i class="ev in" style="--o:0" title="13º salário, 1ª parcela"></i></div><div class="pt" style="left:23.653846153846153%;top:26.5899209276914%"><i class="ev " style="--o:0" title="Presentes de Natal"></i></div><div class="pt" style="left:23.653846153846153%;top:26.5899209276914%"><i class="ev in" style="--o:1" title="13º salário, 2ª parcela"></i></div><div class="pt" style="left:31.03846153846154%;top:52.204774832389575%"><i class="ev " style="--o:0" title="Gastos na Itália"></i></div><div class="pt" style="left:31.03846153846154%;top:52.204774832389575%"><i class="ev " style="--o:1" title="IPVA"></i></div><div class="pt" style="left:38.42307692307693%;top:48.847272280645285%"><i class="ev " style="--o:0" title="IPTU"></i></div><div class="pt" style="left:45.80769230769231%;top:84.02322616713184%"><i class="ev " style="--o:0" title="Troca do notebook"></i></div><div class="pt" style="left:31.03846153846154%;top:52.204774832389575%"><i class="ring"></i><span class="rot cr">Mês crítico</span></div><div class="pt" style="left:45.80769230769231%;top:84.02322616713184%"><span class="rot mn">mais baixo <span class="num">R<!--ssr:chart--><!--/ssr:chart-->nbsp;488</span></span></div><div class="guia" id="guia"></div></div><!--/ssr:chart-->
+    </div>
+    <div class="eixo" id="eixo" aria-hidden="true"><!--ssr:eixo--><span class="k" style="left:8.884615384615385%">out 26</span><span class="" style="left:16.26923076923077%">nov</span><span class="" style="left:23.653846153846153%">dez</span><span class="k ano" style="left:31.03846153846154%">jan 27</span><span class="" style="left:38.42307692307693%">fev</span><span class="" style="left:45.80769230769231%">mar</span><span class="k" style="left:53.19230769230769%">abr</span><span class="" style="left:60.57692307692308%">mai</span><span class="" style="left:67.96153846153847%">jun</span><span class="k" style="left:75.34615384615385%">jul</span><span class="" style="left:82.73076923076924%">ago</span><span class="" style="left:90.11538461538461%">set</span><span class="k" style="left:97.5%">out 27</span><!--/ssr:eixo--></div>
+    <p class="prosa" id="prosa"><!--ssr:prosa-->Saldo de fim de mês no cenário realista: de <b class="num">R<!--ssr:prosa-->Saldo de fim de mês no cenário realista: de <b class="num">R<!--ssr:prosa--><!--/ssr:prosa-->nbsp;1.840</b> hoje para <b class="num">R<!--ssr:prosa--><!--/ssr:prosa-->nbsp;2.120</b> no fechamento de outubro. O mais alto é <b class="num">R<!--ssr:prosa--><!--/ssr:prosa-->nbsp;9.804</b>, em outubro de 2027; o mais baixo, <b class="num w">R<!--ssr:prosa--><!--/ssr:prosa-->nbsp;488</b>, em março de 2027. Outubro de 2027 fecha em <b class="num">R<!--ssr:prosa--><!--/ssr:prosa-->nbsp;9.804</b>.<!--/ssr:prosa-->nbsp;1.840</b> hoje para <b class="num">R<!--ssr:prosa--><!--/ssr:prosa-->nbsp;2.120</b> no fechamento de outubro. O mais alto é <b class="num">R<!--ssr:prosa--><!--/ssr:prosa-->nbsp;9.804</b>, em outubro de 2027; o mais baixo, <b class="num w">R<!--ssr:prosa--><!--/ssr:prosa-->nbsp;488</b>, em março de 2027. Outubro de 2027 fecha em <b class="num">R<!--ssr:prosa--><!--/ssr:prosa-->nbsp;9.804</b>.<!--/ssr:prosa--></p>
+  </section>
+
+  <!-- 4. laboratório: quando trocar o notebook -->
+  <div class="sec-head rv">
+    <div>
+      <p class="eyebrow">Uma escolha, mais de um efeito</p>
+      <h2>Quando trocar o notebook?</h2>
+    </div>
+    <p>Experimente antes de decidir. Nada é lançado.</p>
+  </div>
+  <section class="lab rv" aria-label="Laboratório: data da troca do notebook">
+    <div class="perg">
+      <p class="eyebrow"><b>01 · 08 · 07</b> · Finanças, Experiências, Carreira</p>
+      <h3>Troca do notebook de <span class="num">R$&nbsp;4.500</span>, planejada para <span class="num">15 de março</span>.</h3>
+      <p>Compare o ponto mais baixo do ano, a folga para a Itália e quando o notebook chega. Nenhuma opção é a certa: a prioridade é sua.</p>
+      <div class="opcoes" role="group" aria-label="Data da troca">
+        <button class="opc" type="button" data-lab="antecipar" aria-pressed="false"><span>Antecipar para dezembro</span><span class="n num">10 dez</span></button>
+        <button class="opc" type="button" data-lab="manter" aria-pressed="true"><span>Manter em março</span><span class="n num">15 mar</span></button>
+        <button class="opc" type="button" data-lab="adiar" aria-pressed="false"><span>Adiar para maio</span><span class="n num">15 mai</span></button>
+      </div>
+    </div>
+    <div class="efei">
+      <div class="et"><b id="labTit">Manter em março</b><span class="eyebrow">Simulação · cenário realista</span></div>
+      <div class="imp" aria-live="polite">
+        <div><label><b>01</b>Ponto mais baixo</label><strong class="num" id="eMin">R$&nbsp;488</strong><small id="eMinN">em março de 2027 · como hoje</small></div>
+        <div><label><b>08</b>Folga para a Itália</label><strong class="num" id="eJan">R$&nbsp;4.781</strong><small id="eJanN">saldo de janeiro, depois da viagem</small></div>
+        <div><label><b>07</b>Notebook novo chega</label><strong class="num" id="eNb">15 mar</strong><small id="eNbN">como planejado</small></div>
+      </div>
+      <div class="expl">
+        <span class="sy40" aria-hidden="true"><canvas></canvas></span>
+        <p id="labCopy">Você mantém março. Janeiro fecha em <b>R$&nbsp;4.781</b> depois da Itália, e <b>o ponto mais baixo é R$&nbsp;488, em março</b>, o mês da troca.</p>
+      </div>
+      <details class="evid">
+        <summary>De onde vêm esses efeitos?</summary>
+        <p>As três curvas saem da mesma projeção realista, com o evento Troca do notebook (<span class="num">R$&nbsp;4.500</span>) em <span class="num">10 de dezembro</span>, <span class="num">15 de março</span> ou <span class="num">15 de maio</span>. Ponto mais baixo é o menor saldo de fim de mês entre outubro de 2026 e outubro de 2027. A folga para a Itália é o saldo de janeiro depois dos Gastos na Itália (<span class="num">R$&nbsp;3.200</span>, viagem Positano, 08 Experiências) e do IPVA (<span class="num">R$&nbsp;1.450</span>). A data de chegada é a da compra, ligada à meta Notebook novo, de 07 Carreira.</p>
+        <p>Não modelado: parcelar o notebook, mudança de preço até a data, venda do aparelho antigo. Fontes: 8 eventos planejados, 9 recorrentes ativas, renda e gasto variáveis médios de julho a setembro, meta Notebook novo.</p>
+      </details>
+      <div class="aplicar">
+        <button class="btn-sm roxo" type="button" id="aplicar">Experimentar nesta projeção →</button>
+        <span>Prévia local, com desfazer. O evento planejado não muda.</span>
+      </div>
+      <div class="recibo" id="recibo" role="status" hidden><span id="reciboTxt"></span><button type="button" id="desfazer">Desfazer</button></div>
+    </div>
+  </section>
+
+  <!-- 5. eventos planejados -->
+  <section class="eventos rv" id="eventos" aria-label="Eventos planejados">
+    <div class="secao-head">
+      <div><p class="eyebrow">Eventos planejados · próximos 12 meses</p></div>
+      <button class="btn-sm ghost" type="button" data-novo-evento>+ Novo evento</button>
+    </div>
+    <div id="lista"><!--ssr:lista--><p class="eyebrow ano-div">2026</p><div class="evrow" data-id="p8"><span class="d num">24 out</span><div class="nm"><strong>Revisão do carro</strong><small>Transporte</small></div><span class="st"></span><span class="v num">–&nbsp;R<!--ssr:lista--><p class="eyebrow ano-div">2026</p><div class="evrow" data-id="p8"><span class="d num">24 out</span><div class="nm"><strong>Revisão do carro</strong><small>Transporte</small></div><span class="st"></span><span class="v num">–&nbsp;R<!--ssr:lista--><!--/ssr:lista-->nbsp;620,00</span><span class="ac"><button class="btn-sm ghost" type="button" data-conf="">Confirmar</button><button class="btn-sm ghost" type="button" data-edit="">Editar</button></span></div><div class="evrow in" data-id="p1"><span class="d num">28 nov</span><div class="nm"><strong>13º salário, 1ª parcela</strong><small>Renda</small></div><span class="st"><span class="etq ok">Confirmado</span> </span><span class="v num">+&nbsp;R<!--ssr:lista--><!--/ssr:lista-->nbsp;2.075,00</span><span class="ac"><button class="btn-sm ghost" type="button" data-edit="">Editar</button></span></div><div class="evrow" data-id="p3"><span class="d num">15 dez</span><div class="nm"><strong>Presentes de Natal</strong><small>Lazer</small></div><span class="st"></span><span class="v num">–&nbsp;R<!--ssr:lista--><!--/ssr:lista-->nbsp;900,00</span><span class="ac"><button class="btn-sm ghost" type="button" data-conf="">Confirmar</button><button class="btn-sm ghost" type="button" data-edit="">Editar</button></span></div><div class="evrow in" data-id="p2"><span class="d num">18 dez</span><div class="nm"><strong>13º salário, 2ª parcela</strong><small>Renda</small></div><span class="st"></span><span class="v num">+&nbsp;R<!--ssr:lista--><!--/ssr:lista-->nbsp;2.075,00</span><span class="ac"><button class="btn-sm ghost" type="button" data-conf="">Confirmar</button><button class="btn-sm ghost" type="button" data-edit="">Editar</button></span></div><p class="eyebrow ano-div">2027</p><div class="evrow" data-id="p4"><span class="d num">12 jan</span><div class="nm"><strong>Gastos na Itália</strong><small>Lazer · o que a meta não cobre: comida e passeios</small></div><span class="st"></span><span class="v num">–&nbsp;R<!--ssr:lista--><!--/ssr:lista-->nbsp;3.200,00</span><span class="ac"><button class="btn-sm ghost" type="button" data-conf="">Confirmar</button><button class="btn-sm ghost" type="button" data-edit="">Editar</button></span></div><div class="evrow" data-id="p5"><span class="d num">20 jan</span><div class="nm"><strong>IPVA</strong><small>Transporte</small></div><span class="st"></span><span class="v num">–&nbsp;R<!--ssr:lista--><!--/ssr:lista-->nbsp;1.450,00</span><span class="ac"><button class="btn-sm ghost" type="button" data-conf="">Confirmar</button><button class="btn-sm ghost" type="button" data-edit="">Editar</button></span></div><div class="evrow" data-id="p6"><span class="d num">10 fev</span><div class="nm"><strong>IPTU</strong><small>Moradia</small></div><span class="st"></span><span class="v num">–&nbsp;R<!--ssr:lista--><!--/ssr:lista-->nbsp;980,00</span><span class="ac"><button class="btn-sm ghost" type="button" data-conf="">Confirmar</button><button class="btn-sm ghost" type="button" data-edit="">Editar</button></span></div><div class="evrow" data-id="p7"><span class="d num">15 mar</span><div class="nm"><strong>Troca do notebook</strong><small>Trabalho · meta Notebook novo, 07 Carreira</small></div><span class="st"></span><span class="v num">–&nbsp;R<!--ssr:lista--><!--/ssr:lista-->nbsp;4.500,00</span><span class="ac"><button class="btn-sm ghost" type="button" data-conf="">Confirmar</button><button class="btn-sm ghost" type="button" data-edit="">Editar</button></span></div><!--/ssr:lista-->nbsp;620,00</span><span class="ac"><button class="btn-sm ghost" type="button" data-conf="">Confirmar</button><button class="btn-sm ghost" type="button" data-edit="">Editar</button></span></div><div class="evrow in" data-id="p1"><span class="d num">28 nov</span><div class="nm"><strong>13º salário, 1ª parcela</strong><small>Renda</small></div><span class="st"><span class="etq ok">Confirmado</span> </span><span class="v num">+&nbsp;R<!--ssr:lista--><!--/ssr:lista-->nbsp;2.075,00</span><span class="ac"><button class="btn-sm ghost" type="button" data-edit="">Editar</button></span></div><div class="evrow" data-id="p3"><span class="d num">15 dez</span><div class="nm"><strong>Presentes de Natal</strong><small>Lazer</small></div><span class="st"></span><span class="v num">–&nbsp;R<!--ssr:lista--><!--/ssr:lista-->nbsp;900,00</span><span class="ac"><button class="btn-sm ghost" type="button" data-conf="">Confirmar</button><button class="btn-sm ghost" type="button" data-edit="">Editar</button></span></div><div class="evrow in" data-id="p2"><span class="d num">18 dez</span><div class="nm"><strong>13º salário, 2ª parcela</strong><small>Renda</small></div><span class="st"></span><span class="v num">+&nbsp;R<!--ssr:lista--><!--/ssr:lista-->nbsp;2.075,00</span><span class="ac"><button class="btn-sm ghost" type="button" data-conf="">Confirmar</button><button class="btn-sm ghost" type="button" data-edit="">Editar</button></span></div><p class="eyebrow ano-div">2027</p><div class="evrow" data-id="p4"><span class="d num">12 jan</span><div class="nm"><strong>Gastos na Itália</strong><small>Lazer · o que a meta não cobre: comida e passeios</small></div><span class="st"></span><span class="v num">–&nbsp;R<!--ssr:lista--><!--/ssr:lista-->nbsp;3.200,00</span><span class="ac"><button class="btn-sm ghost" type="button" data-conf="">Confirmar</button><button class="btn-sm ghost" type="button" data-edit="">Editar</button></span></div><div class="evrow" data-id="p5"><span class="d num">20 jan</span><div class="nm"><strong>IPVA</strong><small>Transporte</small></div><span class="st"></span><span class="v num">–&nbsp;R<!--ssr:lista--><!--/ssr:lista-->nbsp;1.450,00</span><span class="ac"><button class="btn-sm ghost" type="button" data-conf="">Confirmar</button><button class="btn-sm ghost" type="button" data-edit="">Editar</button></span></div><div class="evrow" data-id="p6"><span class="d num">10 fev</span><div class="nm"><strong>IPTU</strong><small>Moradia</small></div><span class="st"></span><span class="v num">–&nbsp;R<!--ssr:lista--><!--/ssr:lista-->nbsp;980,00</span><span class="ac"><button class="btn-sm ghost" type="button" data-conf="">Confirmar</button><button class="btn-sm ghost" type="button" data-edit="">Editar</button></span></div><div class="evrow" data-id="p7"><span class="d num">15 mar</span><div class="nm"><strong>Troca do notebook</strong><small>Trabalho · meta Notebook novo, 07 Carreira</small></div><span class="st"></span><span class="v num">–&nbsp;R<!--ssr:lista--><!--/ssr:lista-->nbsp;4.500,00</span><span class="ac"><button class="btn-sm ghost" type="button" data-conf="">Confirmar</button><button class="btn-sm ghost" type="button" data-edit="">Editar</button></span></div><!--/ssr:lista--></div>
+    <div class="lista-foot">
+      <span id="lTot"><!--ssr:ltot--><b class="num">8</b> eventos · entradas <b class="num ele">+&nbsp;R<!--ssr:ltot--><b class="num">8</b> eventos · entradas <b class="num ele">+&nbsp;R<!--ssr:ltot--><!--/ssr:ltot-->nbsp;4.150,00</b> · saídas <b class="num">–&nbsp;R<!--ssr:ltot--><!--/ssr:ltot-->nbsp;11.650,00</b><!--/ssr:ltot-->nbsp;4.150,00</b> · saídas <b class="num">–&nbsp;R<!--ssr:ltot--><!--/ssr:ltot-->nbsp;11.650,00</b><!--/ssr:ltot--></span>
+      <output id="lOut" aria-live="polite"></output>
+    </div>
+  </section>
+
+  <!-- 6. mais em Finanças -->
+  <nav class="mais" aria-label="Mais em Finanças">
+    <span>Mais em Finanças:</span>
+    <a href="financas-transacoes.html">Transações</a>
+    <a href="financas-orcamentos.html">Orçamentos</a>
+    <a href="financas-recorrentes.html">Recorrentes</a>
+    <a href="financas-calendario.html">Calendário</a>
+    <a href="financas-relatorios.html">Relatórios</a>
+    <a href="financas-importar.html">Importar extrato</a>
+  </nav>
+</main>
+
+<!-- rodapé -->
+<footer class="colofao">
+  <span>Saldo hoje <b class="num">R$&nbsp;1.840</b></span>
+  <div class="r">
+    <span id="rodScn">Projeção realista para outubro de 2027: <b class="num">R$&nbsp;9.804</b></span>
+    <span>Última sincronização às <b class="num">14:05</b></span>
+  </div>
+</footer>
+
+<!-- camada de Sy (vem antes do .painel no DOM: app.js pega a primeira .camada) -->
+<div class="scrim"></div>
+<aside class="camada" aria-label="Sy">
+  <header class="chead">
+    <p class="eyebrow"><b>Sy</b> · lendo: o seu planejamento</p>
+    <button class="x" type="button" aria-label="Fechar">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </header>
+  <div class="cbody">
+    <div class="cempty">
+      <p class="hello">Já li os próximos 12 meses. O que você quer saber?</p>
+      <div class="csug">
+        <button class="chip" type="button">Dá para trocar o notebook antes?</button>
+        <button class="chip" type="button">Por que janeiro é crítico?</button>
+        <button class="chip" type="button">Simular: e se a Itália custar R$&nbsp;4.000?</button>
+      </div>
+    </div>
+    <div class="cthread" hidden>
+      <div class="divider">Hoje · 14:02</div>
+      <div class="bub u">Dá para trocar o notebook antes?</div>
+      <div class="bub a">Dá, mas janeiro paga: trocando em dezembro, o saldo de janeiro desce para <strong class="num">R$&nbsp;281</strong> depois da Itália. Mantendo março, o mais baixo é <strong class="num">R$&nbsp;488</strong>; adiando para maio, o ano não desce de <strong class="num">R$&nbsp;2.120</strong>. O laboratório desta tela mostra as três.
+        <span class="meta">Fontes: 8 eventos planejados · projeção realista · meta Notebook novo</span>
+      </div>
+    </div>
+  </div>
+  <form class="cask"><div class="in">
+    <input type="text" placeholder="Pergunte qualquer coisa sobre o planejamento">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+  </div></form>
+  <a class="cfull" href="#sy">Conversa completa →</a>
+</aside>
+
+<!-- painel lateral: criar e editar evento planejado (peça .painel do shared) -->
+<aside class="painel" id="painel" role="dialog" aria-modal="true" aria-labelledby="p-titulo">
+  <header class="phead">
+    <div>
+      <p class="eyebrow"><b>01</b> · Evento planejado</p>
+      <h2 id="p-titulo">Novo evento</h2>
+    </div>
+    <button class="x" type="button" aria-label="Fechar">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </header>
+  <form id="pform" class="pbody" autocomplete="off" novalidate>
+    <div class="f">
+      <span class="eyebrow">Tipo</span>
+      <div class="tipo" role="group" aria-label="Tipo">
+        <button class="chip on" type="button" data-tipo="out" aria-pressed="true">Despesa</button>
+        <button class="chip" type="button" data-tipo="in" aria-pressed="false">Receita</button>
+      </div>
+    </div>
+    <div class="f">
+      <label class="eyebrow" for="p-nome">Nome</label>
+      <input class="ck-note" id="p-nome" name="nome" type="text" placeholder="Ex.: IPVA, bônus, viagem">
+    </div>
+    <div class="f2">
+      <div class="f">
+        <label class="eyebrow" for="p-valor">Valor</label>
+        <input class="ck-note num" id="p-valor" name="valor" type="text" inputmode="decimal" placeholder="0,00">
+      </div>
+      <div class="f">
+        <label class="eyebrow" for="p-data">Data</label>
+        <input class="ck-note num" id="p-data" name="data" type="date" min="2026-10-03" value="2026-10-03">
+      </div>
+    </div>
+    <div class="f">
+      <label class="eyebrow" for="p-cat">Categoria</label>
+      <div class="sel"><select id="p-cat" name="cat"></select></div>
+    </div>
+    <div class="f">
+      <label class="eyebrow" for="p-notas">Notas</label>
+      <textarea class="ck-note" id="p-notas" name="notas" rows="2" placeholder="Opcional"></textarea>
+    </div>
+    <div class="f">
+      <span class="eyebrow">Situação</span>
+      <div class="tipo" role="group" aria-label="Situação">
+        <button class="chip on" type="button" data-sit="0" aria-pressed="true">Previsto</button>
+        <button class="chip" type="button" data-sit="1" aria-pressed="false">Confirmado</button>
+      </div>
+      <p class="aviso">Confirmar só marca o evento. Ele não vira transação.</p>
+    </div>
+    <p class="err" id="p-err" role="alert"></p>
+  </form>
+  <div class="pfoot">
+    <div class="confirma" id="p-confirma" hidden role="status">
+      <span>Excluir <b id="p-conf-nome">este evento</b>? A projeção volta sem ele. Não dá para desfazer.</span>
+      <button class="sim" type="button" id="p-conf-sim">Excluir</button>
+      <button type="button" id="p-conf-nao">Cancelar</button>
+    </div>
+    <div class="acts">
+      <button class="btn-sm ghost perigo" type="button" id="p-excluir" hidden>Excluir</button>
+      <button class="btn-sm roxo" type="submit" form="pform" id="p-salvar">Planejar</button>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══ anotação do protótipo: estados + regra + o que Sy lê aqui (fora do fluxo) ═══ -->
+<section class="proto-estados" inert>
+  <div class="wrap">
+    <p class="eyebrow">Estados · anotação do protótipo</p>
+    <div class="pe-grid">
+      <div class="pe">
+        <h4>Vazio · nenhum evento planejado</h4>
+        <p>A curva continua: sai das recorrentes e da renda e gasto variáveis médios. Some o ponto de mês crítico se não houver queda; Sy diz só o saldo em 6 meses. O laboratório não aparece (não há troca a simular).</p>
+        <div class="vazio">Nada planejado para os próximos 12 meses. Comece pelo que já tem data: 13º, IPVA, uma viagem.
+          <div><button class="btn-sm roxo" type="button">Planejar um evento</button></div></div>
+      </div>
+      <div class="pe">
+        <h4>Carregando · erro</h4>
+        <div class="skel"><span style="width:40%"></span><span style="width:70%;height:34px"></span><span style="width:100%;height:120px"></span></div>
+        <p class="erro">Não deu para carregar a projeção. Tentar de novo</p>
+        <p class="pe-nota">Carregando: esqueleto do número, da curva e de 3 linhas. Erro: linha coral com "Tentar de novo"; os eventos já carregados continuam editáveis.</p>
+      </div>
+      <div class="pe">
+        <h4>Limite do plano FREE · 7 meses</h4>
+        <div class="free"><span>Projeção de 12 meses no PRO →</span></div>
+        <p class="pe-nota">No FREE a curva mostra outubro a abril (7 meses, como no v3) e os meses seguintes ficam apagados com o convite. Número principal (6 meses) e laboratório continuam. O mock é PRO.</p>
+      </div>
+      <div class="pe">
+        <h4>Cenário sem mês crítico · otimista</h4>
+        <p>Nenhuma queda maior que 30% de um mês para o outro: some o anel coral e a linha "próximo mês crítico" vira "nenhum mês crítico". Sy diz o ponto mais baixo do ano.</p>
+      </div>
+      <div class="pe">
+        <h4>Saldo negativo · pessimista</h4>
+        <p>O trecho abaixo do zero fica coral (linha e área), o número principal fica coral e Sy diz desde quando o saldo fica negativo e até onde vai.</p>
+      </div>
+      <div class="pe">
+        <h4>Próprios da tela</h4>
+        <p><b>Confirmar</b> só marca o evento (selo Confirmado). Não vira transação: na data, o lançamento real entra pela captura de Transações ou por uma recorrente. <b>Data no passado</b>: "A data precisa ser hoje ou depois." <b>Fora da projeção</b> (depois de outubro de 2027): o evento fica na lista com o selo "Fora dos 12 meses" e não entra na curva. <b>Excluir</b> pede licença inline no painel (o v3 excluía direto).</p>
+      </div>
+    </div>
+
+    <div class="regra">
+      <p class="eyebrow">Regra de projeção</p>
+      <b>13 meses a partir de outubro</b>; inclui a renda e o gasto variáveis médios de julho a setembro (<span class="num">R$&nbsp;600</span> e <span class="num">R$&nbsp;880</span> por mês); recorrentes normalizadas por mês (iguais a Recorrentes); cenários: receita ×1,3 / ×0,7 e despesa ×0,7 / ×1,3; eventos planejados sem multiplicador; crítico = queda maior que 30% vinda de saldo positivo. <b>Correção do v3:</b> o v3 ignorava a renda e o gasto variáveis e contava recorrentes semanais e quinzenais uma vez por mês, o que inflava o saldo projetado.
+    </div>
+
+    <div class="le">
+      <p class="eyebrow">O que Sy lê aqui</p>
+      <ul>
+        <li><code>planning_events</code><span>os 8 eventos: nome, tipo, valor, planned_date (sempre hoje ou depois), categoria, notas, is_confirmed</span></li>
+        <li><code>recurring_transactions</code><span>as 9 recorrentes ativas (pausadas ficam de fora), normalizadas por mês: a base da curva</span></li>
+        <li><code>transactions</code><span>julho a setembro: a renda e o gasto variáveis médios (R$ 600 e R$ 880 por mês)</span></li>
+        <li><code>profiles</code><span>current_balance (o saldo de hoje, R$ 1.840) e monthly_income</span></li>
+        <li><code>categories</code><span>as categorias de receita e despesa do formulário e o motivo do mês crítico</span></li>
+        <li><code>goals</code><span>a meta Notebook novo, ligada a 07 Carreira: o evento que o laboratório move</span></li>
+        <li><code>trips</code><span>a viagem Positano, 08 Experiências: a origem dos Gastos na Itália em janeiro</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<script src="../shared/mock-data.js"></script>
+<script src="../shared/app.js"></script>
+<script>
+SLApp.boot()
+
+// ── Planejamento: projeção, curva, laboratório e eventos. Tudo sai de SL_MOCK.fin.planejamento.
+// Editar, criar ou excluir um evento soma a diferença ao cenário a partir do mês do evento (eventos não têm multiplicador).
+;(function () {
+  var P = SL_MOCK.fin.planejamento, MOB = document.documentElement.classList.contains('mob')
+  var $ = function (s) { return document.querySelector(s) }
+  var NB = ' ', HOJE = '2026-10-03'
+  var MES = ['outubro', 'novembro', 'dezembro', 'janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro']
+  var MESC = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez']
+  var CATS = { out: ['Moradia', 'Mercado', 'Lazer', 'Transporte', 'Saúde', 'Assinaturas', 'Impostos', 'Trabalho', 'Investimento'], in: ['Renda', 'Renda extra'] }
+  var LABD = { antecipar: P.lab.antecipar.data, manter: P.lab.manter.data, adiar: P.lab.adiar.data }
+  var LABN = { antecipar: 'Antecipar para dezembro', manter: 'Manter em março', adiar: 'Adiar para maio' }
+  var NB_ID = 'p7'
+
+  function anoDe (i) { return i < 3 ? 2026 : 2027 }
+  function nomeMes (i, comAno) { return MES[i] + (comAno || i === 0 || i === 12 ? ' de ' + anoDe(i) : '') }
+  function cap (s) { return s.charAt(0).toUpperCase() + s.slice(1) }
+  function br (n, dec) { return Math.abs(n).toLocaleString('pt-BR', { minimumFractionDigits: dec ? 2 : 0, maximumFractionDigits: dec ? 2 : 0 }) }
+  function R0 (n) { n = Math.round(n); return (n < 0 ? '–' + NB : '') + 'R$' + NB + br(n) }
+  function R2 (n) { return 'R$' + NB + br(n, true) }
+  function idxMes (d) { return (+d.slice(0, 4) - 2026) * 12 + (+d.slice(5, 7) - 10) }
+  function dCurta (d) { return (+d.slice(8, 10)) + ' ' + MESC[+d.slice(5, 7) - 1] }
+  function bn (v, cls) { return '<b class="num' + (cls ? ' ' + cls : '') + '">' + R0(v) + '</b>' }
+  function clone (o) { return JSON.parse(JSON.stringify(o)) }
+
+  // ── estado
+  var EV0 = P.eventos.map(clone), EV = P.eventos.map(clone)
+  var scen = 'realista', lab = null, labSel = 'manter', kSel = null
+
+  function dataEf (ev, lk) { return (lk && ev.id === NB_ID) ? LABD[lk] : ev.data }
+  function serie (sc, lk) {
+    var s = (lk ? P.lab[lk].serie : P.projecao[sc]).slice()
+    function apl (list, sinal) {
+      list.forEach(function (ev) {
+        var i = idxMes(dataEf(ev, lk)); if (i < 0 || i > 12) return
+        var v = (ev.tipo === 'in' ? 1 : -1) * ev.valor * sinal
+        for (var k = i; k <= 12; k++) s[k] += v
+      })
+    }
+    apl(EV, 1); apl(EV0, -1)
+    return s
+  }
+  function maiorSaida (i, lk) {
+    var best = null
+    EV.forEach(function (ev) { if (ev.tipo === 'out' && idxMes(dataEf(ev, lk)) === i && (!best || ev.valor > best.valor)) best = ev })
+    return best ? best.nome : ''
+  }
+  function analisar (s, lk) {
+    var min = Infinity, iMin = 0, max = -Infinity, iMax = 0, crit = null, neg = -1, i
+    for (i = 0; i <= 12; i++) {
+      if (s[i] < min) { min = s[i]; iMin = i }
+      if (s[i] > max) { max = s[i]; iMax = i }
+      if (neg < 0 && s[i] < 0) neg = i
+    }
+    for (i = 1; i <= 12; i++) { var a = s[i - 1], b = s[i]; if (a > 0 && (a - b) / a > 0.3) { crit = { i: i, de: a, para: b, motivo: maiorSaida(i, lk) }; break } }
+    return { min: min, iMin: iMin, max: max, iMax: iMax, crit: crit, neg: neg, s6: s[6], s12: s[12] }
+  }
+
+  // ── número principal + Sy
+  function principal (a) {
+    var p6 = $('#p6'); p6.textContent = R0(a.s6); p6.classList.toggle('w', a.s6 < 0)
+    var de = 'Ponto mais baixo ' + bn(a.min, a.min < 0 ? 'w' : '') + ' em ' + nomeMes(a.iMin, true) + ' · '
+    de += a.crit ? 'próximo mês crítico: <b>' + nomeMes(a.crit.i) + '</b>' + (a.crit.motivo ? ', ' + a.crit.motivo : '') : 'nenhum mês crítico neste cenário'
+    $('#pDe').innerHTML = de
+    var p12 = $('#p12'); p12.textContent = R0(a.s12); p12.classList.toggle('w', a.s12 < 0)
+    var f
+    if (a.crit) {
+      f = cap(nomeMes(a.crit.i)) + ' é o mês que aperta: ' + (a.crit.motivo ? a.crit.motivo + ' leva o saldo de ' : 'o saldo cai de ') + bn(a.crit.de) + ' para ' + bn(a.crit.para, a.crit.para < 0 ? 'w' : '') + '.'
+      if (a.neg >= 0) f += ' Neste cenário o saldo fica negativo já em ' + nomeMes(a.neg, true) + ' e chega a ' + bn(a.min, 'w') + ' em ' + nomeMes(a.iMin, true) + '.'
+      else if (a.iMin !== a.crit.i) f += ' O ponto mais baixo vem em ' + nomeMes(a.iMin) + ', ' + bn(a.min, 'w') + '.'
+      else f += ' É também o ponto mais baixo do ano.'
+    } else {
+      f = 'Nenhum mês crítico neste cenário: o saldo nunca cai mais de 30% de um mês para o outro. O ponto mais baixo é ' + bn(a.min, a.min < 0 ? 'w' : '') + ', em ' + nomeMes(a.iMin, true) + '.'
+    }
+    $('#syFala').innerHTML = f
+    $('#pPrev').hidden = !lab
+    var rs = $('#rodScn'); if (rs) rs.innerHTML = 'Projeção ' + scen + (lab ? ' (prévia)' : '') + ' para outubro de 2027: ' + bn(a.s12)
+  }
+
+  // ── curva: 14 vértices (hoje + 13 fins de mês); SVG esticado, pontos e rótulos em HTML (não deformam)
+  var X = function (k) { return 1.5 + k * (96 / 13) }          // % da largura; k = 0 é hoje
+  function escala (s) {
+    var lo = Math.min(0, P.saldoHoje), hi = Math.max(0, P.saldoHoje)
+    s.forEach(function (v) { lo = Math.min(lo, v); hi = Math.max(hi, v) })
+    var pad = (hi - lo) * 0.06; lo -= pad; hi += pad * 1.6
+    return function (v) { return 8 + (hi - v) / (hi - lo) * 84 }   // % da altura
+  }
+  function desenhar (s, a) {
+    var Y = escala(s), vals = [P.saldoHoje].concat(s)
+    var pts = vals.map(function (v, k) { return [X(k) * 10, Y(v) * 2.4] })   // viewBox 1000 × 240
+    var d = 'M' + pts.map(function (p) { return p[0].toFixed(1) + ' ' + p[1].toFixed(1) }).join(' L')
+    var y0 = Y(0) * 2.4
+    var area = d + ' L' + pts[13][0].toFixed(1) + ' ' + y0.toFixed(1) + ' L' + pts[0][0].toFixed(1) + ' ' + y0.toFixed(1) + ' Z'
+    var ch = $('#chart')
+    if (!ch.querySelector('svg')) ch.innerHTML = MOLDE
+    ch.querySelector('.area-p').setAttribute('d', area)
+    ch.querySelector('.area-n').setAttribute('d', area)
+    ch.querySelector('.lin-p').setAttribute('d', d)
+    ch.querySelector('.lin-n').setAttribute('d', d)
+    var z = ch.querySelector('.zero'); z.setAttribute('y1', y0.toFixed(1)); z.setAttribute('y2', y0.toFixed(1))
+    ch.querySelector('#cpA').setAttribute('height', y0.toFixed(1))
+    var cb = ch.querySelector('#cpB'); cb.setAttribute('y', y0.toFixed(1)); cb.setAttribute('height', (240 - y0).toFixed(1))
+    // overlay
+    var h = '<div class="hoje" style="left:' + X(0) + '%"><span>Hoje</span></div>'
+    h += '<span class="zr" style="top:' + Y(0) + '%">R$' + NB + '0</span>'
+    h += '<div class="pt" style="left:' + X(0) + '%;top:' + Y(P.saldoHoje) + '%"><i class="dot0"></i></div>'
+    var porMes = {}
+    EV.forEach(function (ev) {
+      var i = idxMes(dataEf(ev, lab)); if (i < 0 || i > 12) return
+      var o = porMes[i] = (porMes[i] || 0) + 1
+      var cls = ev.tipo === 'in' ? 'in' : (lab && ev.id === NB_ID ? 'prev' : '')
+      h += '<div class="pt" style="left:' + X(i + 1) + '%;top:' + Y(s[i]) + '%"><i class="ev ' + cls + '" style="--o:' + (o - 1) + '" title="' + ev.nome + '"></i></div>'
+    })
+    if (a.crit) h += '<div class="pt" style="left:' + X(a.crit.i + 1) + '%;top:' + Y(s[a.crit.i]) + '%"><i class="ring"></i></div>'
+    if (!a.crit || a.iMin !== a.crit.i) h += '<div class="pt" style="left:' + X(a.iMin + 1) + '%;top:' + Y(a.min) + '%"><span class="rot mn">mais baixo <span class="num">' + R0(a.min) + '</span></span></div>'
+    else h += '<div class="pt" style="left:' + X(a.iMin + 1) + '%;top:' + Y(a.min) + '%"><span class="rot mn">e mais baixo</span></div>'
+    h += '<div class="guia" id="guia"></div>'
+    document.querySelectorAll('#eixo span').forEach(function (sp, i) { sp.classList.toggle('cr', !!a.crit && a.crit.i === i); sp.title = a.crit && a.crit.i === i ? 'Mês crítico' : '' })
+    ch.querySelector('.ov').innerHTML = h
+    if (!MOB && !ch.querySelector('.tip')) { var t = document.createElement('div'); t.className = 'tip'; t.id = 'tip'; ch.appendChild(t) }
+    $('#cTit').textContent = 'Curva do saldo · 13 meses · ' + scen + (lab ? ' · prévia' : '')
+    desenhar.s = s; desenhar.Y = Y
+  }
+  var MOLDE = '<svg viewBox="0 0 1000 240" preserveAspectRatio="none" aria-hidden="true">' +
+    '<defs><linearGradient id="gp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a1ff62" stop-opacity=".22"/><stop offset="1" stop-color="#a1ff62" stop-opacity="0"/></linearGradient>' +
+    '<linearGradient id="gn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f84131" stop-opacity="0"/><stop offset="1" stop-color="#f84131" stop-opacity=".2"/></linearGradient>' +
+    '<clipPath id="cA"><rect id="cpA" class="clipr" x="0" y="0" width="1000" height="120"/></clipPath><clipPath id="cB"><rect id="cpB" class="clipr" x="0" y="120" width="1000" height="120"/></clipPath></defs>' +
+    '<line x1="0" y1="12" x2="1000" y2="12" stroke="rgba(255,255,255,.06)" vector-effect="non-scaling-stroke"/>' +
+    '<line x1="0" y1="228" x2="1000" y2="228" stroke="rgba(255,255,255,.06)" vector-effect="non-scaling-stroke"/>' +
+    '<path class="area-p" clip-path="url(#cA)" fill="url(#gp)"/><path class="area-n" clip-path="url(#cB)" fill="url(#gn)"/>' +
+    '<line class="zero" x1="0" x2="1000" stroke="rgba(255,255,255,.32)" stroke-dasharray="4 5" vector-effect="non-scaling-stroke"/>' +
+    '<path class="lin-p" clip-path="url(#cA)" fill="none" stroke="#a1ff62" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>' +
+    '<path class="lin-n" clip-path="url(#cB)" fill="none" stroke="#f84131" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>' +
+    '</svg><div class="ov"></div>'
+
+  function eixo () {
+    var h = ''
+    P.meses.forEach(function (m, i) {
+      var t = m.split('/'), lbl = (i === 3 || i === 12 || i === 0) ? t[0] + ' ' + t[1] : t[0]
+      h += '<span class="' + (i % 3 === 0 ? 'k' : '') + (i === 3 ? ' ano' : '') + '" style="left:' + X(i + 1) + '%">' + lbl + '</span>'
+    })
+    $('#eixo').innerHTML = h
+  }
+
+  function prosa (s, a) {
+    var t = 'Saldo de fim de mês no cenário ' + scen + (lab ? ', com a prévia do laboratório' : '') + ': de ' + bn(P.saldoHoje) + ' hoje para ' + bn(s[0], s[0] < 0 ? 'w' : '') + ' no fechamento de outubro. '
+    t += 'O mais alto é ' + bn(a.max) + ', em ' + nomeMes(a.iMax, true) + '; o mais baixo, ' + bn(a.min, 'w') + ', em ' + nomeMes(a.iMin, true) + '. '
+    t += cap(nomeMes(12, true)) + ' fecha em ' + bn(s[12], s[12] < 0 ? 'w' : '') + '.'
+    $('#prosa').innerHTML = t
+  }
+
+  // ── leitura mês a mês (tooltip no desktop, linha de leitura no mobile)
+  function ler (k) {
+    var s = desenhar.s, Y = desenhar.Y; if (!s) return
+    kSel = k
+    var g = $('#guia'); if (g) { g.style.left = X(k) + '%'; g.classList.add('on') }
+    var tit, v, itens = []
+    if (k === 0) { tit = 'Hoje · 3 de outubro'; v = P.saldoHoje }
+    else {
+      tit = cap(nomeMes(k - 1, true)); v = s[k - 1]
+      EV.forEach(function (ev) { if (idxMes(dataEf(ev, lab)) === k - 1) itens.push(ev) })
+    }
+    var li = itens.map(function (ev) { return '<li><span>' + ev.nome + '</span><span class="num">' + (ev.tipo === 'in' ? '+' + NB : '–' + NB) + R2(ev.valor) + '</span></li>' }).join('')
+    if (MOB) {
+      $('#leitura').innerHTML = '<b>' + tit + '</b> · saldo ' + bn(v, v < 0 ? 'w' : '') + (itens.length ? ' · ' + itens.map(function (ev) { return ev.nome + ' ' + (ev.tipo === 'in' ? '+' : '–') + NB + R2(ev.valor) }).join(', ') : '')
+      return
+    }
+    var tip = $('#tip'), ch = $('#chart'), w = ch.clientWidth
+    tip.innerHTML = '<p class="t">' + tit + '</p><p class="v num' + (v < 0 ? ' w' : '') + '">' + R0(v) + '</p>' + (li ? '<ul>' + li + '</ul>' : '')
+    var x = X(k) / 100 * w, tw = tip.offsetWidth || 220
+    tip.style.left = Math.max(0, Math.min(w - tw, x - tw / 2)) + 'px'
+    tip.style.top = Math.max(0, Y(v) / 100 * ch.clientHeight - 14) + 'px'
+    tip.classList.add('on')
+  }
+  function soltar () { if (MOB) return; var t = $('#tip'), g = $('#guia'); if (t) t.classList.remove('on'); if (g) g.classList.remove('on'); kSel = null }
+  function kDoX (ev) { var r = $('#chart').getBoundingClientRect(), p = (ev.clientX - r.left) / r.width * 100; return Math.max(0, Math.min(13, Math.round((p - 1.5) / (96 / 13)))) }
+  var chart = $('#chart')
+  chart.addEventListener('pointermove', function (e) { if (e.pointerType === 'mouse') ler(kDoX(e)) })
+  chart.addEventListener('pointerdown', function (e) { ler(kDoX(e)) })
+  chart.addEventListener('mouseleave', soltar)
+  chart.addEventListener('blur', soltar)
+  chart.addEventListener('keydown', function (e) {
+    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return
+    e.preventDefault(); var k = kSel == null ? 0 : kSel + (e.key === 'ArrowRight' ? 1 : -1); ler(Math.max(0, Math.min(13, k)))
+  })
+
+  // ── lista de eventos
+  function ordenados () { return EV.slice().sort(function (a, b) { return dataEf(a, lab) < dataEf(b, lab) ? -1 : 1 }) }
+  function lista (destacar) {
+    var h = '', ano = ''
+    ordenados().forEach(function (ev) {
+      var d = dataEf(ev, lab), y = d.slice(0, 4), fora = idxMes(d) > 12
+      if (y !== ano) { ano = y; h += '<p class="eyebrow ano-div">' + y + '</p>' }
+      var selos = (ev.confirmado ? '<span class="etq ok">Confirmado</span> ' : '') + (lab && ev.id === NB_ID ? '<span class="etq prev">Prévia</span> ' : '') + (fora ? '<span class="etq">Fora dos 12 meses</span>' : '')
+      var sub = ev.cat + (ev.nota ? ' · ' + ev.nota : '')
+      var val = (ev.tipo === 'in' ? '+' : '–') + NB + R2(ev.valor)
+      if (MOB) {
+        h += '<div class="evrow' + (ev.tipo === 'in' ? ' in' : '') + (ev.id === destacar ? ' nova' : '') + '" role="button" tabindex="0" data-id="' + ev.id + '" aria-label="Editar ' + ev.nome + ', ' + val + '">' +
+          '<span class="d num">' + dCurta(d) + '</span><div class="nm"><strong>' + ev.nome + '</strong><small>' + sub + '</small>' + (selos ? '<span class="sl">' + selos + '</span>' : '') + '</div><span class="v num">' + val + '</span></div>'
+      } else {
+        h += '<div class="evrow' + (ev.tipo === 'in' ? ' in' : '') + (ev.id === destacar ? ' nova' : '') + '" data-id="' + ev.id + '">' +
+          '<span class="d num">' + dCurta(d) + '</span><div class="nm"><strong>' + ev.nome + '</strong><small>' + sub + '</small></div>' +
+          '<span class="st">' + selos + '</span><span class="v num">' + val + '</span>' +
+          '<span class="ac">' + (ev.confirmado ? '' : '<button class="btn-sm ghost" type="button" data-conf>Confirmar</button>') + '<button class="btn-sm ghost" type="button" data-edit>Editar</button></span></div>'
+      }
+    })
+    if (!EV.length) h = '<p class="vazio-l">Nada planejado para os próximos 12 meses. Comece pelo que já tem data: 13º, IPVA, uma viagem.</p>'
+    $('#lista').innerHTML = h
+    var ent = 0, sai = 0
+    EV.forEach(function (ev) { if (ev.tipo === 'in') ent += ev.valor; else sai += ev.valor })
+    $('#lTot').innerHTML = '<b class="num">' + EV.length + '</b> eventos · entradas <b class="num ele">+' + NB + R2(ent) + '</b> · saídas <b class="num">–' + NB + R2(sai) + '</b>'
+    if (destacar) setTimeout(function () { var r = document.querySelector('.evrow.nova'); if (r) r.classList.remove('nova') }, 1800)
+  }
+  function avisar (t) { var o = $('#lOut'); o.textContent = t; clearTimeout(o._t); o._t = setTimeout(function () { o.textContent = '' }, 3200) }
+
+  // ── laboratório
+  function efeitos (k) { var s = serie('realista', k), a = analisar(s, k); return { min: a.min, iMin: a.iMin, jan: s[3], s6: a.s6 } }
+  function escolher (k) {
+    labSel = k
+    document.querySelectorAll('[data-lab]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.lab === k)) })
+    var e = efeitos(k), m = efeitos('manter')
+    $('#labTit').textContent = LABN[k]
+    var em = $('#eMin'); em.textContent = R0(e.min); em.className = 'num ' + (e.min < m.min ? 'w' : e.min > m.min ? 'ok' : '')
+    $('#eMinN').textContent = 'em ' + nomeMes(e.iMin, true) + (k === 'manter' ? ' · como hoje' : '')
+    var ej = $('#eJan'); ej.textContent = R0(e.jan); ej.className = 'num ' + (e.jan < m.jan ? 'w' : e.jan > m.jan ? 'ok' : '')
+    $('#eJanN').textContent = 'saldo de janeiro, depois da viagem' + (k !== 'manter' && e.jan === m.jan ? ' · igual' : '')
+    $('#eNb').textContent = dCurta(LABD[k])
+    $('#eNbN').textContent = { antecipar: '3 meses antes do planejado', manter: 'como planejado', adiar: '2 meses depois do planejado' }[k]
+    var c
+    if (k === 'antecipar') c = 'O notebook chega <b>3 meses antes</b> e quem paga é janeiro: depois da Itália o saldo desce a <b>' + R0(e.jan) + '</b>, o ponto mais baixo do ano. É a folga que sobra para qualquer imprevisto na viagem.'
+    else if (k === 'manter') c = 'Você mantém março. Janeiro fecha em <b>' + R0(e.jan) + '</b> depois da Itália, e <b>o ponto mais baixo é ' + R0(e.min) + ', em ' + nomeMes(e.iMin) + '</b>, o mês da troca.'
+    else c = 'O notebook chega <b>2 meses depois</b> e o ano fica mais folgado: o saldo não desce de <b>' + R0(e.min) + '</b>, o fechamento de outubro, e abril chega a <b>' + R0(e.s6) + '</b>.'
+    $('#labCopy').innerHTML = c
+  }
+  function render (destacar) { var s = serie(scen, lab), a = analisar(s, lab); principal(a); desenhar(s, a); prosa(s, a); lista(destacar); escolher(labSel); if (kSel != null) ler(kSel) }
+  function setScen (k) {
+    scen = k
+    document.querySelectorAll('[data-scn]').forEach(function (b) { var on = b.dataset.scn === k; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)) })
+  }
+  function aplicar () {
+    lab = labSel; setScen('realista'); render()
+    $('#reciboTxt').innerHTML = '<b>' + LABN[lab] + '</b> entrou na prévia da curva e do número principal. O evento Troca do notebook não mudou.'
+    $('#recibo').hidden = false
+  }
+  function desfazer (quieto) {
+    lab = null; $('#recibo').hidden = true; labSel = 'manter'; render()
+    if (!quieto) $('#aplicar').focus()
+  }
+  document.querySelectorAll('[data-lab]').forEach(function (b) { b.addEventListener('click', function () { escolher(b.dataset.lab) }) })
+  $('#aplicar').addEventListener('click', aplicar)
+  $('#desfazer').addEventListener('click', function () { desfazer(false) })
+  document.querySelectorAll('[data-scn]').forEach(function (b) {
+    b.addEventListener('click', function () { if (lab) desfazer(true); setScen(b.dataset.scn); render() })
+  })
+
+  // ── painel (desktop) / sheet (mobile) de evento
+  var painel = $('#painel'), scrim = $('.scrim'), camada = $('.camada'), form = $('#pform'), conf = $('#p-confirma')
+  var atual = null, tipo = 'out', sit = false, volta = null
+  function setTipo (t, cat) {
+    tipo = t
+    painel.querySelectorAll('[data-tipo]').forEach(function (c) { var on = c.dataset.tipo === t; c.classList.toggle('on', on); c.setAttribute('aria-pressed', String(on)) })
+    form.cat.innerHTML = CATS[t].map(function (c) { return '<option>' + c + '</option>' }).join('')
+    if (cat && CATS[t].indexOf(cat) >= 0) form.cat.value = cat
+  }
+  function setSit (c) {
+    sit = c
+    painel.querySelectorAll('[data-sit]').forEach(function (b) { var on = (b.dataset.sit === '1') === c; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)) })
+  }
+  function campo (v) { return v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }
+  function parseValor (t) { t = String(t).replace(/[^\d,.]/g, ''); if (t.indexOf(',') >= 0) t = t.replace(/\./g, '').replace(',', '.'); return parseFloat(t) || 0 }
+  function abrir (ev) {
+    volta = document.activeElement; atual = ev || null
+    $('#p-titulo').textContent = ev ? 'Editar evento' : 'Novo evento'
+    form.nome.value = ev ? ev.nome : ''
+    form.valor.value = ev ? campo(ev.valor) : ''
+    form.data.value = ev ? ev.data : HOJE
+    setTipo(ev ? ev.tipo : 'out', ev ? ev.cat : null)
+    form.notas.value = ev ? (ev.nota || '') : ''
+    setSit(ev ? !!ev.confirmado : false)
+    $('#p-excluir').hidden = !ev; conf.hidden = true; $('#p-err').textContent = ''
+    $('#p-salvar').textContent = ev ? 'Salvar' : 'Planejar'
+    if (ev) $('#p-conf-nome').textContent = ev.nome
+    if (camada) camada.classList.remove('open')
+    painel.classList.add('open'); scrim.classList.add('open')
+    if (MOB) painel.querySelector('.x').focus({ preventScroll: true })
+    else form.nome.focus({ preventScroll: true })
+  }
+  function fechar () {
+    if (!painel.classList.contains('open')) return
+    painel.classList.remove('open')
+    if (!camada || !camada.classList.contains('open')) scrim.classList.remove('open')
+    if (volta && document.contains(volta)) volta.focus({ preventScroll: true })
+    atual = null
+  }
+  painel.querySelector('.x').addEventListener('click', fechar)
+  scrim.addEventListener('click', fechar)
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') fechar() })
+  painel.querySelectorAll('[data-tipo]').forEach(function (c) { c.addEventListener('click', function () { setTipo(c.dataset.tipo) }) })
+  painel.querySelectorAll('[data-sit]').forEach(function (c) { c.addEventListener('click', function () { setSit(c.dataset.sit === '1') }) })
+  form.addEventListener('submit', function (e) {
+    e.preventDefault()
+    var nome = form.nome.value.trim(), val = parseValor(form.valor.value), data = form.data.value, err = $('#p-err')
+    if (nome.length < 2) { err.textContent = 'Faltou o nome do evento.'; form.nome.focus(); return }
+    if (!val) { err.textContent = 'Faltou o valor.'; form.valor.focus(); return }
+    if (!data || data < HOJE) { err.textContent = 'A data precisa ser hoje ou depois.'; form.data.focus(); return }
+    var ev = atual || { id: 'n' + Date.now() }
+    ev.nome = nome; ev.valor = val; ev.data = data; ev.tipo = tipo; ev.cat = form.cat.value; ev.confirmado = sit
+    var nota = form.notas.value.trim(); if (nota) ev.nota = nota; else delete ev.nota
+    if (!atual) EV.push(ev)
+    var novo = !atual
+    atual = null; fechar(); render(ev.id); avisar(novo ? 'Planejado. A curva já conta com ele.' : 'Salvo.')
+  })
+  $('#p-excluir').addEventListener('click', function () { conf.hidden = false; $('#p-conf-sim').focus() })
+  $('#p-conf-nao').addEventListener('click', function () { conf.hidden = true; $('#p-excluir').focus() })
+  $('#p-conf-sim').addEventListener('click', function () {
+    if (!atual) return
+    var id = atual.id; EV = EV.filter(function (x) { return x.id !== id }); atual = null
+    volta = $('#eventos'); fechar(); render(); avisar('Evento excluído. A projeção foi refeita sem ele.')
+  })
+  document.querySelectorAll('[data-novo-evento]').forEach(function (b) { b.addEventListener('click', function () { abrir(null) }) })
+  function porId (id) { for (var i = 0; i < EV.length; i++) if (EV[i].id === id) return EV[i] }
+  $('#lista').addEventListener('click', function (e) {
+    var row = e.target.closest('.evrow'); if (!row) return
+    var ev = porId(row.dataset.id)
+    if (e.target.closest('[data-conf]')) { ev.confirmado = true; render(); avisar('Confirmado. Continua planejado: não vira transação.'); return }
+    if (MOB || e.target.closest('[data-edit]')) abrir(ev)
+  })
+  $('#lista').addEventListener('keydown', function (e) {
+    if (MOB && (e.key === 'Enter' || e.key === ' ') && e.target.classList.contains('evrow')) { e.preventDefault(); abrir(porId(e.target.dataset.id)) }
+  })
+
+  eixo(); render()
+  window.__plan = { serie: serie, analisar: analisar, estado: function () { return { scen: scen, lab: lab, labSel: labSel, n: EV.length } } }
+})()
+</script>
+<script type="module">import { ligarSy40 } from '../shared/sy40.js'; ligarSy40()</script>
+</body>
+</html>

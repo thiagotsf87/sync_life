@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife · Importar extrato · Finanças</title>
+<!-- Fase 2 · Finanças, subtela "Importar extrato" (brief 2026-10-05 §4.7), desktop 1440. Template T4 (formulário).
+     Estado principal: o arquivo já foi escolhido (extrato do Nubank, SL_MOCK.fin.importar). 01 Arquivo aparece concluído e
+     reabrível; 02 Revisão aberto com Sy no topo ("o que reconheci"); 03 Categorias com as 3 linhas sem categoria.
+     SaveBar sticky com a ação principal (Importar N transações, N = marcadas). Histórico de lotes com Desfazer e .confirma.
+     Coluna de leitura mais larga que o T4 (900px, não 720px): a tabela de revisão precisa de 6 colunas.
+     E-02: sem JS a página está completa no estado principal (16 de 18 marcadas, totais estáticos). -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Cline x1='32' y1='6' x2='32' y2='13' stroke='%23a1ff62' stroke-width='6' stroke-linecap='round'/%3E%3Cpolygon points='32,10 39,34 25,34' fill='%236840ff'/%3E%3Cpolygon points='32,57 25,34 39,34' fill='%23575353'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/base.css">
+<link rel="stylesheet" href="../shared/app.css">
+<link rel="stylesheet" href="../shared/auth.css"><!-- primitivas de formulário (.fld, .proto-estados) -->
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.185.1/build/three.module.js"}}</script>
+<style>
+  html{color-scheme:dark}
+  .wrap{--wrap-max:1180px;padding-left:clamp(20px,4vw,56px);padding-right:clamp(20px,4vw,56px)}
+  main{padding-bottom:140px}
+  section[id],div[id]{scroll-margin-top:130px}
+
+  /* ── cabeçalho T4: voltar + eyebrow (link para o hub) + título ── */
+  .voltar{display:inline-flex;align-items:center;gap:6px;font:500 12.5px var(--int);color:var(--t2);margin-bottom:18px;transition:color .3s var(--ease)}
+  .voltar:hover,.titulo .eyebrow a:hover{color:var(--t1)}
+  .titulo .sub{font:400 14px/1.6 var(--int);color:var(--t2);margin-top:10px;max-width:58ch}
+
+  /* ── coluna de leitura + passos numerados (G-09), hairline entre eles ── */
+  .form-col{max-width:900px}
+  .fsec{padding:36px 0 34px;border-bottom:1px solid var(--line)}
+  .fsec .shead{display:flex;align-items:baseline;justify-content:space-between;gap:16px}
+  .fsec .shead > .eyebrow{color:var(--roxo)}
+  .fsec .lead{font:400 13px/1.6 var(--int);color:var(--t3);margin:8px 0 20px;max-width:60ch}
+  .estado{font:700 9.5px var(--gro);letter-spacing:.16em;text-transform:uppercase;color:var(--t3);border:1px solid var(--line);border-radius:999px;padding:4px 10px;white-space:nowrap}
+  .estado.ok{color:var(--ele);border-color:rgba(161,255,98,.4)}
+
+  /* 01 · arquivo concluído (objeto: o arquivo) + zona de soltar */
+  .arq{display:grid;grid-template-columns:40px 1fr auto;gap:16px;align-items:center;margin-top:18px}
+  .arq .ic{width:40px;height:40px;border-radius:11px;background:var(--s1);border:1px solid var(--line);display:grid;place-items:center;color:var(--t2)}
+  .arq .nm{font:500 15px var(--gro);letter-spacing:-.015em;color:var(--t1)}
+  .arq .meta{font:400 12.5px var(--int);color:var(--t3);margin-top:3px}
+  .arq .meta b{color:var(--ele);font-weight:600}
+  .drop{margin-top:20px;border:1px dashed var(--line-h);border-radius:16px;padding:30px 28px;text-align:center;transition:border-color .3s var(--ease),background .3s var(--ease)}
+  .drop.sobre{border-color:var(--roxo);background:rgba(104,64,255,.06)}
+  .drop .dz-t{font:500 17px var(--gro);letter-spacing:-.02em;color:var(--t1)}
+  .drop .dz-a{display:flex;justify-content:center;align-items:center;gap:10px;margin-top:14px;flex-wrap:wrap}
+  .drop label.btn-sm{cursor:pointer}
+  .drop .fmts{font:400 12.5px/1.6 var(--int);color:var(--t3);margin:16px auto 0;max-width:60ch}
+  .drop .dz-st{font:500 12.5px var(--int);color:var(--ele);min-height:1.2em;margin-top:8px}
+
+  /* 02 · revisão: barra (filtros + contagem) e tabela marcável */
+  .sy{margin-top:22px}
+  .rev-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:30px}
+  .rev-bar .chip{padding:8px 14px;font-size:12px}
+  .rev-bar .chip[aria-pressed=true]{border-color:var(--roxo);color:var(--t1)}
+  .rev-bar .cnt{margin-left:auto;font:400 12.5px var(--int);color:var(--t3)}
+  .rev-bar .cnt b{color:var(--t1);font-weight:700}
+  .rev{width:100%;border-collapse:collapse;margin-top:14px}
+  .rev th{font:700 9.5px var(--gro);letter-spacing:.18em;text-transform:uppercase;color:var(--t3);text-align:left;padding:8px 10px;border-bottom:1px solid var(--line-h)}
+  .rev th.v{text-align:right}
+  .rev td{padding:9px 10px;border-bottom:1px solid var(--line);font:400 13.5px/1.4 var(--int);color:var(--t1);vertical-align:middle}
+  .rev td.ck,.rev th.ck{width:44px;padding:0 0 0 0}
+  .rev .d{font:600 12px var(--gro);color:var(--t3);white-space:nowrap;width:64px}
+  .rev .tp{color:var(--t3);font-size:12.5px;width:84px}
+  .rev th.tp{font-size:9.5px}
+  .rev .ct{color:var(--t2);font-size:12.5px;width:150px}
+  .rev td.v{text-align:right;font:700 13.5px var(--gro);letter-spacing:-.02em;white-space:nowrap;width:130px}
+  .rev tr.in td.v{color:var(--ele)}
+  .rev tbody tr{cursor:pointer}
+  .rev tbody tr:hover td{background:rgba(255,255,255,.02)}
+  .rev tr.off td:not(.ck){opacity:.42}
+  .rev tr.hide{display:none}
+  .rev .ds small{display:block;font:400 11.5px var(--int);color:var(--t3);margin-top:3px}
+  .semcat{color:var(--coral);font-weight:500}
+  .semcat:hover{text-decoration:underline}
+  .tag{font:700 9px var(--gro);letter-spacing:.14em;text-transform:uppercase;padding:3px 8px;border-radius:999px;border:1px solid var(--line);color:var(--t3);white-space:nowrap;margin-left:8px;vertical-align:1px}
+  .tag.dup{border-color:rgba(248,65,49,.45);color:var(--coral)}
+  .rev-foot{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:14px 0 0;font:400 12.5px var(--int);color:var(--t3)}
+  .rev-foot .num{color:var(--t1);font-weight:700}
+  .rev-foot .ele{color:var(--ele)}
+
+  /* caixa de marcar (objeto): alvo 40px, quadrado 18px */
+  .cb{width:40px;height:40px;display:grid;place-items:center;background:none;border:none;cursor:pointer;border-radius:10px}
+  .cb:focus-visible{outline:2px solid rgba(104,64,255,.6);outline-offset:-2px}
+  .cb i{width:18px;height:18px;border:1.5px solid var(--line-h);border-radius:5px;position:relative;transition:background .25s var(--ease),border-color .25s var(--ease)}
+  .cb[aria-checked=true] i,.cb[aria-checked=mixed] i{background:var(--roxo);border-color:var(--roxo)}
+  .cb[aria-checked=true] i::after{content:"";position:absolute;left:5px;top:1.5px;width:4px;height:9px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+  .cb[aria-checked=mixed] i::after{content:"";position:absolute;left:3.5px;top:6.5px;width:8px;height:2px;background:#fff;border-radius:1px}
+
+  /* 03 · categorias: aplicar a todas + linhas sem categoria + nova categoria inline */
+  .s3st{font:500 12.5px var(--int);color:var(--coral)}
+  .s3st.ok{color:var(--ele)}
+  .bulk{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:2px 0 14px}
+  .bulk .lbl{font:500 12.5px var(--int);color:var(--t2)}
+  .bulk .sel{margin-top:0;width:220px}
+  .bulk .sel select,.catln .sel select{padding:10px 40px 10px 14px;font-size:13px}
+  .bulk-msg{font:400 12.5px/1.5 var(--int);color:var(--t3);min-height:1.5em}
+  .catln{display:grid;grid-template-columns:64px 1fr 130px 240px;gap:14px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+  .catln:first-of-type{border-top:1px solid var(--line)}
+  .catln .d{font:600 12px var(--gro);color:var(--t3)}
+  .catln .ds{font:400 13.5px var(--int);color:var(--t1)}
+  .catln .v{font:700 13.5px var(--gro);text-align:right}
+  .catln .v.in{color:var(--ele)}
+  .catln .sel{margin-top:0}
+  .novacat{border-left:2px solid var(--roxo);padding:16px 0 6px 18px;margin:14px 0 14px}
+  .novacat .eyebrow{display:block;margin-bottom:12px}
+  .novacat .lin{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:end}
+  .novacat .fld{margin-bottom:6px}
+  .novacat .pills{display:flex;gap:8px}
+  .novacat .pills .chip[aria-pressed=true]{border-color:var(--roxo);color:var(--t1)}
+  .novacat .acts{display:flex;gap:8px;margin-top:10px}
+  .novacat .nota{font:400 12px var(--int);color:var(--t3);margin-top:10px}
+
+  /* concluído */
+  .feito{padding:36px 0 34px;border-bottom:1px solid var(--line)}
+  .feito .eyebrow{color:var(--ele)}
+  .feito h2{font:500 26px/1.15 var(--gro);letter-spacing:-.03em;margin-top:10px}
+  .feito p{font:400 14px/1.6 var(--int);color:var(--t2);margin-top:10px;max-width:62ch}
+  .feito .ele{color:var(--ele)}
+  .feito .acts{display:flex;gap:10px;margin-top:20px}
+  .feito .acts .btn-sm{padding:11px 20px;font-size:13px}
+
+  /* histórico de lotes */
+  .hist{padding:40px 0 10px}
+  .hist .lead{font:400 13px/1.6 var(--int);color:var(--t3);margin:8px 0 10px;max-width:62ch}
+  .lote{display:grid;grid-template-columns:1fr auto auto;gap:4px 22px;align-items:center;padding:16px 0;border-bottom:1px solid var(--line)}
+  .lote .nm{font:500 14px var(--gro);letter-spacing:-.01em;color:var(--t1)}
+  .lote .meta{font:400 12.5px var(--int);color:var(--t3);margin-top:3px}
+  .lote .vals{display:flex;gap:14px;font:700 13px var(--gro);white-space:nowrap}
+  .lote .vals .ele{color:var(--ele)}
+  .lote .confirma{grid-column:1 / -1;margin-top:10px}
+  .lote.desfeito .nm{color:var(--t3);text-decoration:line-through}
+  .lote.desfeito [data-desf]{display:none}
+  .lote.novo{box-shadow:inset 3px 0 0 var(--ele);padding-left:14px}
+
+  .mais{padding:34px 0 0;font:400 12.5px var(--int);color:var(--t3);display:flex;gap:6px 16px;flex-wrap:wrap}
+  .mais a{color:var(--t2);transition:color .3s var(--ease)}
+  .mais a:hover{color:var(--t1)}
+
+  /* ── SaveBar (pílula do T4) com a ação principal ── */
+  .savebar{position:fixed;left:50%;bottom:22px;z-index:70;display:flex;align-items:center;gap:22px;
+    background:#0d0c0cf2;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    border:1px solid var(--line-h);border-radius:999px;padding:8px 8px 8px 22px;box-shadow:0 24px 60px -24px rgba(0,0,0,.7);
+    transform:translate(-50%,140%);visibility:hidden;transition:transform .55s var(--ease),visibility 0s linear .55s}
+  .savebar.on{transform:translate(-50%,0);visibility:visible;transition-delay:0s}
+  .savebar .sb-txt{font:500 13px var(--int);color:var(--t2);white-space:nowrap}
+  .savebar .sb-txt b{color:var(--t1);font-weight:700}
+  .savebar .sb-txt .w{color:var(--coral)}
+  .savebar .btn-sm{padding:10px 18px}
+  .savebar .btn-sm[disabled]{opacity:.45;cursor:not-allowed}
+  .savebar .sb-ok{font:500 13px var(--int);color:var(--ele);padding:10px 14px 10px 0;white-space:nowrap}
+  .savebar.saved .sb-txt,.savebar.saved .btn-sm{display:none}
+  @media (prefers-reduced-motion:reduce){.savebar{transition:none}}
+
+  /* ── anotação do protótipo ── */
+  .proto-estados .pe{min-width:0}
+  .proto-estados .pe.full{grid-column:1 / -1}
+  .proto-estados .pe p.n{font:400 12.5px/1.6 var(--int);color:var(--t3);margin-top:10px}
+  .proto-estados .drop{margin-top:0}
+  .proto-estados .savebar{position:static;transform:none;visibility:visible;display:inline-flex}
+  .proto-estados .erro{border-left:3px solid var(--coral);padding:10px 14px;font:400 13px/1.55 var(--int);color:var(--t2)}
+  .proto-estados .erro b{color:var(--coral);font-weight:600;display:block;margin-bottom:2px}
+  .proto-estados .map{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .proto-estados .map .sel{margin-top:6px}
+  .proto-estados .map label{font:700 9.5px var(--gro);letter-spacing:.16em;text-transform:uppercase;color:var(--t3)}
+  .proto-estados .prev{font:400 12px/1.7 var(--int);color:var(--t3);margin-top:12px}
+  .proto-estados .prog{height:4px;border-radius:2px;background:var(--s2);overflow:hidden;margin-top:12px;max-width:340px}
+  .proto-estados .prog i{display:block;height:100%;width:50%;background:var(--ele)}
+  .skel span{display:block;height:10px;border-radius:5px;background:var(--s2);margin-top:12px}
+  .le{list-style:none;margin-top:16px;max-width:820px}
+  .le li{display:grid;grid-template-columns:230px 1fr;gap:18px;padding:12px 0;border-bottom:1px solid var(--line);font:400 13px/1.55 var(--int);color:var(--t2)}
+  .le li:last-child{border-bottom:none}
+  .le code{font:600 12.5px var(--gro);letter-spacing:-.01em;color:var(--t1)}
+
+  @media (max-width:960px){
+    html:not(.mob) .catln{grid-template-columns:56px 1fr 110px;}
+    html:not(.mob) .catln .sel{grid-column:1 / -1}
+    html:not(.mob) .rev .tp{display:none}
+    html:not(.mob) .le li{grid-template-columns:1fr;gap:4px}
+    html:not(.mob) .proto-estados .map{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- chrome -->
+<header class="bar">
+  <a class="brand" href="#">
+    <svg width="19" height="19" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="2" x2="32" y2="11" stroke="#a1ff62" stroke-width="7" stroke-linecap="round"/><polygon points="32,8 40,34 24,34" fill="#6840ff"/><polygon points="32,58 24,34 40,34" fill="#f4f4f4" opacity=".35"/></svg>
+    <span class="wm">Sync<em>Life</em></span></a>
+  <span class="date">Sexta · 3 de outubro de 2026</span>
+  <div class="acts">
+    <button class="btn-sm ghost coach-pill" type="button" data-coach-open>
+      <svg width="15" height="15" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="5" x2="32" y2="12" stroke="#a1ff62" stroke-width="4.5" stroke-linecap="round"/><line x1="59" y1="32" x2="52" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="32" y1="59" x2="32" y2="52" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="5" y1="32" x2="12" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><polygon points="32,8 38,32 26,32" fill="#6840ff"/><polygon points="32,55 26,32 38,32" fill="#f4f4f4" opacity=".3"/><circle cx="32" cy="32" r="3.5" fill="#151313"/></svg>
+      Fale com Sy</button>
+    <button class="btn-sm roxo" type="button">+ Registrar</button>
+  </div>
+</header>
+<nav class="modbar" aria-label="Áreas">
+  <div class="in">
+    <a href="meu-dia-d.html">Meu dia</a>
+    <a class="on" href="financas-a.html"><span class="n">01</span>Finanças</a>
+    <a href="#"><span class="n">02</span>Futuro</a>
+    <a href="#"><span class="n">03</span>Tempo</a>
+    <a href="#"><span class="n">04</span>Corpo</a>
+    <a href="#"><span class="n">05</span>Mente</a>
+    <a href="#"><span class="n">06</span>Patrimônio</a>
+    <a href="#"><span class="n">07</span>Carreira</a>
+    <a href="#"><span class="n">08</span>Experiências</a>
+    <a href="#">Conquistas</a>
+    <a href="#">Configurações</a>
+  </div>
+</nav>
+
+<main>
+  <div class="wrap">
+
+    <!-- cabeçalho -->
+    <header class="titulo boot b1">
+      <a class="voltar" href="financas-a.html">← Finanças · outubro</a>
+      <p class="eyebrow"><a href="financas-a.html"><b>01</b> · Finanças</a></p>
+      <h1>Importar extrato</h1>
+      <p class="sub">Traga o extrato do banco, confira as linhas e importe. Nada entra em Finanças antes do seu ok, e cada importação pode ser desfeita.</p>
+    </header>
+
+    <div class="form-col">
+
+      <!-- 01 · arquivo (concluído, reabrível) -->
+      <section class="fsec boot b2" id="s1" aria-labelledby="s1t">
+        <div class="shead">
+          <p class="eyebrow" id="s1t"><b>01</b> · Arquivo</p>
+          <span class="estado ok">Concluído</span>
+        </div>
+        <div class="arq">
+          <span class="ic" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><polyline points="14 3 14 8 19 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg></span>
+          <div>
+            <p class="nm">extrato-nubank-setembro.csv</p>
+            <p class="meta">CSV · <b>Nubank reconhecido</b> · <span class="num">18</span> linhas · <span class="num">1</span> a <span class="num">30 set</span></p>
+          </div>
+          <button type="button" class="btn-sm ghost" id="trocar" aria-expanded="false" aria-controls="drop">Trocar arquivo</button>
+        </div>
+        <div class="drop" id="drop" hidden>
+          <p class="dz-t">Arraste o extrato aqui</p>
+          <div class="dz-a">
+            <label class="btn-sm roxo" for="arquivo">Escolher arquivo</label>
+            <button type="button" class="btn-sm ghost" id="manter">Manter o extrato do Nubank</button>
+          </div>
+          <input type="file" id="arquivo" accept=".pdf,.csv,.ofx,.qfx" hidden>
+          <p class="fmts">PDF, CSV, OFX ou QFX. Bancos reconhecidos: Nubank, Inter, Itaú, Bradesco, C6 Bank e BTG. CSV de outro banco: você diz qual coluna é a data, a descrição e o valor.</p>
+          <p class="dz-st" id="dzStatus" role="status"></p>
+        </div>
+      </section>
+
+      <!-- 02 · revisão -->
+      <section class="fsec boot b3" id="s2" aria-labelledby="s2t" data-passo>
+        <div class="shead">
+          <p class="eyebrow" id="s2t"><b>02</b> · Revisão</p>
+          <span class="estado">Em revisão</span>
+        </div>
+        <div class="sy">
+          <span class="sy40" aria-hidden="true"><canvas></canvas></span>
+          <div>
+            <p class="fala">Reconheci um extrato do <b>Nubank</b> com <b class="num">18</b> linhas: <b class="num">15</b> já com categoria, <b class="num">3</b> sem, e <b class="num w">2</b> parecem duplicatas do que você já registrou. Deixei as duplicatas desmarcadas.</p>
+            <p class="fontes">Lido agora · fontes: extrato-nubank-setembro.csv, suas transações de setembro, suas categorias</p>
+            <button class="falar" type="button" data-coach-open data-coach-seed="Sobre o extrato de setembro: ">Falar com Sy sobre o extrato →</button>
+          </div>
+        </div>
+
+        <div class="rev-bar" role="group" aria-label="Mostrar">
+          <button type="button" class="chip" data-f="todas" aria-pressed="true">Todas <span class="num">18</span></button>
+          <button type="button" class="chip" data-f="semcat" aria-pressed="false">Sem categoria <span class="num" data-semcat>3</span></button>
+          <button type="button" class="chip" data-f="dup" aria-pressed="false">Possíveis duplicatas <span class="num">2</span></button>
+          <span class="cnt" aria-live="polite"><b class="num" data-n>16</b> de <span class="num">18</span> marcadas</span>
+        </div>
+
+        <table class="rev" aria-label="Linhas do extrato">
+          <thead>
+            <tr>
+              <th class="ck" scope="col"><button type="button" class="cb" id="ckAll" role="checkbox" aria-checked="mixed" aria-label="Marcar todas"><i aria-hidden="true"></i></button></th>
+              <th scope="col">Data</th>
+              <th scope="col">Descrição</th>
+              <th scope="col" class="tp">Tipo</th>
+              <th scope="col">Categoria</th>
+              <th scope="col" class="v">Valor</th>
+            </tr>
+          </thead>
+          <tbody>
+<!--ROWS:start-->
+        <tr class="ln in" data-i="0" data-tipo="in" data-valor="4150" data-cat="Renda" data-dup="0">
+          <td class="ck"><button type="button" class="cb" role="checkbox" aria-checked="true" aria-label="Importar Salario Empresa X, 1 set, + R$ 4.150,00"><i aria-hidden="true"></i></button></td>
+          <td class="d num">1 set</td>
+          <td class="ds">Salario Empresa X</td>
+          <td class="tp">Receita</td>
+          <td class="ct" data-ct>Renda</td>
+          <td class="v num">+ R$&nbsp;4.150,00</td>
+        </tr>
+        <tr class="ln" data-i="1" data-tipo="out" data-valor="-1200" data-cat="Moradia" data-dup="0">
+          <td class="ck"><button type="button" class="cb" role="checkbox" aria-checked="true" aria-label="Importar Aluguel setembro, 1 set, – R$ 1.200,00"><i aria-hidden="true"></i></button></td>
+          <td class="d num">1 set</td>
+          <td class="ds">Aluguel setembro</td>
+          <td class="tp">Despesa</td>
+          <td class="ct" data-ct>Moradia</td>
+          <td class="v num">– R$&nbsp;1.200,00</td>
+        </tr>
+        <tr class="ln" data-i="2" data-tipo="out" data-valor="-300" data-cat="Investimento" data-dup="0">
+          <td class="ck"><button type="button" class="cb" role="checkbox" aria-checked="true" aria-label="Importar Aporte CDB, 2 set, – R$ 300,00"><i aria-hidden="true"></i></button></td>
+          <td class="d num">2 set</td>
+          <td class="ds">Aporte CDB</td>
+          <td class="tp">Despesa</td>
+          <td class="ct" data-ct>Investimento</td>
+          <td class="v num">– R$&nbsp;300,00</td>
+        </tr>
+        <tr class="ln" data-i="3" data-tipo="out" data-valor="-55.9" data-cat="Assinaturas" data-dup="0">
+          <td class="ck"><button type="button" class="cb" role="checkbox" aria-checked="true" aria-label="Importar Netflix.com, 5 set, – R$ 55,90"><i aria-hidden="true"></i></button></td>
+          <td class="d num">5 set</td>
+          <td class="ds">Netflix.com</td>
+          <td class="tp">Despesa</td>
+          <td class="ct" data-ct>Assinaturas</td>
+          <td class="v num">– R$&nbsp;55,90</td>
+        </tr>
+        <tr class="ln" data-i="4" data-tipo="out" data-valor="-214.3" data-cat="Mercado" data-dup="0">
+          <td class="ck"><button type="button" class="cb" role="checkbox" aria-checked="true" aria-label="Importar Pao de Acucar, 8 set, – R$ 214,30"><i aria-hidden="true"></i></button></td>
+          <td class="d num">8 set</td>
+          <td class="ds">Pao de Acucar</td>
+          <td class="tp">Despesa</td>
+          <td class="ct" data-ct>Mercado</td>
+          <td class="v num">– R$&nbsp;214,30</td>
+        </tr>
+        <tr class="ln" data-i="5" data-tipo="out" data-valor="-395.7" data-cat="Mercado" data-dup="0">
+          <td class="ck"><button type="button" class="cb" role="checkbox" aria-checked="true" aria-label="Importar Mercado Extra, 10 set, – R$ 395,70"><i aria-hidden="true"></i></button></td>
+          <td class="d num">10 set</td>
+          <td class="ds">Mercado Extra</td>
+          <td class="tp">Despesa</td>
+          <td class="ct" data-ct>Mercado</td>
+          <td class="v num">– R$&nbsp;395,70</td>
+        </tr>
+        <tr class="ln" data-i="6" data-tipo="out" data-valor="-190" data-cat="Transporte" data-dup="0">
+          <td class="ck"><button type="button" class="cb" role="checkbox" aria-checked="true" aria-label="Importar Posto Shell, 12 set, – R$ 190,00"><i aria-hidden="true"></i></button></td>
+          <td class="d num">12 set</td>
+          <td class="ds">Posto Shell</td>
+          <td class="tp">Despesa</td>
+          <td class="ct" data-ct>Transporte</td>
+          <td class="v num">– R$&nbsp;190,00</td>
+        </tr>
+        <tr class="ln in" data-i="7" data-tipo="in" data-valor="600" data-cat="" data-dup="0">
+          <td class="ck"><button type="button" class="cb" role="checkbox" aria-checked="true" aria-label="Importar Pix recebido Joao, 14 set, + R$ 600,00"><i aria-hidden="true"></i></button></td>
+          <td class="d num">14 set</td>
+          <td class="ds">Pix recebido Joao</td>
+          <td class="tp">Receita</td>
+          <td class="ct" data-ct><a class="semcat" href="#s3">Sem categoria</a></td>
+          <td class="v num">+ R$&nbsp;600,00</td>
+        </tr>
+        <tr class="ln" data-i="8" data-tipo="out" data-valor="-119.9" data-cat="Saúde" data-dup="0">
+          <td class="ck"><button type="button" class="cb" role="checkbox" aria-checked="true" aria-label="Importar Smart Fit, 15 set, – R$ 119,90"><i aria-hidden="true"></i></button></td>
+          <td class="d num">15 set</td>
+          <td class="ds">Smart Fit</td>
+          <td class="tp">Despesa</td>
+          <td class="ct" data-ct>Saúde</td>
+          <td class="v num">– R$&nbsp;119,90</td>
+        </tr>
+        <tr class="ln" data-i="9" data-tipo="out" data-valor="-64.9" data-cat="Saúde" data-dup="0">
+          <td class="ck"><button type="button" class="cb" role="checkbox" aria-checked="true" aria-label="Importar Drogasil, 18 set, – R$ 64,90"><i aria-hidden="true"></i></button></td>
+          <td class="d num">18 set</td>
+          <td class="ds">Drogasil</td>
+          <td class="tp">Despesa</td>
+          <td class="ct" data-ct>Saúde</td>
+          <td class="v num">– R$&nbsp;64,90</td>
+        </tr>
+        <tr class="ln" data-i="10" data-tipo="out" data-valor="-142" data-cat="Lazer" data-dup="0">
+          <td class="ck"><button type="button" class="cb" role="checkbox" aria-checked="true" aria-label="Importar Ingresso.com, 20 set, – R$ 142,00"><i aria-hidden="true"></i></button></td>
+          <td class="d num">20 set</td>
+          <td class="ds">Ingresso.com</td>
+          <td class="tp">Despesa</td>
+          <td class="ct" data-ct>Lazer</td>
+          <td class="v num">– R$&nbsp;142,00</td>
+        </tr>
+        <tr class="ln" data-i="11" data-tipo="out" data-valor="-24.9" data-cat="Transporte" data-dup="0">
+          <td class="ck"><button type="button" class="cb" role="checkbox" aria-checked="true" aria-label="Importar Uber *trip, 22 set, – R$ 24,90"><i aria-hidden="true"></i></button></td>
+          <td class="d num">22 set</td>
+          <td class="ds">Uber *trip</td>
+          <td class="tp">Despesa</td>
+          <td class="ct" data-ct>Transporte</td>
+          <td class="v num">– R$&nbsp;24,90</td>
+        </tr>
+        <tr class="ln" data-i="12" data-tipo="out" data-valor="-88" data-cat="" data-dup="0">
+          <td class="ck"><button type="button" class="cb" role="checkbox" aria-checked="true" aria-label="Importar Pg *Loja do Ze, 24 set, – R$ 88,00"><i aria-hidden="true"></i></button></td>
+          <td class="d num">24 set</td>
+          <td class="ds">Pg *Loja do Ze</td>
+          <td class="tp">Despesa</td>
+          <td class="ct" data-ct><a class="semcat" href="#s3">Sem categoria</a></td>
+          <td class="v num">– R$&nbsp;88,00</td>
+        </tr>
+        <tr class="ln" data-i="13" data-tipo="out" data-valor="-76.4" data-cat="Lazer" data-dup="0">
+          <td class="ck"><button type="button" class="cb" role="checkbox" aria-checked="true" aria-label="Importar Ifood, 26 set, – R$ 76,40"><i aria-hidden="true"></i></button></td>
+          <td class="d num">26 set</td>
+          <td class="ds">Ifood</td>
+          <td class="tp">Despesa</td>
+          <td class="ct" data-ct>Lazer</td>
+          <td class="v num">– R$&nbsp;76,40</td>
+        </tr>
+        <tr class="ln" data-i="14" data-tipo="out" data-valor="-32" data-cat="" data-dup="0">
+          <td class="ck"><button type="button" class="cb" role="checkbox" aria-checked="true" aria-label="Importar Tarifa pacote, 27 set, – R$ 32,00"><i aria-hidden="true"></i></button></td>
+          <td class="d num">27 set</td>
+          <td class="ds">Tarifa pacote</td>
+          <td class="tp">Despesa</td>
+          <td class="ct" data-ct><a class="semcat" href="#s3">Sem categoria</a></td>
+          <td class="v num">– R$&nbsp;32,00</td>
+        </tr>
+        <tr class="ln" data-i="15" data-tipo="out" data-valor="-24.9" data-cat="Transporte" data-dup="0">
+          <td class="ck"><button type="button" class="cb" role="checkbox" aria-checked="true" aria-label="Importar Uber *trip, 28 set, – R$ 24,90"><i aria-hidden="true"></i></button></td>
+          <td class="d num">28 set</td>
+          <td class="ds">Uber *trip</td>
+          <td class="tp">Despesa</td>
+          <td class="ct" data-ct>Transporte</td>
+          <td class="v num">– R$&nbsp;24,90</td>
+        </tr>
+        <tr class="ln dup off" data-i="16" data-tipo="out" data-valor="-42" data-cat="Lazer" data-dup="1">
+          <td class="ck"><button type="button" class="cb" role="checkbox" aria-checked="false" aria-label="Importar Cafe Tal, 29 set, – R$ 42,00"><i aria-hidden="true"></i></button></td>
+          <td class="d num">29 set</td>
+          <td class="ds">Cafe Tal <span class="tag dup">Duplicata?</span><small>Mesma data, valor e descrição de um lançamento já registrado.</small></td>
+          <td class="tp">Despesa</td>
+          <td class="ct" data-ct>Lazer</td>
+          <td class="v num">– R$&nbsp;42,00</td>
+        </tr>
+        <tr class="ln dup off" data-i="17" data-tipo="out" data-valor="-96" data-cat="Mercado" data-dup="1">
+          <td class="ck"><button type="button" class="cb" role="checkbox" aria-checked="false" aria-label="Importar Padaria Real, 30 set, – R$ 96,00"><i aria-hidden="true"></i></button></td>
+          <td class="d num">30 set</td>
+          <td class="ds">Padaria Real <span class="tag dup">Duplicata?</span><small>Mesma data, valor e descrição de um lançamento já registrado.</small></td>
+          <td class="tp">Despesa</td>
+          <td class="ct" data-ct>Mercado</td>
+          <td class="v num">– R$&nbsp;96,00</td>
+        </tr><!--ROWS:end-->
+          </tbody>
+        </table>
+        <div class="rev-foot">
+          <span>Marcadas: <span class="num" data-n>16</span> linhas</span>
+          <span>Entradas <span class="num ele" id="totIn">+ R$&nbsp;4.750,00</span> · saídas <span class="num" id="totOut">– R$&nbsp;2.928,90</span></span>
+        </div>
+      </section>
+
+      <!-- 03 · categorias -->
+      <section class="fsec boot b4" id="s3" aria-labelledby="s3t" data-passo>
+        <div class="shead">
+          <p class="eyebrow" id="s3t"><b>03</b> · Categorias</p>
+          <span class="s3st" id="s3st" aria-live="polite"><span class="num">3</span> linhas sem categoria</span>
+        </div>
+        <p class="lead">Escolha uma categoria para cada linha, ou aplique a mesma a todas. Se você importar sem escolher, a linha entra sem categoria e você ajusta depois em Transações.</p>
+
+        <div class="bulk" id="bulk">
+          <span class="lbl">Aplicar a todas sem categoria</span>
+          <div class="sel"><select id="bulkSel" aria-label="Categoria para todas">
+            <option value="">Escolha…</option>
+            <optgroup label="Despesa" data-g="out"><option>Moradia</option><option>Mercado</option><option>Lazer</option><option>Transporte</option><option>Saúde</option><option>Assinaturas</option><option>Investimento</option></optgroup>
+            <optgroup label="Receita" data-g="in"><option>Renda</option><option>Renda extra</option></optgroup>
+          </select></div>
+          <button type="button" class="btn-sm ghost" id="bulkAplicar">Aplicar</button>
+          <button type="button" class="btn-sm ghost" id="bulkNova">+ Nova categoria</button>
+        </div>
+        <p class="bulk-msg" id="bulkMsg" role="status"></p>
+
+        <div class="catln" data-i="7">
+          <span class="d num">14 set</span><span class="ds">Pix recebido Joao</span><span class="v num in">+ R$&nbsp;600,00</span>
+          <div class="sel"><select class="catsel" data-i="7" aria-label="Categoria de Pix recebido Joao">
+            <option value="">Sem categoria</option><option>Renda</option><option>Renda extra</option><option value="__nova">+ Nova categoria…</option>
+          </select></div>
+        </div>
+        <div class="catln" data-i="13">
+          <span class="d num">24 set</span><span class="ds">Pg *Loja do Ze</span><span class="v num">– R$&nbsp;88,00</span>
+          <div class="sel"><select class="catsel" data-i="13" aria-label="Categoria de Pg *Loja do Ze">
+            <option value="">Sem categoria</option><option>Moradia</option><option>Mercado</option><option>Lazer</option><option>Transporte</option><option>Saúde</option><option>Assinaturas</option><option>Investimento</option><option value="__nova">+ Nova categoria…</option>
+          </select></div>
+        </div>
+        <div class="catln" data-i="15">
+          <span class="d num">27 set</span><span class="ds">Tarifa pacote</span><span class="v num">– R$&nbsp;32,00</span>
+          <div class="sel"><select class="catsel" data-i="15" aria-label="Categoria de Tarifa pacote">
+            <option value="">Sem categoria</option><option>Moradia</option><option>Mercado</option><option>Lazer</option><option>Transporte</option><option>Saúde</option><option>Assinaturas</option><option>Investimento</option><option value="__nova">+ Nova categoria…</option>
+          </select></div>
+        </div>
+
+        <!-- nova categoria inline (aparece sob a linha ou sob "aplicar a todas") -->
+        <div class="novacat" id="novacat" hidden>
+          <span class="eyebrow">Nova categoria</span>
+          <div class="lin">
+            <div class="fld">
+              <div class="lblrow"><label for="ncNome">Nome</label></div>
+              <input id="ncNome" type="text" placeholder="Ex.: Tarifas bancárias" autocomplete="off" aria-describedby="ncMsg">
+            </div>
+            <div class="pills" role="group" aria-label="Tipo">
+              <button type="button" class="chip" data-nt="out" aria-pressed="true">Despesa</button>
+              <button type="button" class="chip" data-nt="in" aria-pressed="false">Receita</button>
+            </div>
+          </div>
+          <p class="fld"><span class="msg" id="ncMsg" aria-live="polite"></span></p>
+          <div class="acts">
+            <button type="button" class="btn-sm roxo" id="ncCriar">Criar e aplicar</button>
+            <button type="button" class="btn-sm ghost" id="ncCancelar">Cancelar</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- concluído (aparece depois de importar) -->
+      <section class="feito" id="feito" aria-labelledby="feitoN" hidden>
+        <p class="eyebrow">Concluído</p>
+        <h2 id="feitoN">16 transações importadas.</h2>
+        <p id="feitoP">Do Nubank, de 1 a 30 de setembro.</p>
+        <div class="acts">
+          <a class="btn-sm roxo" id="verTx" href="financas-transacoes.html">Ver transações</a>
+          <button type="button" class="btn-sm ghost" id="outro">Importar outro extrato</button>
+        </div>
+      </section>
+
+      <!-- histórico de importações -->
+      <section class="hist" aria-labelledby="ht">
+        <p class="eyebrow" id="ht">Importações anteriores</p>
+        <p class="lead">Desfazer um lote apaga as transações que vieram daquele arquivo, inclusive as que você editou depois.</p>
+        <div id="lotes">
+          <div class="lote">
+            <div>
+              <p class="nm">extrato-inter-agosto.ofx</p>
+              <p class="meta">Importado em <span class="num">2 set</span> · <span class="num">22</span> transações · <span class="num">1 ago</span> a <span class="num">31 ago</span></p>
+            </div>
+            <div class="vals"><span class="num ele">+ R$&nbsp;4.900,00</span><span class="num">– R$&nbsp;2.980,00</span></div>
+            <button type="button" class="btn-sm ghost perigo" data-desf>Desfazer este lote</button>
+            <div class="confirma" role="group" aria-label="Confirmar desfazer" hidden>
+              <span>Remover as <b class="num" data-cn>22</b> transações de <b data-ca>extrato-inter-agosto.ofx</b>? Não dá para voltar.</span>
+              <button type="button" class="sim" data-sim>Sim, remover</button>
+              <button type="button" data-nao>Manter</button>
+            </div>
+          </div>
+          <div class="lote">
+            <div>
+              <p class="nm">fatura-nubank-julho.pdf</p>
+              <p class="meta">Importado em <span class="num">4 ago</span> · <span class="num">31</span> transações · <span class="num">1 jul</span> a <span class="num">31 jul</span></p>
+            </div>
+            <div class="vals"><span class="num">– R$&nbsp;1.412,60</span></div>
+            <button type="button" class="btn-sm ghost perigo" data-desf>Desfazer este lote</button>
+            <div class="confirma" role="group" aria-label="Confirmar desfazer" hidden>
+              <span>Remover as <b class="num" data-cn>31</b> transações de <b data-ca>fatura-nubank-julho.pdf</b>? Não dá para voltar.</span>
+              <button type="button" class="sim" data-sim>Sim, remover</button>
+              <button type="button" data-nao>Manter</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <nav class="mais" aria-label="Mais em Finanças">
+        <span>Mais em Finanças:</span>
+        <a href="financas-transacoes.html">Transações</a>
+        <a href="financas-orcamentos.html">Orçamentos</a>
+        <a href="financas-recorrentes.html">Recorrentes</a>
+        <a href="financas-planejamento.html">Planejamento</a>
+        <a href="financas-calendario.html">Calendário</a>
+        <a href="financas-relatorios.html">Relatórios</a>
+      </nav>
+    </div>
+  </div>
+</main>
+
+<!-- SaveBar: o arquivo escolhido é a alteração pendente, então ela nasce visível -->
+<div class="savebar on" id="savebar" role="region" aria-label="Importação pendente">
+  <span class="sb-txt" id="sb-txt" aria-live="polite"><b class="num">16</b> de <span class="num">18</span> marcadas · <span class="w num">3</span> sem categoria</span>
+  <button type="button" class="btn-sm roxo" id="importar">Importar 16 transações</button>
+  <span class="sb-ok" id="sb-ok" role="status" hidden>Importado.</span>
+</div>
+
+<!-- camada de Sy -->
+<div class="scrim"></div>
+<aside class="camada" aria-label="Sy">
+  <header class="chead">
+    <p class="eyebrow"><b>Sy</b> · lendo: o extrato de setembro</p>
+    <button class="x" type="button" aria-label="Fechar">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </header>
+  <div class="cbody">
+    <div class="cempty">
+      <p class="hello">Já li o extrato do Nubank. O que você quer saber?</p>
+      <div class="csug">
+        <button class="chip" type="button">Quais são as duplicatas?</button>
+        <button class="chip" type="button">Que categoria dar ao Pix de 14 set?</button>
+        <button class="chip" type="button">Setembro bate com o que eu já tinha?</button>
+      </div>
+    </div>
+    <div class="cthread" hidden>
+      <div class="divider">Hoje · agora</div>
+      <div class="bub u">Quais são as duplicatas?</div>
+      <div class="bub a">Duas: Cafe Tal (<strong class="num">– R$&nbsp;42,00</strong>, 29 set) e Padaria Real (<strong class="num">– R$&nbsp;96,00</strong>, 30 set). As duas têm a mesma data, valor e descrição de lançamentos que você já registrou, por isso ficaram desmarcadas. Se foram compras diferentes, marque e elas entram.
+        <span class="meta">Fontes: extrato-nubank-setembro.csv · transações de setembro · regra de duplicata</span>
+      </div>
+      <div class="typing" aria-label="Sy digitando"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i></div>
+    </div>
+  </div>
+  <form class="cask"><div class="in">
+    <input type="text" placeholder="Pergunte qualquer coisa sobre o extrato">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+  </div></form>
+  <a class="cfull" href="#sy">Conversa completa →</a>
+</aside>
+
+<!-- estados: anotação do protótipo (fora do fluxo) -->
+<section class="proto-estados" inert>
+  <div class="wrap">
+    <p class="eyebrow">Estados · anotação do protótipo</p>
+    <div class="pe-grid">
+
+      <div class="pe">
+        <h4>Vazio · nenhum arquivo ainda</h4>
+        <div class="drop">
+          <p class="dz-t">Arraste o extrato aqui</p>
+          <div class="dz-a"><span class="btn-sm roxo">Escolher arquivo</span></div>
+          <p class="fmts">PDF, CSV, OFX ou QFX. Bancos reconhecidos: Nubank, Inter, Itaú, Bradesco, C6 Bank e BTG.</p>
+        </div>
+        <p class="n">01 aberto; 02 e 03 aparecem só com o eyebrow e a linha "Escolha um arquivo para revisar". Sem SaveBar. O histórico continua embaixo.</p>
+      </div>
+
+      <div class="pe">
+        <h4>Carregando · lendo o arquivo</h4>
+        <p class="nm" style="font:500 15px var(--gro)">extrato-nubank-setembro.csv</p>
+        <p class="n" style="margin-top:4px">Lendo o arquivo…</p>
+        <div class="skel"><span style="width:92%"></span><span style="width:78%"></span><span style="width:85%"></span></div>
+        <p class="n">PDF leva mais: a leitura é no navegador, página por página. O arquivo nunca é guardado.</p>
+      </div>
+
+      <div class="pe full">
+        <h4>CSV sem banco reconhecido · mapear colunas</h4>
+        <p class="n" style="margin:0 0 12px">Passo extra entre 01 e 02, só quando o cabeçalho do CSV não bate com um banco conhecido. Os 3 campos são obrigatórios.</p>
+        <div class="map">
+          <div><label>Data</label><div class="sel"><select><option>data_mov</option></select></div></div>
+          <div><label>Descrição</label><div class="sel"><select><option>historico</option></select></div></div>
+          <div><label>Valor</label><div class="sel"><select><option>valor_rs</option></select></div></div>
+        </div>
+        <p class="prev">Prévia: <span class="num">01/09/2026</span> · Salario Empresa X · <span class="num">4150,00</span> &nbsp;|&nbsp; <span class="num">01/09/2026</span> · Aluguel setembro · <span class="num">-1200,00</span></p>
+        <p style="margin-top:14px"><span class="btn-sm roxo">Usar estas colunas</span></p>
+      </div>
+
+      <div class="pe">
+        <h4>Erro · PDF com senha</h4>
+        <div class="erro"><b>Este PDF tem senha.</b>Exporte o extrato em CSV ou OFX no app do banco e escolha de novo. O SyncLife não pede a senha do seu PDF.</div>
+      </div>
+
+      <div class="pe">
+        <h4>Erro · arquivo sem transações</h4>
+        <div class="erro"><b>Nenhuma transação neste arquivo.</b>Confira se é o extrato do período (não um comprovante ou uma fatura em imagem) e tente outro.</div>
+      </div>
+
+      <div class="pe">
+        <h4>Importando · com progresso</h4>
+        <div class="savebar on"><span class="sb-txt">Importando <b class="num">8</b> de <span class="num">16</span>…</span><span class="btn-sm roxo" style="opacity:.45">Importando…</span></div>
+        <div class="prog" aria-hidden="true"><i></i></div>
+        <p class="n">Grava em lotes de <span class="num">50</span>. Se um lote falhar, os anteriores ficam e a mensagem diz quantas entraram: "<span class="num">50</span> de <span class="num">120</span> importadas. Tente de novo para o resto."</p>
+      </div>
+
+      <div class="pe">
+        <h4>Concluído</h4>
+        <p style="font:500 20px var(--gro);letter-spacing:-.02em">16 transações importadas.</p>
+        <p class="n">Do Nubank, de 1 a 30 de setembro. A SaveBar diz "Importado." por <span class="num">2</span> s e some; o lote entra no topo do histórico, destacado, com Desfazer. "Ver transações" leva a Transações de setembro.</p>
+      </div>
+
+      <div class="pe">
+        <h4>Desfazer lote · licença inline</h4>
+        <div class="confirma"><span>Remover as <b class="num">22</b> transações de <b>extrato-inter-agosto.ofx</b>? Não dá para voltar.</span><button type="button" class="sim">Sim, remover</button><button type="button">Manter</button></div>
+        <p class="n">Depois: o nome riscado e "Lote desfeito · 22 transações removidas de 01 Finanças."</p>
+      </div>
+
+      <div class="pe">
+        <h4>Erro de rede · histórico</h4>
+        <div class="erro"><b>Não deu para carregar as importações anteriores.</b>A revisão continua funcionando. Tentar de novo.</div>
+      </div>
+
+      <div class="pe">
+        <h4>Plano FREE</h4>
+        <p class="n" style="margin-top:0">Importar não tem limite de plano no v3, e esta tela não cria um. Se entrar, o aviso fica no passo 01, antes da leitura.</p>
+      </div>
+
+      <div class="pe full">
+        <h4>Mudanças contra o v3 (para aprovação)</h4>
+        <ul class="le">
+          <li><code>Marcadas ao abrir</code><span>As linhas reconhecidas começam marcadas e as duplicatas desmarcadas (o v3 começava tudo desmarcado). SaveBar: "Importar 16 transações".</span></li>
+          <li><code>Sem categoria pode entrar</code><span>Importar não bloqueia por categoria: a linha entra sem categoria (o v3 desabilitava o botão e oferecia "Pular e importar").</span></li>
+          <li><code>Aplicar a todas</code><span>Aplica só às linhas do mesmo tipo da categoria e diz quais ficaram de fora (o v3 aplicava despesa a receita).</span></li>
+          <li><code>Nova categoria</code><span>Nome e tipo. Sem ícone emoji e sem cor (E-09 e regra de chrome); o v3 pedia os dois.</span></li>
+          <li><code>Passos na mesma página</code><span>01, 02 e 03 numa coluna só, com o 01 reabrível; o v3 trocava de tela a cada passo e escondia a revisão ao categorizar.</span></li>
+        </ul>
+      </div>
+
+      <div class="pe full">
+        <h4>O que Sy lê aqui</h4>
+        <ul class="le">
+          <li><code>extrato em leitura</code><span>As linhas do arquivo já lidas (data, descrição, valor, tipo, categoria sugerida), só em memória. É de onde vem "o que reconheci". O arquivo não é guardado.</span></li>
+          <li><code>transactions</code><span>date, description, amount, type e notes do mês do extrato: a regra de duplicata (mesma data, valor e descrição de uma transação já registrada) e os lotes, identificados por notes = "Importado de {arquivo}".</span></li>
+          <li><code>categories</code><span>name e type: o que dá para sugerir por palavra-chave e o que entra nos selects do passo 03.</span></li>
+          <li><code>budgets</code><span>Só para responder na camada se setembro importado mexe em algum envelope; a tela não mostra orçamento.</span></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<script src="../shared/mock-data.js"></script>
+<script src="../shared/app.js"></script>
+<script>SLApp.boot()</script>
+<script type="module">import { ligarSy40 } from '../shared/sy40.js'; ligarSy40()</script>
+<!--JS:start-->
+<script>
+// Importar extrato · revisão, categorias, SaveBar, desfazer lote. Igual nos dois arquivos (desktop e mobile).
+// Sem JS a página está completa: o HTML já nasce no estado principal (passo 02 aberto, 16 de 18 marcadas).
+(function () {
+  var NB = ' ';
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var CATS = { out: ['Moradia', 'Mercado', 'Lazer', 'Transporte', 'Saúde', 'Assinaturas', 'Investimento'], in: ['Renda', 'Renda extra'] };
+  var imp = (window.SL_MOCK && SL_MOCK.fin && SL_MOCK.fin.importar) || null;
+  var ARQ = imp ? imp.arquivo : 'extrato-nubank-setembro.csv';
+  var TOTAL = imp ? imp.linhas.length : 18;
+  function $(id) { return document.getElementById(id); }
+  function brl(n) { return 'R$' + NB + Math.abs(n).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+  function tipoDe(cat) { return CATS.in.indexOf(cat) >= 0 ? 'in' : 'out'; }
+  var importando = false;
+
+  // ── estado das linhas (lido do DOM: estático e JS concordam) ──
+  var st = [].slice.call(document.querySelectorAll('.ln[data-i]')).map(function (el) {
+    var ct = el.querySelector('[data-ct]');
+    return { el: el, i: +el.dataset.i, tipo: el.dataset.tipo, valor: parseFloat(el.dataset.valor), desc: el.querySelector('.ds').firstChild.textContent.trim(),
+      orig: el.dataset.cat || '', cat: el.dataset.cat || '', dup: el.dataset.dup === '1', vazio: ct ? ct.innerHTML : '',
+      on: el.querySelector('.cb').getAttribute('aria-checked') === 'true' };
+  });
+  var inicial = st.map(function (r) { return r.on; });
+  var filtro = 'todas';
+
+  // ── render: linhas, contadores, totais, SaveBar, passo 03 ──
+  function render() {
+    var n = 0, ent = 0, sai = 0, semcatMarc = 0, semcat = 0;
+    st.forEach(function (r) {
+      r.el.classList.toggle('off', !r.on);
+      r.el.querySelector('.cb').setAttribute('aria-checked', r.on ? 'true' : 'false');
+      var ct = r.el.querySelector('[data-ct]');
+      if (ct) ct.innerHTML = r.cat ? esc(r.cat) : r.vazio;
+      if (!r.cat) { semcat++; if (r.on) semcatMarc++; }
+      if (r.on) { n++; if (r.valor > 0) ent += r.valor; else sai -= r.valor; }
+      var esconde = (filtro === 'semcat' && r.cat) || (filtro === 'dup' && !r.dup);
+      r.el.classList.toggle('hide', !!esconde);
+    });
+    [].forEach.call(document.querySelectorAll('[data-n]'), function (el) { el.textContent = n; });
+    [].forEach.call(document.querySelectorAll('[data-semcat]'), function (el) { el.textContent = semcat; });
+    var all = $('ckAll');
+    if (all) all.setAttribute('aria-checked', n === st.length ? 'true' : n === 0 ? 'false' : 'mixed');
+    var allTxt = $('ckAllTxt'); if (allTxt) allTxt.textContent = n === st.length ? 'Desmarcar todas' : 'Marcar todas';
+    if ($('totIn')) $('totIn').textContent = '+' + NB + brl(ent);
+    if ($('totOut')) $('totOut').textContent = '–' + NB + brl(sai);
+    // SaveBar
+    var txt = $('sb-txt'), btn = $('importar');
+    if (txt && !importando) txt.innerHTML = '<b class="num">' + n + '</b> de <span class="num">' + TOTAL + '</span> marcadas' +
+      (semcatMarc ? ' · <span class="w num">' + semcatMarc + '</span> sem categoria' : '');
+    if (btn && !importando) { btn.disabled = n === 0; btn.textContent = n === 0 ? 'Marque ao menos uma' : 'Importar ' + n + (n === 1 ? ' transação' : ' transações'); }
+    // passo 03
+    var s3 = $('s3st');
+    if (s3) {
+      s3.classList.toggle('ok', semcat === 0);
+      s3.innerHTML = semcat === 0 ? 'Tudo categorizado.' : '<span class="num">' + semcat + '</span> ' + (semcat === 1 ? 'linha sem categoria' : 'linhas sem categoria');
+    }
+  }
+
+  // ── marcar / desmarcar ──
+  function toggle(r) { r.on = !r.on; render(); }
+  document.addEventListener('click', function (e) {
+    var cb = e.target.closest('.ln .cb');
+    if (cb) { toggle(st[+cb.closest('.ln').dataset.i]); return; }
+    var tr = e.target.closest('tr.ln');
+    if (tr && !e.target.closest('a,button,select,input')) toggle(st[+tr.dataset.i]);
+  });
+  var ckAll = $('ckAll');
+  if (ckAll) ckAll.addEventListener('click', function () {
+    var todas = st.every(function (r) { return r.on; });
+    st.forEach(function (r) { r.on = !todas; }); render();
+  });
+
+  // ── filtro da revisão ──
+  [].forEach.call(document.querySelectorAll('[data-f]'), function (ch) {
+    ch.addEventListener('click', function () {
+      filtro = ch.dataset.f;
+      [].forEach.call(document.querySelectorAll('[data-f]'), function (c) { c.setAttribute('aria-pressed', c === ch ? 'true' : 'false'); });
+      render();
+    });
+  });
+
+  // ── passo 03: select por linha, aplicar a todas, nova categoria ──
+  var sels = [].slice.call(document.querySelectorAll('.catsel[data-i]'));
+  sels.forEach(function (s) {
+    s.addEventListener('change', function () {
+      var r = st[+s.dataset.i];
+      if (s.value === '__nova') { s.value = r.cat; abrirNova(+s.dataset.i, r.tipo); return; }
+      r.cat = s.value; render();
+    });
+  });
+  function syncSels() { sels.forEach(function (s) { s.value = st[+s.dataset.i].cat; }); }
+
+  var bulkSel = $('bulkSel'), bulkMsg = $('bulkMsg');
+  function aplicar(cat) {
+    if (!cat) { if (bulkMsg) bulkMsg.textContent = 'Escolha a categoria primeiro.'; return; }
+    var t = tipoDe(cat), feitos = 0, fora = [];
+    st.forEach(function (r) {
+      if (r.orig) return;
+      if (r.tipo === t) { r.cat = cat; feitos++; } else if (!r.cat) fora.push(r.desc);
+    });
+    syncSels(); render();
+    if (bulkMsg) bulkMsg.innerHTML = feitos ? 'Aplicada a <span class="num">' + feitos + '</span> ' + (feitos === 1 ? 'linha' : 'linhas') + ' de ' + (t === 'in' ? 'receita' : 'despesa') + '.' +
+      (fora.length ? ' ' + esc(fora.join(', ')) + (fora.length === 1 ? ' é ' : ' são ') + (t === 'in' ? 'despesa' : 'receita') + ': escolha à parte.' : '')
+      : 'Nenhuma linha sem categoria é de ' + (t === 'in' ? 'receita' : 'despesa') + '.';
+  }
+  if ($('bulkAplicar')) $('bulkAplicar').addEventListener('click', function () { aplicar(bulkSel.value); });
+
+  var nova = $('novacat'), ncNome = $('ncNome'), ncMsg = $('ncMsg'), alvo = null, ncTipo = 'out';
+  function setTipo(t) { ncTipo = t; [].forEach.call(document.querySelectorAll('[data-nt]'), function (c) { c.setAttribute('aria-pressed', c.dataset.nt === t ? 'true' : 'false'); }); }
+  function abrirNova(target, tipo) {
+    if (!nova) return;
+    alvo = target;
+    var ref = target === 'bulk' ? $('bulk') : document.querySelector('.catln[data-i="' + target + '"]');
+    if (ref) ref.after(nova);
+    setTipo(tipo || 'out'); ncNome.value = ''; ncNome.classList.remove('err'); ncMsg.textContent = ''; ncMsg.classList.remove('err');
+    nova.hidden = false; ncNome.focus();
+  }
+  function fecharNova() { if (nova) nova.hidden = true; alvo = null; }
+  if ($('bulkNova')) $('bulkNova').addEventListener('click', function () { abrirNova('bulk', 'out'); });
+  [].forEach.call(document.querySelectorAll('[data-nt]'), function (c) { c.addEventListener('click', function () { setTipo(c.dataset.nt); }); });
+  if ($('ncCancelar')) $('ncCancelar').addEventListener('click', fecharNova);
+  function criar() {
+    var nome = ncNome.value.trim();
+    var existe = CATS.in.concat(CATS.out).some(function (c) { return c.toLowerCase() === nome.toLowerCase(); });
+    if (!nome || existe) {
+      ncNome.classList.add('err'); ncMsg.classList.add('err');
+      ncMsg.textContent = nome ? 'Essa categoria já existe.' : 'Faltou o nome.'; ncNome.focus(); return;
+    }
+    CATS[ncTipo].push(nome);
+    sels.forEach(function (s) {
+      if (st[+s.dataset.i].tipo !== ncTipo) return;
+      var o = document.createElement('option'); o.value = nome; o.textContent = nome;
+      s.insertBefore(o, s.querySelector('option[value="__nova"]'));
+    });
+    var og = bulkSel && bulkSel.querySelector('optgroup[data-g="' + ncTipo + '"]');
+    if (og) { var o2 = document.createElement('option'); o2.value = nome; o2.textContent = nome; og.appendChild(o2); }
+    var t = alvo; fecharNova();
+    if (t === 'bulk') { bulkSel.value = nome; aplicar(nome); }
+    else if (t !== null) { st[t].cat = nome; syncSels(); render(); if (bulkMsg) bulkMsg.innerHTML = 'Categoria ' + esc(nome) + ' criada.'; }
+  }
+  if ($('ncCriar')) $('ncCriar').addEventListener('click', criar);
+  if (ncNome) ncNome.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); criar(); } if (e.key === 'Escape') fecharNova(); });
+
+  // ── passo 01: reabrir, trocar arquivo (o protótipo sempre relê o mock) ──
+  var drop = $('drop'), trocar = $('trocar');
+  function abrirDrop(v) { if (!drop) return; drop.hidden = !v; if (trocar) trocar.setAttribute('aria-expanded', v ? 'true' : 'false'); }
+  if (trocar) trocar.addEventListener('click', function () { abrirDrop(drop.hidden); });
+  if ($('manter')) $('manter').addEventListener('click', function () { abrirDrop(false); trocar.focus(); });
+  function lido() {
+    var s = $('dzStatus'); if (s) s.textContent = 'Lendo o arquivo…';
+    setTimeout(function () { if (s) s.textContent = ''; abrirDrop(false); }, reduce ? 0 : 700);
+  }
+  if ($('arquivo')) $('arquivo').addEventListener('change', lido);
+  if (drop) {
+    drop.addEventListener('dragover', function (e) { e.preventDefault(); drop.classList.add('sobre'); });
+    drop.addEventListener('dragleave', function () { drop.classList.remove('sobre'); });
+    drop.addEventListener('drop', function (e) { e.preventDefault(); drop.classList.remove('sobre'); lido(); });
+  }
+
+  // ── importar: progresso → concluído → novo lote no histórico ──
+  var bar = $('savebar'), btn = $('importar'), ok = $('sb-ok');
+  if (btn) btn.addEventListener('click', function () {
+    var ls = st.filter(function (r) { return r.on; }); if (!ls.length || importando) return;
+    importando = true; btn.disabled = true;
+    var n = ls.length, k = 0, txt = $('sb-txt');
+    var ent = 0, sai = 0, semcat = 0;
+    ls.forEach(function (r) { if (r.valor > 0) ent += r.valor; else sai -= r.valor; if (!r.cat) semcat++; });
+    function passo() {
+      k = Math.min(n, k + 4);
+      txt.innerHTML = 'Importando <b class="num">' + k + '</b> de <span class="num">' + n + '</span>…';
+      btn.textContent = 'Importando…';
+      if (k < n && !reduce) setTimeout(passo, 160); else fim();
+    }
+    function fim() {
+      importando = false;
+      $('feitoN').textContent = n + (n === 1 ? ' transação importada.' : ' transações importadas.');
+      $('feitoP').innerHTML = 'Do Nubank, de 1 a 30 de setembro. Entradas <span class="num ele">+' + NB + brl(ent) + '</span> · saídas <span class="num">–' + NB + brl(sai) + '</span>.' +
+        (semcat ? ' <span class="num">' + semcat + '</span> ' + (semcat === 1 ? 'entrou' : 'entraram') + ' sem categoria; o filtro de Transações acha.' : '');
+      [].forEach.call(document.querySelectorAll('[data-passo]'), function (s) { s.hidden = true; });
+      $('feito').hidden = false;
+      novoLote(n, ent, sai);
+      bar.classList.add('saved'); ok.hidden = false;
+      setTimeout(function () { bar.classList.remove('on'); setTimeout(function () { bar.classList.remove('saved'); ok.hidden = true; }, 400); }, 2000);
+      $('feito').scrollIntoView({ block: 'start', behavior: reduce ? 'auto' : 'smooth' });
+      var v = $('verTx'); if (v) v.focus({ preventScroll: true });
+    }
+    passo();
+  });
+  if ($('outro')) $('outro').addEventListener('click', function () {
+    st.forEach(function (r, i) { r.on = inicial[i]; r.cat = r.orig; }); syncSels();
+    [].forEach.call(document.querySelectorAll('[data-passo]'), function (s) { s.hidden = false; });
+    $('feito').hidden = true; bar.classList.remove('saved'); ok.hidden = true; bar.classList.add('on'); if (bulkMsg) bulkMsg.textContent = '';
+    render(); abrirDrop(true);
+    $('s1').scrollIntoView({ block: 'start', behavior: reduce ? 'auto' : 'smooth' });
+  });
+
+  // ── histórico: desfazer lote com licença inline ──
+  function novoLote(n, ent, sai) {
+    var lista = $('lotes'), modelo = lista && lista.querySelector('.lote'); if (!modelo) return;
+    var el = modelo.cloneNode(true);
+    el.classList.remove('desfeito'); el.classList.add('novo');
+    el.querySelector('.nm').textContent = ARQ;
+    el.querySelector('.meta').innerHTML = 'Importado agora · <span class="num">' + n + '</span> transações · <span class="num">1 set</span> a <span class="num">30 set</span>';
+    el.querySelector('.vals').innerHTML = (ent ? '<span class="num ele">+' + NB + brl(ent) + '</span>' : '') + (sai ? '<span class="num">–' + NB + brl(sai) + '</span>' : '');
+    el.querySelector('[data-cn]').textContent = n;
+    el.querySelector('[data-ca]').textContent = ARQ;
+    el.querySelector('.confirma').hidden = true; el.querySelector('[data-desf]').hidden = false;
+    lista.insertBefore(el, lista.firstChild);
+  }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('.lote [data-desf], .lote [data-sim], .lote [data-nao]'); if (!b) return;
+    var lote = b.closest('.lote'), cf = lote.querySelector('.confirma'), desf = lote.querySelector('[data-desf]');
+    if (b.hasAttribute('data-desf')) { desf.hidden = true; cf.hidden = false; cf.querySelector('[data-nao]').focus(); }
+    else if (b.hasAttribute('data-nao')) { cf.hidden = true; desf.hidden = false; desf.focus(); }
+    else {
+      cf.hidden = true; lote.classList.add('desfeito');
+      lote.querySelector('.meta').innerHTML = 'Lote desfeito · <span class="num">' + lote.querySelector('[data-cn]').textContent + '</span> transações removidas de 01 Finanças.';
+      lote.querySelector('.vals').innerHTML = '';
+    }
+  });
+
+  render();
+})();
+</script>
+<!--JS:end-->
+</body>
+</html>

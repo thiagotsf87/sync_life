@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dk mob">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
+<title>SyncLife · Recorrentes · mobile · v5</title>
+<!-- Fase 2 · Finanças · Recorrentes (T2, brief §4.3) MOBILE dedicado (390×844).
+     Bar (marca + "+") → .subbar sticky (← Finanças · Recorrentes) → cabeçalho curto → 4 números 2×2 + % da renda
+     → filtros em scroll-x → próximos 30 dias → lista agrupada por frequência → Mais em Finanças → rodapé → bottom bar.
+     Tocar numa linha abre o sheet de edição (salvar, pausar/retomar, excluir com .confirma). O "+" do bar e o
+     Registrar da bottom bar abrem o mesmo sheet em modo captura. Sy só pela camada (sheet).
+     E-02: sem JS a página está completa (o HTML entre os marcadores gen: é a mesma saída do render). -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Cline x1='32' y1='6' x2='32' y2='13' stroke='%23a1ff62' stroke-width='6' stroke-linecap='round'/%3E%3Cpolygon points='32,10 39,34 25,34' fill='%236840ff'/%3E%3Cpolygon points='32,57 25,34 39,34' fill='%23575353'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/base.css">
+<link rel="stylesheet" href="../shared/app.css">
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.185.1/build/three.module.js"}}</script>
+<style>
+  .wrap{--wrap-max:100%;padding-left:20px;padding-right:20px}
+
+  /* cabeçalho de subtela: .subbar sticky (mesma peça de life-score-v2.mobile) */
+  .subbar{position:sticky;top:56px;z-index:50;display:flex;align-items:center;gap:12px;height:48px;margin:0 -20px;padding:0 20px;
+    background:rgba(21,19,19,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  .subbar .voltar{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding-right:6px;font:500 13px var(--int);color:var(--t2)}
+  .subbar .curto{font:500 14px var(--gro);letter-spacing:-.02em;color:var(--t1);margin-left:auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+  /* alvos de toque >= 40px no chrome (mesmos ajustes do _t2-lista.mobile) */
+  html.mob .brand{min-height:40px}
+  html.mob .bar .btn-sm{min-height:40px}
+  html.mob .camada .csug .chip{min-height:40px}
+  html.mob .camada .cask .in{padding-top:0;padding-bottom:0}
+  html.mob .camada .cask input{min-height:44px}
+  html.mob .camada .cfull{min-height:40px;display:flex;align-items:center;justify-content:center;padding-top:0;padding-bottom:env(safe-area-inset-bottom)}
+
+  /* T2 · cabeçalho curto */
+  html.mob .titulo{padding:22px 0 18px;border-bottom:none}
+  .titulo .eyebrow a{color:inherit;display:inline-flex;align-items:center;min-height:40px;margin:-12px 0 -10px}
+  .titulo .sub{font:400 13.5px/1.5 var(--int);color:var(--t2);margin-top:10px}
+  .titulo .sub .num,.titulo .sub b{color:var(--t1);font-weight:600}
+
+  /* 4 números 2×2 (shared .nums mobile) + % comprometida */
+  html.mob .nums{border-top:1px solid var(--line)}
+  html.mob .nums .v{font-size:22px}
+  .nums .v.ele{color:var(--ele)}
+  .compr{padding:14px 0 2px}
+  .compr p{font:400 12.5px/1.5 var(--int);color:var(--t2)}
+  .compr p b{font:700 15px var(--gro);color:var(--t1);letter-spacing:-.02em}
+  .compr .track{height:3px;background:var(--s2);border-radius:2px;overflow:hidden;margin-top:10px}
+  .compr .track i{display:block;height:100%;width:var(--w,53%);background:var(--t2);border-radius:2px}
+
+  /* filtros em scroll-x */
+  .filtros{display:flex;align-items:center;gap:8px;overflow-x:auto;scrollbar-width:none;margin:18px -20px 0;padding:0 20px 14px;border-bottom:1px solid var(--line)}
+  .filtros::-webkit-scrollbar{display:none}
+  .filtros .chip{min-height:40px;white-space:nowrap;flex:none;font-size:13px}
+
+  /* próximos 30 dias */
+  .p30-h{display:flex;justify-content:space-between;align-items:baseline;padding:24px 0 6px;border-bottom:1px solid var(--line)}
+  .p30-h small{font:400 11.5px var(--int);color:var(--t3)}
+  .pr{display:grid;grid-template-columns:46px minmax(0,1fr) auto;gap:10px;align-items:baseline;padding:11px 0;border-bottom:1px solid var(--line)}
+  .pr .d{font:700 10.5px var(--gro);letter-spacing:.06em;text-transform:uppercase;color:var(--t3)}
+  .pr .d small{display:block;font:500 10px var(--gro);margin-top:2px}
+  .pr .nm{font:500 13.5px var(--int);color:var(--t1)}
+  .pr .tag{display:inline-block;font:700 9px var(--gro);letter-spacing:.12em;padding:2px 7px;border-radius:999px;border:1px solid rgba(248,65,49,.4);color:var(--coral);text-transform:uppercase;margin-left:6px;vertical-align:1px;white-space:nowrap}
+  .pr .v{font:700 13px var(--gro);color:var(--t2);white-space:nowrap}
+  .pr.in .v{color:var(--ele)}
+  .prox-foot{font:400 12px/1.6 var(--int);color:var(--t3);padding-top:10px}
+  .prox-foot b{color:var(--t1);font-weight:700;font-family:var(--gro)}
+  .prox-foot b.ele{color:var(--ele)}
+  .vazio-p{font:400 13px var(--int);color:var(--t3);padding:12px 0}
+
+  /* lista agrupada por frequência: a linha inteira é um botão (>= 56px) que abre o sheet */
+  .grp-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:26px 0 6px;border-bottom:1px solid var(--line)}
+  .grp-h .st{font:700 10.5px var(--gro);color:var(--t3);white-space:nowrap}
+  .grp-h .st .in{color:var(--ele)}
+  .rr{border-bottom:1px solid var(--line)}
+  .rb{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;width:100%;min-height:56px;padding:11px 0;background:none;border:none;text-align:left;cursor:pointer;color:inherit}
+  .anim .rr{transition:background 1.8s var(--ease),box-shadow 1.8s var(--ease)}
+  .rr.nova{background:rgba(161,255,98,.12);box-shadow:inset 3px 0 0 var(--ele)}
+  .rb:focus-visible{outline:2px solid rgba(104,64,255,.6);outline-offset:2px;border-radius:6px}
+  .rb .n1{display:block;font:500 14.5px var(--int);color:var(--t1)}
+  .rb .nm small{display:block;font:400 11.5px/1.45 var(--int);color:var(--t3);margin-top:3px}
+  .rb .v{font:700 13.5px var(--gro);color:var(--t2);text-align:right;white-space:nowrap}
+  .rb .v small{display:block;font:500 11px var(--gro);color:var(--t3);margin-top:3px}
+  .rr.in .rb .v{color:var(--ele)}
+  .rr.pausada .rb{opacity:.5}
+  .rr.pausada .n1{text-decoration:line-through}
+  .sem-resultado{font:400 13px var(--int);color:var(--t3);padding:24px 0 4px}
+  .status{font:600 12.5px/1.5 var(--int);color:var(--ele);min-height:1.5em;padding-top:12px}
+  .pergunte{padding:12px 0 4px}
+  .pergunte .falar{margin-top:0}
+  .mais-fin{padding:14px 0 30px;font:400 12.5px var(--int);color:var(--t3)}
+  .mais-fin .ln{display:flex;flex-wrap:wrap;column-gap:16px;margin-top:4px}
+  .mais-fin a{color:var(--t2);display:inline-flex;align-items:center;min-height:40px}
+
+  /* candidata a shared: sheet de captura/edição (mesma peça do _t2-lista.mobile) */
+  .sheet-form{position:fixed;left:0;right:0;bottom:0;z-index:80;max-height:clamp(420px,90dvh,780px);background:var(--s1);border-top:1px solid var(--line-h);border-radius:22px 22px 0 0;
+    display:flex;flex-direction:column;transform:translateY(105%);visibility:hidden;transition:transform .55s var(--ease),visibility 0s .55s;box-shadow:0 -24px 60px -30px rgba(0,0,0,.6)}
+  .sheet-form.open{transform:none;visibility:visible;transition-delay:0s}
+  .sheet-form .handle{width:44px;height:4px;border-radius:2px;background:var(--line-h);margin:10px auto 0}
+  .sheet-form .shead{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 20px 14px;border-bottom:1px solid var(--line)}
+  .sheet-form .shead h2{font:500 19px var(--gro);letter-spacing:-.02em;margin-top:6px}
+  .sheet-form .x{background:none;border:1px solid var(--line);border-radius:999px;width:40px;height:40px;display:inline-flex;align-items:center;justify-content:center;color:var(--t2);cursor:pointer;flex:none}
+  .sheet-form .sbody{flex:1;overflow-y:auto;padding:16px 20px 6px;display:flex;flex-direction:column;gap:14px}
+  .sheet-form .f .eyebrow{display:block;margin-bottom:8px}
+  .sheet-form .ck-note{width:100%;display:block;padding:13px 16px;font-size:14px;min-height:46px}
+  .sheet-form textarea.ck-note{resize:none;min-height:72px;font:400 14px/1.5 var(--int)}
+  .sheet-form input[type=date]{color-scheme:dark}
+  .sheet-form .sel{margin-top:0}
+  .sheet-form .tipo{display:flex;gap:8px}
+  .sheet-form .tipo .chip{min-height:44px;flex:1;justify-content:center;font-size:13.5px}
+  .sheet-form .f2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .sheet-form .aviso{font:400 12px/1.55 var(--int);color:var(--t3)}
+  .sheet-form .erro-f{font:500 12.5px var(--int);color:var(--coral);min-height:1em}
+  .sheet-form .sfoot{padding:12px 20px calc(16px + env(safe-area-inset-bottom));border-top:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
+  .sheet-form .acts{display:flex;gap:8px}
+  .sheet-form .acts .btn-sm{min-height:48px;justify-content:center;font-size:14px}
+  .sheet-form .acts .ghost{padding:12px 14px}
+  .sheet-form .acts .roxo{flex:1}
+  .confirma .cb{display:flex;gap:18px;margin-top:4px;width:100%}
+  .confirma button{min-height:40px;font-size:13.5px}
+  .sheet-form .sfoot output{font:600 12.5px var(--int);color:var(--ele);text-align:center;min-height:1em}
+  @media (prefers-reduced-motion:reduce){.sheet-form{transition:none}}
+
+  /* anotação do protótipo (fora do fluxo, inert) */
+  .proto-estados{border-top:3px double var(--line-h);margin-top:40px;padding-top:30px;padding-bottom:72px}
+  .proto-estados > .wrap > .eyebrow{color:var(--coral)}
+  .pe-grid{display:grid;grid-template-columns:1fr;gap:32px;margin-top:22px}
+  .pe h4{font:700 10px var(--gro);letter-spacing:.18em;text-transform:uppercase;color:var(--t3);margin-bottom:12px}
+  .pe .vazio{font:500 16px var(--gro);letter-spacing:-.01em;color:var(--t1)}
+  .pe .vazio small{display:block;font:400 12.5px/1.55 var(--int);color:var(--t3);margin-top:6px}
+  .pe .skel{display:grid;grid-template-columns:1fr 70px;gap:14px;padding:14px 0;border-bottom:1px solid var(--line)}
+  .pe .skel span{display:block;height:10px;border-radius:5px;background:var(--s2)}
+  .anim .pe .skel span{animation:pulso 1.4s var(--ease) infinite alternate}
+  @keyframes pulso{from{opacity:.55}to{opacity:1}}
+  .pe .erro{display:flex;justify-content:space-between;align-items:baseline;gap:12px;border-left:3px solid var(--coral);padding:10px 14px;font:400 13px var(--int);color:var(--coral)}
+  .pe .erro button{background:none;border:none;color:var(--t1);font:600 12.5px var(--int);cursor:pointer;padding:0;white-space:nowrap}
+  .pe .lim{border-left:3px solid var(--roxo);padding:10px 14px;font:400 13px/1.6 var(--int);color:var(--t2)}
+  .pe .lim b{color:var(--t1)}
+  .pe .lim a{color:var(--t1);font-weight:600;text-decoration:underline}
+  .pe-nota{font:400 12.5px/1.6 var(--int);color:var(--t3);margin-top:10px}
+  .pe-nota b{color:var(--t2);font-weight:600}
+  .fontes-sy{margin-top:40px}
+  .fontes-sy h3{font:500 20px/1.2 var(--gro);letter-spacing:-.025em;margin-top:8px}
+  .fontes-sy p{font:400 13px/1.6 var(--int);color:var(--t2);margin-top:10px}
+  .fontes-sy ul{list-style:none;margin-top:14px}
+  .fontes-sy li{padding:12px 0;border-bottom:1px solid var(--line);font:400 12.5px/1.55 var(--int);color:var(--t2)}
+  .fontes-sy li code{display:block;font:600 12.5px var(--gro);color:var(--t1);letter-spacing:-.01em;margin-bottom:4px}
+  .fontes-sy li code small{font:400 11.5px var(--int);color:var(--t3)}
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- chrome: com a bottom bar, o bar fica só com a marca e o +; o modbar sai -->
+<header class="bar">
+  <a class="brand" href="#">
+    <svg width="19" height="19" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="2" x2="32" y2="11" stroke="#a1ff62" stroke-width="7" stroke-linecap="round"/><polygon points="32,8 40,34 24,34" fill="#6840ff"/><polygon points="32,58 24,34 40,34" fill="#f4f4f4" opacity=".35"/></svg>
+    <span class="wm">Sync<em>Life</em></span></a>
+  <div class="acts">
+    <button class="btn-sm roxo" type="button" aria-label="Registrar recorrente" data-abrir-captura>+</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="subbar">
+    <a class="voltar" href="financas-a.mobile.html">← Finanças</a>
+    <span class="curto">Recorrentes</span>
+  </div>
+
+  <!-- 1. cabeçalho curto -->
+  <header class="titulo boot b1">
+    <p class="eyebrow"><a href="financas-a.mobile.html"><b>01</b>&nbsp;· Finanças</a></p>
+    <h1>Recorrentes</h1>
+    <p class="sub" id="h-sub"><span class="num">9</span> ativas · <span class="num">1</span> pausada · a próxima sai em <span class="num">3</span> dias: <b>Aluguel</b></p>
+  </header>
+
+  <!-- 2. números (por mês, recorrentes ativas) -->
+  <section class="nums boot b2" id="nums" aria-label="Recorrentes por mês"><!--gen:nums--><div><p class="eyebrow">Saída mensal</p><div class="v num">R$ 2.656</div><div class="d num">8 saídas ativas</div></div><div><p class="eyebrow">Entrada mensal</p><div class="v num">R$ 4.150</div><div class="d num">1 entrada ativa</div></div><div><p class="eyebrow">Impacto líquido</p><div class="v num ele">+ R$ 1.494</div><div class="d num">sobra por mês</div></div><div><p class="eyebrow">Custo anual</p><div class="v num">R$ 31.876</div><div class="d num">saídas × 12 meses</div></div><!--/gen:nums--></section>
+  <div class="compr boot b2" id="compr"><!--gen:compr--><p><b class="num">53%</b> da sua renda comprometida · sobre <span class="num">R$ 5.000</span>, a renda do seu perfil</p><div class="track" style="--w:53%"><i></i></div><!--/gen:compr--></div>
+
+  <!-- 3. filtros em scroll-x -->
+  <div class="filtros boot b3" role="toolbar" aria-label="Filtros">
+    <button class="chip on" type="button" data-f="todas" aria-pressed="true">Todas</button>
+    <button class="chip" type="button" data-f="out" aria-pressed="false">Saídas</button>
+    <button class="chip" type="button" data-f="in" aria-pressed="false">Entradas</button>
+    <button class="chip" type="button" data-f="pausadas" aria-pressed="false">Pausadas</button>
+  </div>
+
+  <!-- 4. próximos 30 dias -->
+  <section class="rv" aria-label="Próximos 30 dias">
+    <div class="p30-h"><p class="eyebrow">Próximos 30 dias</p><small>até 2 nov</small></div>
+    <div id="prox"><!--gen:prox--><div class="pr" data-id="r2"><span class="d num">6 out<small>seg</small></span><span class="nm">Aluguel<span class="tag">em 3 dias</span></span><span class="v num">– R$ 1.200,00</span></div><div class="pr" data-id="r3"><span class="d num">8 out<small>qua</small></span><span class="nm">Aporte automático<span class="tag">em 5 dias</span></span><span class="v num">– R$ 580,00</span></div><div class="pr" data-id="r4"><span class="d num">8 out<small>qua</small></span><span class="nm">Internet<span class="tag">em 5 dias</span></span><span class="v num">– R$ 89,90</span></div><div class="pr" data-id="r5"><span class="d num">12 out<small>dom</small></span><span class="nm">Streaming</span><span class="v num">– R$ 55,90</span></div><div class="pr" data-id="r7"><span class="d num">14 out<small>ter</small></span><span class="nm">Faxina</span><span class="v num">– R$ 180,00</span></div><div class="pr" data-id="r6"><span class="d num">15 out<small>qua</small></span><span class="nm">Academia</span><span class="v num">– R$ 119,90</span></div><div class="pr" data-id="r9"><span class="d num">20 out<small>seg</small></span><span class="nm">Contador do MEI</span><span class="v num">– R$ 240,00</span></div><div class="pr" data-id="r7"><span class="d num">28 out<small>ter</small></span><span class="nm">Faxina</span><span class="v num">– R$ 180,00</span></div><div class="pr in" data-id="r1"><span class="d num">30 out<small>qui</small></span><span class="nm">Salário</span><span class="v num">+ R$ 4.150,00</span></div><p class="prox-foot">Saem <b class="num">R$ 2.645,70</b> e entram <b class="num ele">R$ 4.150,00</b> até 2 nov. Coral: faltam 7 dias ou menos.</p><!--/gen:prox--></div>
+  </section>
+
+  <!-- 5. lista agrupada por frequência -->
+  <section class="lista rv" aria-label="Todas as recorrentes">
+    <div id="lista"><!--gen:lista--><div class="grp" data-freq="mensal"><div class="grp-h"><p class="eyebrow">Mensais · <span class="num">7</span></p><span class="st num">– R$ 2.045,70 · <span class="in">+ R$ 4.150,00</span>/mês</span></div><div class="rr" data-id="r2"><button class="rb" type="button" aria-label="Editar Aluguel"><span class="nm"><span class="n1">Aluguel</span><small>Moradia · dia 6 · próx. 6 out</small></span><span class="v num">– R$ 1.200,00</span></button></div><div class="rr" data-id="r3"><button class="rb" type="button" aria-label="Editar Aporte automático"><span class="nm"><span class="n1">Aporte automático</span><small>Investimento · dia 8 · próx. 8 out</small></span><span class="v num">– R$ 580,00</span></button></div><div class="rr" data-id="r4"><button class="rb" type="button" aria-label="Editar Internet"><span class="nm"><span class="n1">Internet</span><small>Assinaturas · dia 8 · próx. 8 out</small></span><span class="v num">– R$ 89,90</span></button></div><div class="rr" data-id="r5"><button class="rb" type="button" aria-label="Editar Streaming"><span class="nm"><span class="n1">Streaming</span><small>Assinaturas · dia 12 · próx. 12 out</small></span><span class="v num">– R$ 55,90</span></button></div><div class="rr" data-id="r6"><button class="rb" type="button" aria-label="Editar Academia"><span class="nm"><span class="n1">Academia</span><small>Saúde · dia 15 · próx. 15 out</small></span><span class="v num">– R$ 119,90</span></button></div><div class="rr pausada" data-id="r10"><button class="rb" type="button" aria-label="Editar App de idiomas, pausada"><span class="nm"><span class="n1">App de idiomas</span><small>Assinaturas · dia 22 · pausada, não gera lançamentos</small></span><span class="v num">– R$ 39,90</span></button></div><div class="rr in" data-id="r1"><button class="rb" type="button" aria-label="Editar Salário"><span class="nm"><span class="n1">Salário</span><small>Renda · dia 30 · próx. 30 out</small></span><span class="v num">+ R$ 4.150,00</span></button></div></div><div class="grp" data-freq="quinzenal"><div class="grp-h"><p class="eyebrow">Quinzenais · <span class="num">1</span></p><span class="st num">≈ – R$ 390,60/mês</span></div><div class="rr" data-id="r7"><button class="rb" type="button" aria-label="Editar Faxina"><span class="nm"><span class="n1">Faxina</span><small>Moradia · a cada 14 dias · próx. 14 out</small></span><span class="v num">– R$ 180,00<small>≈ R$ 390,60/mês</small></span></button></div></div><div class="grp" data-freq="trimestral"><div class="grp-h"><p class="eyebrow">Trimestrais · <span class="num">1</span></p><span class="st num">≈ – R$ 80,00/mês</span></div><div class="rr" data-id="r9"><button class="rb" type="button" aria-label="Editar Contador do MEI"><span class="nm"><span class="n1">Contador do MEI</span><small>Impostos · dia 20, a cada 3 meses · próx. 20 out</small></span><span class="v num">– R$ 240,00<small>≈ R$ 80,00/mês</small></span></button></div></div><div class="grp" data-freq="anual"><div class="grp-h"><p class="eyebrow">Anuais · <span class="num">1</span></p><span class="st num">≈ – R$ 140,00/mês</span></div><div class="rr" data-id="r8"><button class="rb" type="button" aria-label="Editar Seguro do carro"><span class="nm"><span class="n1">Seguro do carro</span><small>Transporte · 10 de março · próx. 10 mar 2027</small></span><span class="v num">– R$ 1.680,00<small>≈ R$ 140,00/mês</small></span></button></div></div><!--/gen:lista--></div>
+    <p class="sem-resultado" id="sem-resultado" hidden>Nada com esse filtro.</p>
+    <p class="status" id="status" role="status" aria-live="polite"></p>
+  </section>
+
+  <!-- Sy: só pela camada -->
+  <div class="pergunte rv">
+    <button class="falar" type="button" data-coach-open data-coach-seed="Sobre as recorrentes: ">Perguntar sobre as recorrentes →</button>
+  </div>
+
+  <nav class="mais-fin" aria-label="Mais em Finanças">Mais em Finanças:
+    <div class="ln">
+      <a href="financas-transacoes.mobile.html">Transações</a>
+      <a href="financas-orcamentos.mobile.html">Orçamentos</a>
+      <a href="financas-planejamento.mobile.html">Planejamento</a>
+      <a href="financas-calendario.mobile.html">Calendário</a>
+      <a href="financas-relatorios.mobile.html">Relatórios</a>
+      <a href="financas-importar.mobile.html">Importar extrato</a>
+    </div>
+  </nav>
+</main>
+
+<!-- rodapé -->
+<footer class="colofao">
+  <span>Fechamento projetado de outubro: <b class="num">R$&nbsp;2.120</b></span>
+  <div class="r">
+    <span id="rod-ativas"><b class="num">9</b> ativas · <b class="num">1</b> pausada</span>
+    <span>Última sincronização às <b class="num">14:05</b></span>
+  </div>
+</footer>
+
+<!-- bottom bar (markup de _intencao.mobile; CSS e wiring no shared) -->
+<nav class="bbar" aria-label="Navegação principal">
+  <a href="meu-dia-d.mobile.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="3"/><line x1="4" y1="10" x2="20" y2="10"/><circle cx="12" cy="15" r="1.4" fill="currentColor" stroke="none"/></svg>
+    <span>Meu dia</span></a>
+  <a class="on" href="financas-a.mobile.html" aria-current="page"><span class="g num">01</span><span>Finanças</span></a>
+  <button class="sypill" type="button" data-coach-open><span class="sy40" aria-hidden="true"><canvas></canvas></span><span>Fale com Sy</span></button>
+  <button type="button" data-areas-open aria-haspopup="dialog" aria-controls="sheetAreas" aria-expanded="false">
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="8" cy="8" r="2.3"/><circle cx="16" cy="8" r="2.3"/><circle cx="8" cy="16" r="2.3"/><circle cx="16" cy="16" r="2.3"/></svg>
+    <span>Áreas</span></button>
+  <button type="button" data-abrir-captura>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    <span>Registrar</span></button>
+</nav>
+
+<!-- camada de Sy: sheet (antes do #sheetAreas e do .sheet-form: app.js pega a primeira .camada) -->
+<div class="scrim"></div>
+<aside class="camada sheet" aria-label="Sy">
+  <div class="handle"></div>
+  <header class="chead">
+    <p class="eyebrow"><b>Sy</b> · lendo: suas recorrentes</p>
+    <button class="x" type="button" aria-label="Fechar">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </header>
+  <div class="cbody">
+    <div class="cempty">
+      <p class="hello">Já li as suas 9 recorrentes ativas: <span class="num">R$&nbsp;2.656</span> saem todo mês, 53% da sua renda. O que você quer saber?</p>
+      <div class="csug">
+        <button class="chip" type="button">O que vence esta semana?</button>
+        <button class="chip" type="button">Qual assinatura eu poderia cortar?</button>
+        <button class="chip" type="button">Quanto as recorrentes pesam no ano?</button>
+      </div>
+    </div>
+    <div class="cthread" hidden>
+      <div class="divider">Hoje · 14:02</div>
+      <div class="bub u">O que vence esta semana?</div>
+      <div class="bub a">Três saídas até quarta, que somam <strong class="num">R$&nbsp;1.869,90</strong>: Aluguel (<strong class="num">R$&nbsp;1.200,00</strong>) na segunda, dia 6, e Aporte automático (<strong class="num">R$&nbsp;580,00</strong>) e Internet (<strong class="num">R$&nbsp;89,90</strong>) na quarta, dia 8. As três já estão no fechamento projetado de outubro, <strong class="num">R$&nbsp;2.120</strong>.
+        <span class="meta">Fontes: 9 recorrentes · próximos 30 dias · projeção do mês</span>
+      </div>
+    </div>
+  </div>
+  <form class="cask"><div class="in">
+    <input type="text" placeholder="Pergunte sobre as recorrentes">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+  </div></form>
+  <a class="cfull" href="conversa.mobile.html">Conversa completa →</a>
+</aside>
+
+<!-- sheet de Áreas -->
+<aside class="camada sheet areas" id="sheetAreas" role="dialog" aria-label="Áreas">
+  <div class="handle"></div>
+  <header class="chead">
+    <p class="eyebrow">Áreas</p>
+    <button class="x" type="button" aria-label="Fechar" data-areas-close>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </header>
+  <div class="cbody">
+    <a class="arow" href="financas-a.mobile.html"><span class="n num">01</span><span>Finanças</span><span class="sc num">83</span></a>
+    <a class="arow" href="#"><span class="n num">02</span><span>Futuro</span><span class="sc num">79</span></a>
+    <a class="arow" href="#"><span class="n num">03</span><span>Tempo</span><span class="sc num">71</span></a>
+    <a class="arow" href="#"><span class="n num">04</span><span>Corpo</span><span class="sc num">69</span></a>
+    <a class="arow" href="#"><span class="n num">05</span><span>Mente</span><span class="sc num">58</span></a>
+    <a class="arow" href="#"><span class="n num">06</span><span>Patrimônio</span><span class="sc num">76</span></a>
+    <a class="arow" href="#"><span class="n num">07</span><span>Carreira</span><span class="sc num">69</span></a>
+    <a class="arow" href="#"><span class="n num">08</span><span>Experiências</span><span class="sc num">78</span></a>
+    <div class="asep" aria-hidden="true"></div>
+    <a class="arow extra" href="#"><span class="n num" aria-hidden="true"></span><span>Conquistas<small>24/61 badges</small></span><span class="sc num">12 dias</span></a>
+    <a class="arow extra" href="#"><span class="n num" aria-hidden="true"></span><span>Configurações</span><span class="sc"></span></a>
+  </div>
+</aside>
+
+<!-- sheet de captura / edição (próprio; não é a camada de Sy) -->
+<aside class="sheet-form" id="sheet" role="dialog" aria-modal="true" aria-labelledby="s-titulo">
+  <div class="handle"></div>
+  <header class="shead">
+    <div>
+      <p class="eyebrow"><b>01</b> · Recorrente</p>
+      <h2 id="s-titulo">Nova recorrente</h2>
+    </div>
+    <button class="x" type="button" aria-label="Fechar">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </header>
+  <form id="sform" class="sbody" autocomplete="off" novalidate>
+    <div class="f">
+      <span class="eyebrow">Tipo</span>
+      <div class="tipo" role="group" aria-label="Tipo">
+        <button class="chip on" type="button" data-tipo="out" aria-pressed="true">Saída</button>
+        <button class="chip" type="button" data-tipo="in" aria-pressed="false">Entrada</button>
+      </div>
+    </div>
+    <div class="f">
+      <label class="eyebrow" for="s-nome">Nome</label>
+      <input class="ck-note" id="s-nome" name="nome" type="text" placeholder="Ex.: Aluguel, Salário" required>
+    </div>
+    <div class="f2">
+      <div class="f">
+        <label class="eyebrow" for="s-valor">Valor</label>
+        <input class="ck-note num" id="s-valor" name="valor" type="text" inputmode="decimal" placeholder="0,00" required>
+      </div>
+      <div class="f">
+        <label class="eyebrow" for="s-freq">Frequência</label>
+        <div class="sel"><select id="s-freq" name="freq">
+          <option value="semanal">Semanal</option><option value="quinzenal">Quinzenal</option><option value="mensal" selected>Mensal</option><option value="trimestral">Trimestral</option><option value="anual">Anual</option>
+        </select></div>
+      </div>
+    </div>
+    <div class="f2">
+      <div class="f" data-so-dia>
+        <label class="eyebrow" for="s-dia">Dia do mês</label>
+        <input class="ck-note num" id="s-dia" name="dia" type="number" min="1" max="31" inputmode="numeric">
+      </div>
+      <div class="f">
+        <label class="eyebrow" for="s-inicio">Início</label>
+        <input class="ck-note num" id="s-inicio" name="inicio" type="date" value="2026-10-03">
+      </div>
+    </div>
+    <div class="f2">
+      <div class="f">
+        <label class="eyebrow" for="s-fim">Fim (opcional)</label>
+        <input class="ck-note num" id="s-fim" name="fim" type="date">
+      </div>
+      <div class="f">
+        <label class="eyebrow" for="s-cat">Categoria</label>
+        <div class="sel"><select id="s-cat" name="cat">
+          <option>Moradia</option><option>Assinaturas</option><option>Investimento</option><option>Saúde</option><option>Transporte</option><option>Impostos</option><option>Mercado</option><option>Lazer</option><option>Educação</option><option>Renda</option><option>Renda extra</option>
+        </select></div>
+      </div>
+    </div>
+    <div class="f">
+      <label class="eyebrow" for="s-obs">Observações</label>
+      <textarea class="ck-note" id="s-obs" name="obs" rows="2" placeholder="Opcional"></textarea>
+    </div>
+    <p class="aviso" id="s-aviso">Mudanças valem para os próximos lançamentos. Os já registrados ficam como estão.</p>
+    <p class="erro-f" id="s-erro" role="alert"></p>
+  </form>
+  <div class="sfoot">
+    <div class="confirma" id="s-confirma" hidden role="status">
+      <span>Excluir <b id="s-conf-nome">esta recorrente</b>? Os lançamentos já registrados ficam; os próximos deixam de ser gerados.</span>
+      <div class="cb"><button class="sim" type="button" id="s-conf-sim">Excluir</button><button type="button" id="s-conf-nao">Cancelar</button></div>
+    </div>
+    <div class="acts">
+      <button class="btn-sm ghost perigo" type="button" id="s-excluir" hidden>Excluir</button>
+      <button class="btn-sm ghost" type="button" id="s-pausar" hidden>Pausar</button>
+      <button class="btn-sm roxo" type="submit" form="sform" id="s-salvar">Registrar</button>
+    </div>
+    <output id="s-out" aria-live="polite"></output>
+  </div>
+</aside>
+
+<!-- ═══ anotação do protótipo: estados + o que Sy lê aqui (fora do fluxo) ═══ -->
+<section class="proto-estados" inert>
+  <div class="wrap">
+    <p class="eyebrow">Estados · anotação do protótipo</p>
+    <div class="pe-grid">
+      <div class="pe">
+        <h4>Vazio</h4>
+        <p class="vazio">Nenhuma recorrente ainda<small>Toque em Registrar, na barra de baixo, para a primeira: aluguel, salário ou uma assinatura. Os números e os próximos 30 dias aparecem a partir dela.</small></p>
+      </div>
+      <div class="pe">
+        <h4>Carregando · esqueleto</h4>
+        <div aria-hidden="true">
+          <div class="skel"><span style="width:62%"></span><span></span></div>
+          <div class="skel"><span style="width:48%"></span><span></span></div>
+          <div class="skel"><span style="width:70%"></span><span></span></div>
+        </div>
+        <p class="pe-nota">Os 4 números mostram <b>R$&nbsp;–</b> até a lista chegar; nada de zero falso.</p>
+      </div>
+      <div class="pe">
+        <h4>Erro · linha coral</h4>
+        <div class="erro" role="alert"><span>Não consegui carregar as recorrentes.</span><button type="button">Tentar de novo</button></div>
+        <p class="pe-nota">Erro ao pausar ou salvar: o sheet continua aberto, com a mesma linha coral acima dos botões.</p>
+      </div>
+      <div class="pe">
+        <h4>Limite do plano FREE · 5 ativas</h4>
+        <div class="lim">Você tem <b class="num">5</b> recorrentes ativas, o limite do plano FREE. Pause uma para registrar outra, ou <a href="#">conheça o PRO</a>.</div>
+        <p class="pe-nota">Aparece no sheet no lugar dos campos quando Registrar é tocado. Como no v3, pausadas contam no limite. O mock é <b>PRO</b>.</p>
+      </div>
+      <div class="pe">
+        <h4>Pausada · na própria lista</h4>
+        <p class="pe-nota" style="margin-top:0">Esmaecida, nome riscado, "pausada, não gera lançamentos". Fora dos números e dos próximos 30 dias. Pausar e Retomar ficam no sheet da linha (o v3 mobile só deixava ver e criar).</p>
+      </div>
+      <div class="pe">
+        <h4>Encerrada · fim no passado</h4>
+        <p class="pe-nota" style="margin-top:0">Sai da lista ativa e vai para "Encerradas" no fim, esmaecida, com a data do fim. Fim antes do início é recusado no sheet: "O fim precisa ser depois do início."</p>
+      </div>
+    </div>
+
+    <div class="fontes-sy">
+      <p class="eyebrow"><b>01</b> · Finanças</p>
+      <h3>O que Sy lê aqui</h3>
+      <p>Pacote de contexto desta tela (o que <code>buildModuleContext</code> expõe para Finanças, recortado em recorrentes). Normalização: <span class="num">semanal ×4,33 · quinzenal ×2,17 · trimestral ÷3 · anual ÷12</span>; aviso quando faltam 7 dias ou menos.</p>
+      <ul>
+        <li><code>recurring_transactions</code><span>type, name, amount, frequency, day_of_month, start_date, end_date, is_paused, is_active, category_id, notes. Base dos números, dos grupos e dos próximos 30 dias. Excluir é lógico.</span></li>
+        <li><code>profiles <small>(monthly_income)</small></code><span>A renda do perfil, <span class="num">R$&nbsp;5.000</span>: base dos <span class="num">53%</span> comprometidos. O v3 dividia por <span class="num">3.000</span> fixo.</span></li>
+        <li><code>transactions <small>(recurring_id)</small></code><span>Os lançamentos que cada recorrente já gerou. Ficam quando ela é pausada ou excluída.</span></li>
+        <li><code>budgets</code><span>Se a recorrente cabe no envelope da categoria.</span></li>
+        <li><code>categories</code><span>Nome e tipo da categoria de cada recorrente.</span></li>
+        <li><code>goals <small>(02 Futuro)</small></code><span>Só o vínculo do Aporte automático com a meta Viagem Itália.</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<script src="../shared/mock-data.js"></script>
+<script src="../shared/app.js"></script>
+<script>SLApp.boot()</script>
+<script type="module">import { ligarSy40 } from '../shared/sy40.js'; ligarSy40()</script>
+<script>
+(function () {
+  var M = window.SL_MOCK, R = M.fin.recorrentes, NB = ' ';
+  var HOJE = '2026-10-03', LIMITE = addDias(HOJE, 30);
+  var RENDA = parseInt(R.totais.base.replace(/\D/g, ''), 10); // profiles.monthly_income do mock
+  var MES = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+  var MESL = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+  var DSEM = ['dom','seg','ter','qua','qui','sex','sáb'];
+  var FATOR = { semanal: 4.33, quinzenal: 2.17, mensal: 1, trimestral: 1 / 3, anual: 1 / 12 };
+  var PASSO_D = { semanal: 7, quinzenal: 14 }, PASSO_M = { mensal: 1, trimestral: 3, anual: 12 };
+  var GRUPOS = [['mensal', 'Mensais'], ['semanal', 'Semanais'], ['quinzenal', 'Quinzenais'], ['trimestral', 'Trimestrais'], ['anual', 'Anuais']];
+  var ENTRADA = ['Renda', 'Renda extra'];
+  var itens = R.itens.map(function (x) { return Object.assign({}, x); });
+  var filtro = 'todas', seq = 100;
+
+  function d2n(iso) { var p = iso.split('-'); return Date.UTC(+p[0], +p[1] - 1, +p[2]); }
+  function n2d(n) { return new Date(n).toISOString().slice(0, 10); }
+  function addDias(iso, k) { return n2d(d2n(iso) + k * 864e5); }
+  function diasNoMes(y, m) { return new Date(Date.UTC(y, m + 1, 0)).getUTCDate(); }
+  function addMeses(iso, k, dia) {
+    var p = iso.split('-'), y = +p[0], m = +p[1] - 1 + k; y += Math.floor(m / 12); m = ((m % 12) + 12) % 12;
+    var d = Math.min(dia || +p[2], diasNoMes(y, m));
+    return y + '-' + String(m + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+  }
+  function entre(a, b) { return Math.round((d2n(b) - d2n(a)) / 864e5); }
+  function curta(iso) { var p = iso.split('-'); return +p[2] + ' ' + MES[+p[1] - 1] + (p[0] !== '2026' ? ' ' + p[0] : ''); }
+  // calendário do mock: 3 de outubro de 2026 é sexta (1 dia antes do calendário real)
+  function dsem(iso) { return DSEM[(new Date(d2n(iso)).getUTCDay() + 6) % 7]; }
+
+  function brl(n) { return M.fmtBRL(Math.abs(n)).replace('R$ ', 'R$' + NB); }
+  function brl0(n) { return M.fmtBRL0(Math.abs(n)).replace('R$ ', 'R$' + NB); }
+  function sinal(t) { return t === 'in' ? '+ ' : '– '; }
+  function parseValor(s) { s = String(s).replace(/[R$\s ]/g, '').replace(/\./g, '').replace(',', '.'); var n = parseFloat(s); return isNaN(n) ? 0 : Math.abs(n); }
+  function valorCampo(n) { return M.fmtBRL(n).replace('R$ ', ''); }
+  function mensal(it) { return Math.round(it.valor * FATOR[it.freq] * 100) / 100; }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+  function proxima(it) {
+    if (it.pausada) return null;
+    if (it.prox && it.prox >= HOJE) return it.prox;
+    var d = it.inicio || HOJE;
+    if (PASSO_D[it.freq]) { while (d < HOJE) d = addDias(d, PASSO_D[it.freq]); }
+    else {
+      var p = it.inicio.split('-'), base = p[0] + '-' + p[1] + '-01', k = 0;
+      d = addMeses(base, 0, it.dia);
+      while (d < HOJE || d < it.inicio) { k += PASSO_M[it.freq]; d = addMeses(base, k, it.dia); }
+    }
+    if (it.fim && d > it.fim) return null;
+    return d;
+  }
+  function ocorrencias(it) {
+    var out = [], d = proxima(it), k = 0;
+    while (d && d <= LIMITE && k < 10) {
+      if (it.fim && d > it.fim) break;
+      out.push(d); k++;
+      d = PASSO_D[it.freq] ? addDias(d, PASSO_D[it.freq]) : addMeses(d, PASSO_M[it.freq], it.dia);
+    }
+    return out;
+  }
+  function quando(it) {
+    if (it.freq === 'mensal') return 'dia ' + it.dia;
+    if (it.freq === 'semanal') return 'a cada 7 dias';
+    if (it.freq === 'quinzenal') return 'a cada 14 dias';
+    if (it.freq === 'trimestral') return 'dia ' + it.dia + ', a cada 3 meses';
+    var p = (it.prox || it.inicio).split('-'); return it.dia + ' de ' + MESL[+p[1] - 1];
+  }
+  function emQuanto(iso) { var n = entre(HOJE, iso); return n === 0 ? 'hoje' : n === 1 ? 'amanhã' : 'em ' + n + ' dias'; }
+
+  function totais() {
+    var t = { sai: 0, ent: 0, nSai: 0, nEnt: 0, ativas: 0, pausadas: 0 };
+    itens.forEach(function (it) {
+      if (it.pausada) { t.pausadas++; return; }
+      t.ativas++;
+      if (it.tipo === 'in') { t.ent += mensal(it); t.nEnt++; } else { t.sai += mensal(it); t.nSai++; }
+    });
+    t.sai = Math.round(t.sai * 100) / 100; t.ent = Math.round(t.ent * 100) / 100;
+    t.liq = t.ent - t.sai; t.anual = Math.round(t.sai * 12 * 100) / 100; t.pct = Math.round(t.sai / RENDA * 100);
+    return t;
+  }
+  function plural(n, s, p) { return n + ' ' + (n === 1 ? s : p); }
+  function htmlNums(t) {
+    return '<div><p class="eyebrow">Saída mensal</p><div class="v num">' + brl0(t.sai) + '</div><div class="d num">' + plural(t.nSai, 'saída ativa', 'saídas ativas') + '</div></div>' +
+      '<div><p class="eyebrow">Entrada mensal</p><div class="v num">' + brl0(t.ent) + '</div><div class="d num">' + plural(t.nEnt, 'entrada ativa', 'entradas ativas') + '</div></div>' +
+      '<div><p class="eyebrow">Impacto líquido</p><div class="v num' + (t.liq >= 0 ? ' ele' : '') + '">' + (t.liq >= 0 ? '+ ' : '– ') + brl0(t.liq) + '</div><div class="d num">' + (t.liq >= 0 ? 'sobra por mês' : 'falta por mês') + '</div></div>' +
+      '<div><p class="eyebrow">Custo anual</p><div class="v num">' + brl0(t.anual) + '</div><div class="d num">saídas × 12 meses</div></div>';
+  }
+  function htmlCompr(t) {
+    return '<p><b class="num">' + t.pct + '%</b> da sua renda comprometida · sobre <span class="num">' + brl0(RENDA) + '</span>, a renda do seu perfil</p><div class="track" style="--w:' + Math.min(100, t.pct) + '%"><i></i></div>';
+  }
+  function htmlLinha(it) {
+    var px = proxima(it), nm = esc(it.nome);
+    var sub = esc(it.cat) + ' · ' + quando(it) + (it.pausada ? ' · pausada, não gera lançamentos' : px ? ' · próx. ' + curta(px) : ' · encerrada');
+    var eq = it.freq !== 'mensal' ? '<small>≈ ' + brl(mensal(it)) + '/mês</small>' : '';
+    return '<div class="rr' + (it.tipo === 'in' ? ' in' : '') + (it.pausada ? ' pausada' : '') + '" data-id="' + it.id + '">' +
+      '<button class="rb" type="button" aria-label="Editar ' + nm + (it.pausada ? ', pausada' : '') + '"><span class="nm"><span class="n1">' + nm + '</span><small>' + sub + '</small></span>' +
+      '<span class="v num">' + sinal(it.tipo) + brl(it.valor) + eq + '</span></button></div>';
+  }
+  function ordem(a, b) {
+    if (a.freq === 'mensal' && b.freq === 'mensal') return a.dia - b.dia || a.nome.localeCompare(b.nome);
+    var pa = proxima(a) || '9999', pb = proxima(b) || '9999';
+    return pa < pb ? -1 : pa > pb ? 1 : a.nome.localeCompare(b.nome);
+  }
+  function htmlLista() {
+    var h = '';
+    GRUPOS.forEach(function (g) {
+      var gs = itens.filter(function (it) { return it.freq === g[0]; }).sort(ordem);
+      if (!gs.length) return;
+      var s = 0, e = 0;
+      gs.forEach(function (it) { if (it.pausada) return; if (it.tipo === 'in') e += mensal(it); else s += mensal(it); });
+      var st = (g[0] === 'mensal' ? '' : '≈ ') + (s ? '– ' + brl(s) : '') + (s && e ? ' · ' : '') + (e ? '<span class="in">+ ' + brl(e) + '</span>' : '') + '/mês';
+      if (!s && !e) st = 'tudo pausado';
+      h += '<div class="grp" data-freq="' + g[0] + '"><div class="grp-h"><p class="eyebrow">' + g[1] + ' · <span class="num">' + gs.length + '</span></p><span class="st num">' + st + '</span></div>' +
+        gs.map(htmlLinha).join('') + '</div>';
+    });
+    return h;
+  }
+  function htmlProx() {
+    var oc = [];
+    itens.forEach(function (it) { ocorrencias(it).forEach(function (d) { oc.push({ d: d, it: it }); }); });
+    oc.sort(function (a, b) { return a.d < b.d ? -1 : a.d > b.d ? 1 : 0; });
+    if (!oc.length) return '<p class="vazio-p">Nada nos próximos 30 dias.</p>';
+    var s = 0, e = 0;
+    var h = oc.map(function (o) {
+      var it = o.it, n = entre(HOJE, o.d);
+      if (it.tipo === 'in') e += it.valor; else s += it.valor;
+      return '<div class="pr' + (it.tipo === 'in' ? ' in' : '') + '" data-id="' + it.id + '"><span class="d num">' + curta(o.d) + '<small>' + dsem(o.d) + '</small></span>' +
+        '<span class="nm">' + esc(it.nome) + (n <= 7 && it.tipo !== 'in' ? '<span class="tag">' + emQuanto(o.d) + '</span>' : '') + '</span>' +
+        '<span class="v num">' + sinal(it.tipo) + brl(it.valor) + '</span></div>';
+    }).join('');
+    return h + '<p class="prox-foot">Saem <b class="num">' + brl(s) + '</b> e entram <b class="num ele">' + brl(e) + '</b> até ' + curta(LIMITE) + '. Coral: faltam 7 dias ou menos.</p>';
+  }
+  function htmlSub(t) {
+    var oc = [];
+    itens.forEach(function (it) { if (it.tipo !== 'in') { var d = proxima(it); if (d) oc.push({ d: d, it: it }); } });
+    oc.sort(function (a, b) { return a.d < b.d ? -1 : a.d > b.d ? 1 : 0; });
+    var p = '<span class="num">' + t.ativas + '</span> ' + (t.ativas === 1 ? 'ativa' : 'ativas');
+    if (t.pausadas) p += ' · <span class="num">' + t.pausadas + '</span> ' + (t.pausadas === 1 ? 'pausada' : 'pausadas');
+    if (oc.length) { var n = entre(HOJE, oc[0].d); p += ' · a próxima sai ' + (n === 0 ? 'hoje' : n === 1 ? 'amanhã' : 'em <span class="num">' + n + '</span> dias') + ': <b>' + esc(oc[0].it.nome) + '</b>'; }
+    return p;
+  }
+  function render() {
+    var t = totais();
+    document.getElementById('nums').innerHTML = htmlNums(t);
+    document.getElementById('compr').innerHTML = htmlCompr(t);
+    document.getElementById('lista').innerHTML = htmlLista();
+    document.getElementById('prox').innerHTML = htmlProx();
+    document.getElementById('h-sub').innerHTML = htmlSub(t);
+    document.getElementById('rod-ativas').innerHTML = '<b class="num">' + t.ativas + '</b> ' + (t.ativas === 1 ? 'ativa' : 'ativas') + (t.pausadas ? ' · <b class="num">' + t.pausadas + '</b> ' + (t.pausadas === 1 ? 'pausada' : 'pausadas') : '');
+    aplicarFiltro();
+  }
+  function aplicarFiltro() {
+    var vis = 0;
+    document.querySelectorAll('#lista .grp').forEach(function (g) {
+      var n = 0;
+      g.querySelectorAll('.rr').forEach(function (r) {
+        var it = achar(r.dataset.id), ok = filtro === 'todas' || (filtro === 'pausadas' ? it.pausada : it.tipo === filtro);
+        r.hidden = !ok; if (ok) n++;
+      });
+      g.hidden = !n; vis += n;
+    });
+    document.getElementById('sem-resultado').hidden = vis > 0;
+  }
+  function achar(id) { for (var i = 0; i < itens.length; i++) if (itens[i].id === id) return itens[i]; return null; }
+  function destacar(id) {
+    var el = document.querySelector('#lista .rr[data-id="' + id + '"]'); if (!el) return null;
+    el.classList.add('nova');
+    requestAnimationFrame(function () { requestAnimationFrame(function () { el.classList.remove('nova'); }); });
+    return el;
+  }
+  var status = document.getElementById('status');
+  function avisar(msg) { status.textContent = msg; clearTimeout(status._t); status._t = setTimeout(function () { status.textContent = ''; }, 3200); }
+
+  document.querySelectorAll('.filtros .chip').forEach(function (c) {
+    c.addEventListener('click', function () {
+      document.querySelectorAll('.filtros .chip').forEach(function (q) { q.classList.remove('on'); q.setAttribute('aria-pressed', 'false'); });
+      c.classList.add('on'); c.setAttribute('aria-pressed', 'true'); filtro = c.dataset.f; aplicarFiltro();
+    });
+  });
+
+  function usaDia(f) { return f === 'mensal' || f === 'trimestral' || f === 'anual'; }
+
+  // ── sheet de captura / edição ──
+  var sheet = document.getElementById('sheet'), scrim = document.querySelector('.scrim'), camada = document.querySelector('.camada');
+  var form = document.getElementById('sform'), confirma = document.getElementById('s-confirma'), erro = document.getElementById('s-erro'), out = document.getElementById('s-out');
+  var btnExc = document.getElementById('s-excluir'), btnPau = document.getElementById('s-pausar'), btnSal = document.getElementById('s-salvar');
+  var atual = null, tipo = 'out', voltarFoco = null;
+  function setTipo(t) {
+    tipo = t;
+    sheet.querySelectorAll('.tipo .chip').forEach(function (c) { var on = c.dataset.tipo === t; c.classList.toggle('on', on); c.setAttribute('aria-pressed', on); });
+  }
+  function trocarFreq(f) { sheet.querySelectorAll('[data-so-dia]').forEach(function (el) { el.hidden = !usaDia(f); }); }
+  function abrir(it, origem) {
+    atual = it; voltarFoco = origem || null; var d = it || {};
+    form.nome.value = d.nome || ''; form.valor.value = d.valor ? valorCampo(d.valor) : '';
+    form.freq.value = d.freq || 'mensal'; form.dia.value = d.dia || ''; form.inicio.value = d.inicio || HOJE;
+    form.fim.value = d.fim || ''; form.cat.value = d.cat || 'Moradia'; form.obs.value = d.nota || '';
+    setTipo(d.tipo || 'out'); trocarFreq(form.freq.value);
+    confirma.hidden = true; erro.textContent = ''; out.textContent = '';
+    document.getElementById('s-titulo').textContent = it ? 'Editar recorrente' : 'Nova recorrente';
+    document.getElementById('s-aviso').hidden = !it;
+    btnExc.hidden = !it; btnPau.hidden = !it; btnSal.textContent = it ? 'Salvar' : 'Registrar';
+    if (it) { btnPau.textContent = it.pausada ? 'Retomar' : 'Pausar'; document.getElementById('s-conf-nome').textContent = it.nome; }
+    sheet.classList.add('open'); scrim.classList.add('open');
+    if (!it) form.nome.focus({ preventScroll: true });
+  }
+  function fechar() {
+    if (!sheet.classList.contains('open')) return;
+    sheet.classList.remove('open');
+    if (!camada || !camada.classList.contains('open')) scrim.classList.remove('open');
+    if (voltarFoco && document.body.contains(voltarFoco)) voltarFoco.focus({ preventScroll: true });
+    atual = null; voltarFoco = null;
+  }
+  document.querySelectorAll('[data-abrir-captura]').forEach(function (b) { b.addEventListener('click', function () { abrir(null, b); }); });
+  sheet.querySelector('.x').addEventListener('click', fechar);
+  scrim.addEventListener('click', fechar);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') fechar(); });
+  sheet.querySelectorAll('.tipo .chip').forEach(function (c) { c.addEventListener('click', function () { setTipo(c.dataset.tipo); }); });
+  form.freq.addEventListener('change', function () { trocarFreq(this.value); });
+  form.cat.addEventListener('change', function () { setTipo(ENTRADA.indexOf(this.value) >= 0 ? 'in' : 'out'); });
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var f = form.freq.value, dia = parseInt(form.dia.value, 10), val = parseValor(form.valor.value);
+    if (!form.nome.value.trim()) { erro.textContent = 'Faltou o nome.'; form.nome.focus(); return; }
+    if (!val) { erro.textContent = 'Faltou o valor.'; form.valor.focus(); return; }
+    if (usaDia(f) && !(dia >= 1 && dia <= 31)) { erro.textContent = 'O dia do mês vai de 1 a 31.'; form.dia.focus(); return; }
+    if (form.fim.value && form.fim.value <= form.inicio.value) { erro.textContent = 'O fim precisa ser depois do início.'; form.fim.focus(); return; }
+    var d = { nome: form.nome.value.trim(), valor: val, freq: f, dia: usaDia(f) ? dia : null, inicio: form.inicio.value || HOJE,
+      fim: form.fim.value || null, cat: form.cat.value, nota: form.obs.value.trim() || null, tipo: tipo };
+    var id, novo = !atual;
+    if (atual) { var mudouData = atual.freq !== d.freq || atual.dia !== d.dia || atual.inicio !== d.inicio; Object.assign(atual, d); if (mudouData) atual.prox = null; id = atual.id; }
+    else { var it = Object.assign({ id: 'n' + (seq++), prox: null }, d); itens.push(it); id = it.id; }
+    render(); var el = destacar(id);
+    if (novo) { out.textContent = 'Registrado.'; voltarFoco = null; setTimeout(fechar, 650); }
+    else { voltarFoco = el ? el.querySelector('.rb') : null; fechar(); avisar('Salvo.'); }
+  });
+  btnPau.addEventListener('click', function () {
+    if (!atual) return; var it = atual;
+    it.pausada = !it.pausada; if (!it.pausada) it.prox = null;
+    render(); var el = destacar(it.id);
+    voltarFoco = el ? el.querySelector('.rb') : null; fechar();
+    avisar(it.pausada ? it.nome + ' pausada. Não gera lançamentos até você retomar.' : it.nome + ' retomada. Próximo lançamento em ' + curta(proxima(it)) + '.');
+  });
+  btnExc.addEventListener('click', function () { confirma.hidden = false; document.getElementById('s-conf-sim').focus(); });
+  document.getElementById('s-conf-nao').addEventListener('click', function () { confirma.hidden = true; btnExc.focus(); });
+  document.getElementById('s-conf-sim').addEventListener('click', function () {
+    if (!atual) return; var it = atual;
+    itens.splice(itens.indexOf(it), 1); voltarFoco = null; fechar(); render();
+    avisar(it.nome + ' excluída. Os lançamentos já registrados ficam.');
+  });
+  document.getElementById('lista').addEventListener('click', function (e) {
+    var b = e.target.closest('.rb'); if (!b) return;
+    abrir(achar(b.closest('.rr').dataset.id), b);
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
