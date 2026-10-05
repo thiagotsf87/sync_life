@@ -187,8 +187,10 @@ Tags: `poc-landing-r4` · `poc-landing-viva-r15` · `poc-landing-viva-mobile-m1`
    só existe em produção. Proposta: o usuário cria uma conta de teste em homolog pelo app local, eu semeio dados
    com os números do mock via SQL só nessa conta, o usuário entra pela janela do script e eu rodo o `comparar`.
 2. **Produção CONGELADA (decisão do usuário, 2026-10-05): nada mais sobe para produção até o fim do plano (Fase 8); subida única no final.** Fila de produção: 029 + reconciliação das 11 tabelas (030). Histórico: 028 APLICADA em produção (027 já estava). **029 NÃO aplicada:** `weekly_reviews` não existe em produção. **Descompasso de schema descoberto:** faltam em produção 11 tabelas cujas migrations constam como aplicadas (004/013/014/015/016): `weekly_reviews, agenda_events, life_sync_scores, user_streaks, focus_sessions, badges, user_badges, bucket_list_items, daily_water_intake, meals, trip_memories`; homolog não tem `user_accounts` e não registra 019-026. Plano para a subida final: migration única `030_reconcilia_producao.sql` criando só as tabelas ausentes (IF NOT EXISTS, sem drop), depois a 029; inventário de diferenças atualizado a cada fase.
-3. Fechamento: hub `qa`, limpeza de componentes v3 órfãos (`HistoricoChart`, `OrcamentosCard`, `UltimasTransacoes`,
-   `ProjecaoSaldo`, `FinancasCoachSection`), handoff.
+3. Fechamento (2026-10-05): órfãos v3 de Finanças REMOVIDOS (`HistoricoChart`, `OrcamentosCard`, `UltimasTransacoes`,
+   `ProjecaoSaldo`, `FinancasCoachSection` + `CustomHistTip`, `DonutChart` de financas, `FinancialInsightCard`; tsc 0,
+   878 testes); grep de copy proibida em `app-v5` vazio; hub com a Fase 1 como implementada. Só falta o item 1 para
+   as linhas do hub virarem `qa`.
 
 ### Gotchas (LEI)
 - **`xmtzpj…` é PRODUÇÃO, `bculmh…` é homologação.** O plano tinha os dois trocados; corrigido. Build para QA local
