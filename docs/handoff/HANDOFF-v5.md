@@ -160,6 +160,47 @@ Tags: `poc-landing-r4` · `poc-landing-viva-r15` · `poc-landing-viva-mobile-m1`
 
 ---
 
+## 2026-10-05 · Sessão 30 — Fase 1 fechada: identidade com login, produção congelada
+
+> Tudo local, sem push. Produção não foi tocada e **fica congelada até o fim do plano** (decisão do usuário).
+
+### Entregue
+- **Decisão: produção congelada até a Fase 8.** Migrations novas só em homolog; "fila de produção" neste handoff
+  (hoje: 029 + reconciliação das 11 tabelas via 030). Subida única no final, com inventário de diferenças.
+- **Órfãos v3 de Finanças removidos** (8 arquivos, ver sessão 29 item 3). `tsc` 0, 878 testes, grep de copy proibida vazio.
+- **Teste de identidade com login (Task 18) FEITO.** Conta de teste em homolog é a do próprio usuário
+  (`thiago.tsf.87@gmail.com`, id `85603fcb…`), semeada por SQL com os números do mock (categorias, 28 transações,
+  orçamentos set/out, 4 recorrentes, 3 goals + 4 objectives com objective_goals, 17 eventos, foco, atividades, peso,
+  água, consulta, 2 viagens, bucket list, 30 dias de life_sync_scores, streak 12, 8 coach_messages).
+  Resultado (`.playwright-mcp/identidade/relatorio.json`, pixelmatch 0.1):
+
+  | tela | desktop | mobile | leitura |
+  |---|---|---|---|
+  | meu-dia | 7,5% | 10,3% | texto do header quebra em 3 linhas (2 no mock), 4 gatilhos (3), agenda com mais linhas |
+  | financas | 5,4% | 8,6% | 17 transações (34 no mock), datas reais |
+  | life-score | 3,0% | 9,7% | idêntico; só números do motor |
+  | sua-semana | 34% | 39% | estado diferente: hoje é segunda, semana "em curso" (mock = semana com leitura). Estrutura bate |
+  | conversa | 20% | 27% | 3 dias (5 no mock); o mock tem o briefing do dia como 1ª entrada, o app ainda não (ver pendências) |
+
+  Nenhuma diferença de layout, chrome ou componente. **Fase 1 fechada; hub com as linhas em `qa`.**
+- **Script `identidade-v5.mjs` corrigido:** esconde `.proto-estados` (anotação só do protótipo), `.camada:not(.open)` e
+  `.scrim:not(.open)` (fora da viewport por transform, mas o fullPage capturava), ignora `ERR_ABORTED` (prefetch do
+  Next cancelado) e imprime os erros de rota.
+
+### Pendências (não bloqueiam a Fase 2)
+1. **Arquivo da conversa sem o briefing do dia:** o protótipo lista `coach_briefs` como 1ª entrada do dia; `use-conversa`
+   lê só `coach_messages` + `intencoes`. Entra na Fase 7 (Sy) ou antes se sobrar espaço.
+2. **Homolog × produção, inventário:** homolog não tem a 026 (`preferred_name` etc.) e a URL do site na Auth de homolog
+   aponta para um deploy removido da Vercel (link de confirmação dá 410; o token é consumido antes, a conta fica confirmada).
+3. Fila de produção: 029, 030 (11 tabelas), e a partir daqui toda migration nova.
+
+### Gotchas
+- O briefing de Meu dia é cacheado 1×/dia em `coach_briefs`: depois de semear dados, apagar a linha do dia ou ele fica
+  com o texto gerado antes da semente ("sem transações em outubro").
+- O motor de score lê metas em `objectives`/`objective_goals`, Meu dia e Finanças leem `goals`: semear os dois.
+- O motor grava o score de hoje ao abrir a tela: o histórico semeado tem que terminar perto do valor real, senão a curva despenca.
+- Full-page screenshot captura elementos `position:fixed` fora da viewport (sheet fechada, bottom bar): esconder no CSS do teste.
+
 ## 2026-10-04 · Sessão 29 — Fase 0 fechada, Fase 1 prototipada, aprovada e implementada em web/
 
 > Tudo local, sem push. Produção (`xmtzpjtbqhgwmebycxmx`) NÃO foi tocada; homologação (`bculmhmoxxpjlcilkgmp`)
@@ -183,9 +224,7 @@ Tags: `poc-landing-r4` · `poc-landing-viva-r15` · `poc-landing-viva-mobile-m1`
   redirecionam sem erro, 5 APIs 401). Script de identidade `web/scripts/identidade-v5.mjs` (login manual).
 
 ### Pendente para fechar a Fase 1
-1. **Teste de identidade com login** (Task 18): homolog só tem uma conta de terceiro; o QA (`admin@synclife.dev`)
-   só existe em produção. Proposta: o usuário cria uma conta de teste em homolog pelo app local, eu semeio dados
-   com os números do mock via SQL só nessa conta, o usuário entra pela janela do script e eu rodo o `comparar`.
+1. **Teste de identidade com login** (Task 18): FEITO na sessão 30 (conta do usuário em homolog, semeada por SQL).
 2. **Produção CONGELADA (decisão do usuário, 2026-10-05): nada mais sobe para produção até o fim do plano (Fase 8); subida única no final.** Fila de produção: 029 + reconciliação das 11 tabelas (030). Histórico: 028 APLICADA em produção (027 já estava). **029 NÃO aplicada:** `weekly_reviews` não existe em produção. **Descompasso de schema descoberto:** faltam em produção 11 tabelas cujas migrations constam como aplicadas (004/013/014/015/016): `weekly_reviews, agenda_events, life_sync_scores, user_streaks, focus_sessions, badges, user_badges, bucket_list_items, daily_water_intake, meals, trip_memories`; homolog não tem `user_accounts` e não registra 019-026. Plano para a subida final: migration única `030_reconcilia_producao.sql` criando só as tabelas ausentes (IF NOT EXISTS, sem drop), depois a 029; inventário de diferenças atualizado a cada fase.
 3. Fechamento (2026-10-05): órfãos v3 de Finanças REMOVIDOS (`HistoricoChart`, `OrcamentosCard`, `UltimasTransacoes`,
    `ProjecaoSaldo`, `FinancasCoachSection` + `CustomHistTip`, `DonutChart` de financas, `FinancialInsightCard`; tsc 0,

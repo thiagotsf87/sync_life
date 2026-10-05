@@ -37,9 +37,12 @@ const VIEWPORTS = [
 ]
 
 // Partes vivas que nunca batem pixel a pixel: o Enxame (WebGL) e o grão.
+// A anotação do protótipo (.proto-estados) não existe no app. Camadas fechadas ficam fora: estão fora da viewport por transform e o fullPage as capturaria.
 const NEUTRALIZA = `
   .sy40 canvas{visibility:hidden!important}
   .grain{display:none!important}
+  .camada:not(.open),.scrim:not(.open){display:none!important}
+  .proto-estados{display:none!important}
   *,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important}
 `
 
@@ -68,7 +71,9 @@ async function capturar(b, url, vp, comSessao) {
   const p = await ctx.newPage()
   const erros = []
   p.on('pageerror', (e) => erros.push(e.message))
-  p.on('console', (m) => { if (m.type() === 'error' && !/GL Driver|GPU stall/.test(m.text())) erros.push(m.text()) })
+  p.on('console', (m) => { if (m.type() === 'error' && !/GL Driver|GPU stall|Failed to fetch/.test(m.text())) erros.push(m.text()) })
+  // ERR_ABORTED é prefetch do Next cancelado ao fechar o contexto: ruído, não erro
+  p.on('requestfailed', (r) => { const t = r.failure()?.errorText ?? '?'; if (t !== 'net::ERR_ABORTED') erros.push(`request falhou: ${r.method()} ${r.url()} (${t})`) })
   await p.goto(url, { waitUntil: 'networkidle' })
   await p.waitForTimeout(1500)
   await p.addStyleTag({ content: NEUTRALIZA })
@@ -119,6 +124,7 @@ async function comparar() {
         redirecionou: !rota.final.includes(par.rota) ? rota.final : '',
         errosRota: rota.erros.length,
       })
+      for (const e of rota.erros) console.log(`  [${par.nome} ${vp.nome}] ${e.slice(0, 300)}`)
     }
   }
   await b.close()
