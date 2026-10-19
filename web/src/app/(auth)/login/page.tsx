@@ -40,9 +40,9 @@ export default function LoginPage() {
       if (error) {
         if (error.message.includes('Email not confirmed') || error.message.includes('email_not_confirmed')) {
           setEmailNotConfirmed(true)
-          toast.error('E-mail ainda nao confirmado. Verifique sua caixa de entrada.')
+          toast.error('E-mail ainda não confirmado. Verifique sua caixa de entrada.')
         } else {
-          toast.error('Credenciais incorretas')
+          toast.error('E-mail ou senha incorretos.')
         }
         return
       }
@@ -77,7 +77,7 @@ export default function LoginPage() {
       const supabase = createClient()
       const { error } = await supabase.auth.resend({ type: 'signup', email: email.trim() })
       if (error) { toast.error(error.message); return }
-      toast.success('E-mail de confirmacao reenviado!')
+      toast.success('E-mail de confirmação reenviado!')
       setEmailNotConfirmed(false)
     } catch {
       toast.error('Erro ao reenviar. Tente novamente.')
@@ -93,9 +93,9 @@ export default function LoginPage() {
         provider: 'google',
         options: { redirectTo: `${window.location.origin}/auth/callback` },
       })
-      if (error) toast.error('Erro ao conectar com Google')
+      if (error) toast.error('Erro ao conectar com o Google. Tente novamente.')
     } catch {
-      toast.error('Erro ao conectar com Google')
+      toast.error('Erro ao conectar com o Google. Tente novamente.')
     }
   }
 
@@ -111,10 +111,10 @@ export default function LoginPage() {
             SyncLife
           </div>
           <div className="av-tagline">
-            Gerencie todas as<br />areas da sua vida<br />em um so lugar.
+            Gerencie todas as<br />áreas da sua vida<br />em um só lugar.
           </div>
           <div className="av-desc">
-            8 dimensoes da sua vida integradas com um score inteligente que mostra o equilibrio entre elas.
+            8 dimensões da sua vida integradas com um score inteligente que mostra o equilíbrio entre elas.
           </div>
 
           {/* Mini preview card */}
@@ -135,7 +135,7 @@ export default function LoginPage() {
             </div>
             <div className="av-mini-modules">
               <div className="av-mini-mod">
-                <div className="av-mini-mod-name">Financas</div>
+                <div className="av-mini-mod-name">Finanças</div>
                 <div className="av-mini-mod-val" style={{ color: 'var(--green)' }}>85</div>
               </div>
               <div className="av-mini-mod">
@@ -224,7 +224,7 @@ export default function LoginPage() {
             {emailNotConfirmed && (
               <div className="auth-warning-banner">
                 <p className="auth-warning-text">
-                  Seu e-mail ainda nao foi confirmado. Verifique a caixa de entrada e spam.
+                  Seu e-mail ainda não foi confirmado. Verifique a caixa de entrada e a pasta de spam.
                 </p>
                 <button
                   type="button"
@@ -232,7 +232,7 @@ export default function LoginPage() {
                   disabled={resendLoading}
                   onClick={handleResendConfirmation}
                 >
-                  {resendLoading ? 'Enviando...' : 'Reenviar confirmacao'}
+                  {resendLoading ? 'Enviando...' : 'Reenviar confirmação'}
                 </button>
               </div>
             )}
@@ -243,7 +243,7 @@ export default function LoginPage() {
           </form>
 
           <div className="auth-footer">
-            Nao tem conta? <Link href="/cadastro">Criar conta gratis</Link>
+            Não tem conta? <Link href="/cadastro">Criar conta grátis</Link>
           </div>
         </div>
       </div>

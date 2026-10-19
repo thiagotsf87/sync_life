@@ -17,18 +17,29 @@ test.describe('Login', () => {
     await expect(page.getByRole('heading', { name: /Bem-vindo de volta/i })).toBeVisible()
   })
 
+  test('exibe os textos corrigidos da tela de login', async ({ page }) => {
+    await page.goto('/login')
+    await expect(page.getByText(/áreas da sua vida/)).toBeVisible()
+    await expect(page.getByText(/em um só lugar/)).toBeVisible()
+    await expect(page.getByText(/8 dimensões/)).toBeVisible()
+    await expect(page.getByText(/equilíbrio/)).toBeVisible()
+    await expect(page.getByText('Finanças', { exact: true })).toBeVisible()
+    await expect(page.getByText(/Não tem conta\?/)).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Criar conta grátis' })).toBeVisible()
+  })
+
   test('exibe erro com credenciais inválidas', async ({ page }) => {
     await page.goto('/login')
     await page.getByLabel('E-mail').fill('invalido@teste.com')
     await page.locator('#password').fill('senhaerrada')
     await page.getByRole('button', { name: /Entrar/ }).click()
-    // Toast de erro: "Credenciais incorretas"
-    await expect(page.getByText(/Credenciais incorretas/i)).toBeVisible({ timeout: 8000 })
+    // Toast de erro: "E-mail ou senha incorretos."
+    await expect(page.getByText(/E-mail ou senha incorretos/i)).toBeVisible({ timeout: 8000 })
   })
 
-  test('exibe link Esqueci minha senha e Criar conta grátis', async ({ page }) => {
+  test('exibe link Esqueceu a senha? e Criar conta grátis', async ({ page }) => {
     await page.goto('/login')
-    await expect(page.getByRole('link', { name: /Esqueci minha senha/i })).toBeVisible()
+    await expect(page.getByRole('link', { name: /Esqueceu a senha\?/i })).toBeVisible()
     await expect(page.getByRole('link', { name: 'Criar conta grátis' })).toBeVisible()
   })
 
