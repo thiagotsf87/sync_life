@@ -16,6 +16,15 @@ interface OnboardingState {
   dimensions: string[]
 }
 
+interface StartAction {
+  title: string
+  desc: string
+  color: string
+  bg: string
+  icon: string
+  href: string
+}
+
 // ── Objectives Data ──────────────────────────────────────
 const OBJECTIVES = [
   { value: 'financas', title: 'Organizar minhas financas', desc: 'Sair do vermelho, controlar gastos, criar orcamento', color: '#10b981', bg: 'rgba(16,185,129,.1)', icon: 'dollar' },
@@ -62,11 +71,36 @@ function ObjIcon({ type, color, size = 18 }: { type: string; color: string; size
 }
 
 // ── "Start here" suggestions ─────────────────────────────
-const START_ACTIONS = [
-  { title: 'Registre sua primeira transacao', desc: 'Financas \u00b7 30 segundos', color: '#10b981', bg: 'rgba(16,185,129,.1)', icon: 'dollar', href: '/financas/transacoes' },
-  { title: 'Crie seu primeiro objetivo', desc: 'Futuro \u00b7 1 minuto', color: '#0055ff', bg: 'rgba(0,85,255,.1)', icon: 'target', href: '/futuro' },
-  { title: 'Configure sua agenda semanal', desc: 'Tempo \u00b7 2 minutos', color: '#06b6d4', bg: 'rgba(6,182,212,.1)', icon: 'clock', href: '/tempo' },
+// Padrão: usado como complemento e quando não há objetivo com ação própria.
+const DEFAULT_ACTIONS: StartAction[] = [
+  { title: 'Registre sua primeira transação', desc: 'Finanças · 30 segundos', color: '#10b981', bg: 'rgba(16,185,129,.1)', icon: 'dollar', href: '/financas/transacoes' },
+  { title: 'Crie seu primeiro objetivo', desc: 'Futuro · 1 minuto', color: '#0055ff', bg: 'rgba(0,85,255,.1)', icon: 'target', href: '/futuro' },
+  { title: 'Configure sua agenda semanal', desc: 'Tempo · 2 minutos', color: '#06b6d4', bg: 'rgba(6,182,212,.1)', icon: 'clock', href: '/tempo' },
 ]
+
+// Objetivo -> primeira ação. 'equilibrio' não tem ação própria.
+const ACTION_BY_OBJECTIVE: Record<string, StartAction> = {
+  financas: DEFAULT_ACTIONS[0],
+  patrimonio: { title: 'Cadastre seu primeiro investimento', desc: 'Patrimônio · 1 minuto', color: '#3b82f6', bg: 'rgba(59,130,246,.1)', icon: 'chart', href: '/patrimonio' },
+  saude: { title: 'Registre seu peso de hoje', desc: 'Corpo · 30 segundos', color: '#f97316', bg: 'rgba(249,115,22,.1)', icon: 'pulse', href: '/corpo/peso' },
+  tempo: DEFAULT_ACTIONS[2],
+  carreira: { title: 'Monte seu perfil de carreira', desc: 'Carreira · 2 minutos', color: '#f43f5e', bg: 'rgba(244,63,94,.1)', icon: 'briefcase', href: '/carreira' },
+  sonhos: DEFAULT_ACTIONS[1],
+  mente: { title: 'Registre como você está hoje', desc: 'Mente · 30 segundos', color: '#eab308', bg: 'rgba(234,179,8,.1)', icon: 'heart', href: '/mente' },
+  viagens: { title: 'Planeje sua primeira viagem', desc: 'Experiências · 2 minutos', color: '#ec4899', bg: 'rgba(236,72,153,.1)', icon: 'plane', href: '/experiencias/nova' },
+}
+
+function buildStartActions(objectives: string[]): StartAction[] {
+  const result: StartAction[] = []
+  const add = (action: StartAction | undefined) => {
+    if (action && result.length < 3 && !result.some(a => a.href === action.href)) {
+      result.push(action)
+    }
+  }
+  objectives.forEach(o => add(ACTION_BY_OBJECTIVE[o]))
+  DEFAULT_ACTIONS.forEach(add)
+  return result
+}
 
 // ── Main Component ────────────────────────────────────────
 export default function OnboardingPage() {
@@ -131,7 +165,9 @@ export default function OnboardingPage() {
     }
   }
 
-  const handleFinish = async () => {
+  // Salva o onboarding e só então navega para `href`.
+  const handleFinish = async (href: string) => {
+    if (isLoading) return
     setIsLoading(true)
     try {
       const supabase = createClient()
@@ -154,7 +190,7 @@ export default function OnboardingPage() {
         return
       }
 
-      await (supabase as any)
+      const { error: updateError } = await (supabase as any)
         .from('profiles')
         .update({
           life_moments: state.objectives.length > 0 ? state.objectives : null,
@@ -162,8 +198,13 @@ export default function OnboardingPage() {
         })
         .eq('id', user.id)
 
+      if (updateError) {
+        toast.error('Erro ao salvar configuracoes. Tente novamente.')
+        return
+      }
+
       toast.success('Tudo configurado! Bem-vindo ao SyncLife.')
-      router.push('/financas')
+      router.push(href)
       router.refresh()
     } catch {
       toast.error('Erro inesperado. Tente novamente.')
@@ -173,6 +214,7 @@ export default function OnboardingPage() {
   }
 
   const displayName = state.nome.trim().split(' ')[0] || ''
+  const startActions = buildStartActions(state.objectives)
 
   return (
     <>
@@ -456,8 +498,15 @@ export default function OnboardingPage() {
                   {/* Start here actions */}
                   <div className="celeb-actions-title">Comece por aqui</div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                    {START_ACTIONS.map((action) => (
-                      <div key={action.title} className="celeb-action">
+                    {startActions.map((action) => (
+                      <button
+                        key={action.href}
+                        type="button"
+                        className="celeb-action"
+                        style={{ width: '100%', textAlign: 'left', font: 'inherit', color: 'inherit', cursor: isLoading ? 'default' : 'pointer' }}
+                        onClick={() => handleFinish(action.href)}
+                        disabled={isLoading}
+                      >
                         <div className="celeb-action-icon" style={{ background: action.bg }}>
                           <ObjIcon type={action.icon} color={action.color} size={14} />
                         </div>
@@ -466,7 +515,7 @@ export default function OnboardingPage() {
                           <div className="celeb-action-desc">{action.desc}</div>
                         </div>
                         <ChevronRight size={14} style={{ color: 'var(--t3)' }} />
-                      </div>
+                      </button>
                     ))}
                   </div>
                 </div>
@@ -498,10 +547,10 @@ export default function OnboardingPage() {
             ) : (
               <button
                 className="onb-nav-finish"
-                onClick={handleFinish}
+                onClick={() => handleFinish(startActions[0].href)}
                 disabled={isLoading}
               >
-                {isLoading ? 'Preparando...' : 'Ir para o Dashboard'}
+                {isLoading ? 'Preparando...' : startActions[0].title}
                 <ArrowRight size={16} />
               </button>
             )}
